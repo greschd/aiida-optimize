@@ -90,7 +90,8 @@ class Bisection(object):
 
     def update(self, outputs):
         self._result_mapping.add_outputs(outputs)
-        res = outputs.values()[0]
+        res = outputs.values()[0]['result']
+        print(res)
         if res > 0:
             self.upper = self.average
         else:
@@ -123,7 +124,7 @@ class TestWorkChain(WorkChain):
         self.ctx.optimizer_state = optimizer.state
 
     def create_optimizer(self):
-        optimizer = Bisection(lower=-1., upper=1., tol=1e-2)
+        optimizer = Bisection(lower=-1., upper=1., tol=1e-3)
         self.ctx.optimizer_state = optimizer.state
 
     def not_finished(self):
@@ -152,7 +153,7 @@ class TestWorkChain(WorkChain):
             for key in step_keys:
                 idx = int(key.split(self._CALC_PREFIX)[1])
                 self.report('Retrieving output for calculation {}'.format(idx))
-                outputs[idx] = self.ctx[key].get_outputs()
+                outputs[idx] = self.ctx[key].get_outputs_dict()
                 delattr(self.ctx, key)
             opt.update(outputs)
 

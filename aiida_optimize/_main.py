@@ -90,7 +90,7 @@ class Bisection(object):
 
     def update(self, outputs):
         self._result_mapping.add_outputs(outputs)
-        res = results[0]
+        res = outputs.values()[0]
         if res > 0:
             self.upper = self.average
         else:
@@ -158,7 +158,8 @@ class TestWorkChain(WorkChain):
 
     def finalize(self):
         self.report('Finalizing optimization procedure.')
-        self.out('result', self.create_optimizer().result)
+        with self.optimizer() as opt:
+            self.out('result', opt.result)
 
 
 @export

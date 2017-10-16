@@ -10,12 +10,12 @@ from .optimization_engine import Bisection
 
 
 @export
-class TestWorkChain(WorkChain):
+class OptimizationWorkChain(WorkChain):
     _CALC_PREFIX = 'calc_'
 
     @classmethod
     def define(cls, spec):
-        super(cls, TestWorkChain).define(spec)
+        super(cls, OptimizationWorkChain).define(spec)
 
         spec.outline(
             cls.create_optimizer,

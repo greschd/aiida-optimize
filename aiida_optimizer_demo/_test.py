@@ -3,7 +3,33 @@ from aiida.orm.data.base import Float
 from aiida.work.workchain import WorkChain, ToContext, while_
 from aiida.work.run import submit
 
-class Bisection:
+class Result(object):
+    __slots__ = ['input', 'output']
+
+    def __init__(self, input, output=None):
+        self.input = input
+        self.output = output
+
+class ResultMapping(object):
+    def __init__(self):
+        self._results = {}
+
+    @property
+    def state(self):
+        return self._results
+
+    def add_input(self, input):
+        key = self.get_new_key()
+        self._results[key] = Result(input=input)
+        return key
+
+    def get_new_key(self):
+        return max(self._results.keys()) + 1
+
+    def add_output(self, key, output):
+        self._result[key].output = output
+
+class Bisection(object):
     def __init__(self, lower, upper, tol=1e-6):
         self.lower, self.upper = sorted([lower, upper])
         self.tol = tol

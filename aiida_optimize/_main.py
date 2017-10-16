@@ -1,5 +1,7 @@
 from contextlib import contextmanager
 
+from fsc.export import export
+
 from aiida.orm import DataFactory
 from aiida.orm.data.base import Float
 from aiida.work.workchain import WorkChain, ToContext, while_
@@ -46,7 +48,7 @@ class ResultMapping(object):
 
     def add_outputs(self, outputs):
         for key, out in outputs.items():
-            self._results[key].output = output
+            self._results[key].output = out
 
 
 class Bisection(object):
@@ -99,6 +101,7 @@ class Bisection(object):
         return Float(self.average)
 
 
+@export
 class TestWorkChain(WorkChain):
     _CALC_PREFIX = 'calc_'
 
@@ -158,6 +161,7 @@ class TestWorkChain(WorkChain):
         self.out('result', self.create_optimizer().result)
 
 
+@export
 class CalculateWorkChain(WorkChain):
     @classmethod
     def define(cls, spec):

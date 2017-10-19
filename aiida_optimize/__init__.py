@@ -1,5 +1,5 @@
 __version__ = '0.0.0a1'
 
-from ._main import *
+from ._optimization_workchain import *
 
-__all__ = _main.__all__
+__all__ = _optimization_workchain.__all__

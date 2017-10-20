@@ -8,6 +8,10 @@ from ._result_mapping import ResultMapping
 
 @export
 class Bisection(object):
+    """
+    TODO
+    """
+
     def __init__(self, lower, upper, tol=1e-6, result_state=None):
         self._result_mapping = ResultMapping.from_state(result_state)
         self.lower, self.upper = sorted([lower, upper])

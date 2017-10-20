@@ -10,11 +10,12 @@ from aiida.work import submit
 
 from aiida_tools import check_workchain_step
 
-from .optimization_engine import Bisection
-
 
 @export
 class OptimizationWorkChain(WorkChain):
+    """
+    TODO
+    """
     _CALC_PREFIX = 'calc_'
 
     @classmethod
@@ -22,12 +23,12 @@ class OptimizationWorkChain(WorkChain):
         super(cls, OptimizationWorkChain).define(spec)
 
         spec.input(
-            'optimization_engine',
+            'engine',
             help='Engine that runs the optimization.',
             **WORKCHAIN_INPUT_KWARGS
         )
         spec.input(
-            'optimization_kwargs',
+            'engine_kwargs',
             valid_type=ParameterData,
             help='Keyword arguments passed to the optimization engine.'
         )
@@ -46,21 +47,17 @@ class OptimizationWorkChain(WorkChain):
 
     @contextmanager
     def optimizer(self):
-        optimizer = self.optimization_engine.from_state(
-            self.ctx.optimizer_state
-        )
+        optimizer = self.engine.from_state(self.ctx.optimizer_state)
         yield optimizer
         self.ctx.optimizer_state = optimizer.state
 
     @property
-    def optimization_engine(self):
-        return self.get_deserialized_input('optimization_engine')
+    def engine(self):
+        return self.get_deserialized_input('engine')
 
     @check_workchain_step
     def create_optimizer(self):
-        optimizer = self.optimization_engine(
-            **self.inputs.optimization_kwargs.get_dict()
-        )
+        optimizer = self.engine(**self.inputs.engine_kwargs.get_dict())
         self.ctx.optimizer_state = optimizer.state
 
     @check_workchain_step

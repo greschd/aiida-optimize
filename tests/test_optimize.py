@@ -3,8 +3,16 @@ import numpy as np
 
 
 def test_optimize_run(configure, submit_as_async):
-    # os.environ['PYTHONPATH'] = os.path.dirname(os.path.abspath(__file__))
     from echo_workchain import Echo
+    from aiida_optimize.optimization_engine import Bisection
     from aiida_optimize import OptimizationWorkChain
-    result = OptimizationWorkChain.run(calculation_workchain=Echo)['result']
-    assert np.isclose(result.value, 0, atol=1e-2)
+    from aiida.orm.data.parameter import ParameterData
+    TOLERANCE = 1e-1
+    result = OptimizationWorkChain.run(
+        optimization_engine=Bisection,
+        optimization_kwargs=ParameterData(
+            dict=dict(lower=-1, upper=1, tol=TOLERANCE)
+        ),
+        calculation_workchain=Echo
+    )['result']
+    assert np.isclose(result.value, 0, atol=TOLERANCE)

@@ -4,6 +4,7 @@ from fsc.export import export
 from aiida_tools.workchain_inputs import WORKCHAIN_INPUT_KWARGS
 
 from aiida.orm.data.base import Float
+from aiida.orm.data.parameter import ParameterData
 from aiida.work.workchain import WorkChain, ToContext, while_
 from aiida.work import submit
 
@@ -20,7 +21,21 @@ class OptimizationWorkChain(WorkChain):
     def define(cls, spec):
         super(cls, OptimizationWorkChain).define(spec)
 
-        spec.input('calculation_workchain', **WORKCHAIN_INPUT_KWARGS)
+        spec.input(
+            'optimization_engine',
+            help='Engine that runs the optimization.',
+            **WORKCHAIN_INPUT_KWARGS
+        )
+        spec.input(
+            'optimization_kwargs',
+            valid_type=ParameterData,
+            help='Keyword arguments passed to the optimization engine.'
+        )
+        spec.input(
+            'calculation_workchain',
+            help='WorkChain which produces the result to be optimized.',
+            **WORKCHAIN_INPUT_KWARGS
+        )
 
         spec.outline(
             cls.create_optimizer,
@@ -31,13 +46,21 @@ class OptimizationWorkChain(WorkChain):
 
     @contextmanager
     def optimizer(self):
-        optimizer = Bisection.from_state(self.ctx.optimizer_state)
+        optimizer = self.optimization_engine.from_state(
+            self.ctx.optimizer_state
+        )
         yield optimizer
         self.ctx.optimizer_state = optimizer.state
 
+    @property
+    def optimization_engine(self):
+        return self.get_deserialized_input('optimization_engine')
+
     @check_workchain_step
     def create_optimizer(self):
-        optimizer = Bisection(lower=-1., upper=1., tol=1e-2)
+        optimizer = self.optimization_engine(
+            **self.inputs.optimization_kwargs.get_dict()
+        )
         self.ctx.optimizer_state = optimizer.state
 
     @check_workchain_step

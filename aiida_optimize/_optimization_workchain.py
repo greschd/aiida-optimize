@@ -5,7 +5,7 @@ from aiida_tools.workchain_inputs import WORKCHAIN_INPUT_KWARGS
 
 from aiida.orm.data.base import Float
 from aiida.work.workchain import WorkChain, ToContext, while_
-from aiida.work.run import submit
+from aiida.work import submit
 
 from aiida_tools import check_workchain_step
 
@@ -37,7 +37,7 @@ class OptimizationWorkChain(WorkChain):
 
     @check_workchain_step
     def create_optimizer(self):
-        optimizer = Bisection(lower=-1., upper=1., tol=1e-3)
+        optimizer = Bisection(lower=-1., upper=1., tol=1e-2)
         self.ctx.optimizer_state = optimizer.state
 
     @check_workchain_step

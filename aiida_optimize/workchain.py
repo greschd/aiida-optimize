@@ -46,7 +46,7 @@ class OptimizationWorkChain(WorkChain):
             cls.finalize
         )
         spec.output('optimizer_result')
-        spec.output('calculation_result', required=False)
+        spec.output_group('calculation_result', required=False)
 
     @contextmanager
     def optimizer(self):
@@ -101,10 +101,24 @@ class OptimizationWorkChain(WorkChain):
                 continue
             self.report('Retrieving output for calculation {}'.format(idx))
             outputs[idx] = self.ctx[key].get_outputs_dict()
-            delattr(self.ctx, key)
 
         with self.optimizer() as opt:
             opt.update(outputs)
+
+    @check_workchain_step
+    def finalize(self):
+        """
+        Return the output after the optimization procedure has finished.
+        """
+        self.report('Finalizing optimization procedure.')
+        with self.optimizer() as opt:
+            self.out('optimizer_result', opt.result_value)
+            result_index = opt.result_index
+            if result_index is not None:
+                self.out(
+                    'calculation_result',
+                    self.ctx[self.calc_key(result_index)].get_outputs_dict()
+                )
 
     def calc_key(self, index):
         """
@@ -119,17 +133,3 @@ class OptimizationWorkChain(WorkChain):
         if key.startswith(self._CALC_PREFIX):
             return int(key.split(self._CALC_PREFIX)[1])
         return None
-
-    def finalize(self):
-        """
-        Return the output after the optimization procedure has finished.
-        """
-        self.report('Finalizing optimization procedure.')
-        with self.optimizer() as opt:
-            self.out('optimizer_result', opt.result_value)
-            result_index = opt.result_index
-            if result_index is not None:
-                self.out(
-                    'calculation_result',
-                    self.ctx[self.calc_key(result_index)].outputs
-                )

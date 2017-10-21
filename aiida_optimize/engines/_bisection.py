@@ -57,7 +57,6 @@ class Bisection(object):
     def update(self, outputs):
         self._result_mapping.add_outputs(outputs)
         res = outputs.values()[0]['result']
-        print(res)
         if res > 0:
             self.upper = self.average
         else:
@@ -69,4 +68,4 @@ class Bisection(object):
 
     @property
     def result_index(self):
-        return None
+        return max(self._result_mapping.keys())

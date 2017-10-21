@@ -63,3 +63,6 @@ class ResultMapping(object):
     def add_outputs(self, outputs):
         for key, out in outputs.items():
             self._results[key].output = out
+
+    def __getattr__(self, key):
+        return getattr(self._results, key)

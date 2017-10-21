@@ -20,5 +20,6 @@ def test_optimize_run(configure, submit_as_async):  # pylint: disable=unused-arg
             dict=dict(lower=-1, upper=1, tol=tolerance)
         ),
         calculation_workchain=Echo
-    )['optimizer_result']
-    assert np.isclose(result.value, 0, atol=tolerance)
+    )
+    assert np.isclose(result['calculation_result'].value, 0, atol=tolerance)
+    assert np.isclose(result['optimizer_result'].value, 0, atol=tolerance)

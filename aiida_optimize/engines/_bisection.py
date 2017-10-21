@@ -1,3 +1,9 @@
+"""
+Defines a 1D bisection optimization engine.
+"""
+
+from __future__ import division, print_function, unicode_literals
+
 from fsc.export import export
 
 from aiida.orm import DataFactory
@@ -58,5 +64,9 @@ class Bisection(object):
             self.lower = self.average
 
     @property
-    def result(self):
+    def result_value(self):
         return Float(self.average)
+
+    @property
+    def result_index(self):
+        return None

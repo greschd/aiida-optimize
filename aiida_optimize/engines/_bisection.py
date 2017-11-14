@@ -56,6 +56,7 @@ class Bisection(object):
 
     def update(self, outputs):
         self._result_mapping.add_outputs(outputs)
+        assert len(outputs.values()) == 1
         res = outputs.values()[0]['result']
         if res > 0:
             self.upper = self.average

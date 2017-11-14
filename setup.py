@@ -26,7 +26,7 @@ if __name__ == '__main__':
             'Topic :: Scientific/Engineering :: Physics'
         ],
         keywords='aiida workflows optimization',
-        packages=find_packages(exclude=['aiida']),
+        packages=find_packages(),
         include_package_data=True,
         setup_requires=['reentry'],
         reentry_register=True,

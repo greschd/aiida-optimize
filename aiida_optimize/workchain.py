@@ -46,7 +46,6 @@ class OptimizationWorkChain(WorkChain):
             cls.finalize
         )
         spec.output('optimizer_result')
-        spec.output_group('calculation_result', required=False)
 
     @contextmanager
     def optimizer(self):
@@ -57,6 +56,14 @@ class OptimizationWorkChain(WorkChain):
     @property
     def engine(self):
         return self.get_deserialized_input('engine')
+
+    @property
+    def indices_to_retrieve(self):
+        return self.ctx.setdefault('indices_to_retrieve', [])
+
+    @indices_to_retrieve.setter
+    def indices_to_retrieve(self, value):
+        self.ctx['indices_to_retrieve'] = value
 
     @check_workchain_step
     def create_optimizer(self):
@@ -85,6 +92,7 @@ class OptimizationWorkChain(WorkChain):
                     **inputs
                 )
                 self.report('Launching calculation {}'.format(idx))
+                self.indices_to_retrieve.append(idx)
         return ToContext(**calcs)
 
     @check_workchain_step
@@ -94,11 +102,9 @@ class OptimizationWorkChain(WorkChain):
         """
         self.report('Checking finished calculations.')
         outputs = {}
-        context_keys = dir(self.ctx)
-        for key in context_keys:
-            idx = self.calc_idx(key)
-            if idx is None:
-                continue
+        while self.indices_to_retrieve:
+            idx = self.indices_to_retrieve.pop(0)
+            key = self.calc_key(idx)
             self.report('Retrieving output for calculation {}'.format(idx))
             outputs[idx] = self.ctx[key].get_outputs_dict()
 
@@ -114,22 +120,15 @@ class OptimizationWorkChain(WorkChain):
         with self.optimizer() as opt:
             self.out('optimizer_result', opt.result_value)
             result_index = opt.result_index
-            if result_index is not None:
-                self.out(
-                    'calculation_result',
-                    self.ctx[self.calc_key(result_index)].get_outputs_dict()
-                )
+            # TODO: move this to an output group (namespace) once those are implemented
+            result_calculation = self.ctx[self.calc_key(result_index)]
+            for label, output in result_calculation.get_outputs(
+                also_labels=True
+            ):
+                self.out('calculation_{}'.format(label), output)
 
     def calc_key(self, index):
         """
         Returns the calculation key corresponding to a given index.
         """
         return self._CALC_PREFIX + str(index)
-
-    def calc_idx(self, key):
-        """
-        Returns the calculation index from a given key.
-        """
-        if key.startswith(self._CALC_PREFIX):
-            return int(key.split(self._CALC_PREFIX)[1])
-        return None

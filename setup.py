@@ -30,7 +30,7 @@ if __name__ == '__main__':
         include_package_data=True,
         setup_requires=['reentry'],
         reentry_register=True,
-        install_requires=['aiida-core', 'fsc.export'],
+        install_requires=['aiida-core', 'fsc.export', 'aiida-tools'],
         extras_require={
             ':python_version < "3"': [],
             'dev': [

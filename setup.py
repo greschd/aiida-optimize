@@ -33,7 +33,8 @@ if __name__ == '__main__':
         install_requires=['aiida-core', 'fsc.export'],
         extras_require={
             ':python_version < "3"': [],
-            'dev': ['aiida-pytest', 'yapf', 'pre-commit', 'sphinx-rtd-theme']
+            'dev':
+            ['aiida-pytest', 'yapf==0.20', 'pre-commit', 'sphinx-rtd-theme']
         },
         entry_points={},
     )

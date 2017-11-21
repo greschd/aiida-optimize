@@ -13,9 +13,12 @@ before_install:  # copied from pgtest's travis.yml
   - sudo apt-get install postgresql
   - sudo updatedb
 install:
-  - pip install -e git+https://github.com/greschd/aiida_core@edge_new#egg=aiida_core
-  - pip install -e git+https://github.com/greschd/aiida-tools#egg=aiida_tools
-  - pip install -e git+https://github.com/greschd/aiida_pytest#egg=aiida_pytest
+  - pip install -U pip wheel setuptools
+  # Unreleased plum version required for fast-forwarding
+  - pip install git+https://github.com/greschd/plumpy@submit_with_process_type
+  - pip install git+https://github.com/greschd/aiida_core@edge_new#egg=aiida_core
+  - pip install git+https://github.com/greschd/aiida-tools#egg=aiida_tools
+  - pip install git+https://github.com/greschd/aiida_pytest#egg=aiida_pytest
   - pip install -e .[dev]
 env:
   - TEST_TYPE="tests"

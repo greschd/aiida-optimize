@@ -5,7 +5,7 @@ Tests for the OptimizationWorkChain.
 import numpy as np
 
 
-def test_optimize_run(configure, submit_as_async):  # pylint: disable=unused-argument
+def test_bisect(configure, submit_as_async):  # pylint: disable=unused-argument
     """
     Simple test of the OptimizationWorkChain, with the Bisection engine.
     """

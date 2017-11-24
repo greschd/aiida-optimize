@@ -6,39 +6,28 @@ from __future__ import division, print_function, unicode_literals
 
 from fsc.export import export
 
-from aiida.orm import DataFactory
 from aiida.orm.data.base import Float
 
-from ._result_mapping import ResultMapping
+from ._base import OptimizationEngine
 
 
 @export
-class Bisection(object):
+class Bisection(OptimizationEngine):
     """
     TODO
     """
 
     def __init__(self, lower, upper, tol=1e-6, result_state=None):
-        self._result_mapping = ResultMapping.from_state(result_state)
+        super(Bisection, self).__init__(result_state=result_state)
         self.lower, self.upper = sorted([lower, upper])
         self.tol = tol
 
-    @classmethod
-    def from_state(cls, state):
-        return cls(**state.get_dict())
-
     @property
-    def state(self):
-        return DataFactory('parameter')(
-            dict=dict(
-                result_state=self._result_mapping.state,
-                **{
-                    k: v
-                    for k, v in self.__dict__.items()
-                    if k not in ['_result_mapping']
-                }
-            )
-        )
+    def _state(self):
+        return {
+            k: v
+            for k, v in self.__dict__.items() if k not in ['_result_mapping']
+        }
 
     @property
     def is_finished(self):
@@ -48,14 +37,10 @@ class Bisection(object):
     def average(self):
         return (self.upper + self.lower) / 2.
 
-    def create_inputs(self):
-        return self._result_mapping.add_inputs(self._create_inputs())
-
     def _create_inputs(self):
         return [{'x': Float(self.average)}]
 
-    def update(self, outputs):
-        self._result_mapping.add_outputs(outputs)
+    def _update(self, outputs):
         assert len(outputs.values()) == 1
         res = outputs.values()[0]['result']
         if res > 0:

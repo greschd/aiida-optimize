@@ -3,6 +3,10 @@ Defines the WorkChain which runs the optimization procedure.
 """
 
 from contextlib import contextmanager
+try:
+    from collections import ChainMap
+except ImportError:
+    from chainmap import ChainMap
 
 from fsc.export import export
 from aiida_tools import check_workchain_step
@@ -11,6 +15,7 @@ from aiida_tools.workchain_inputs import WORKCHAIN_INPUT_KWARGS
 from aiida.orm.data.parameter import ParameterData
 from aiida.work.workchain import WorkChain, ToContext, while_
 from aiida.work import submit
+from aiida.work.process import PortNamespace
 
 
 @export  # pylint: disable=abstract-method
@@ -38,6 +43,9 @@ class OptimizationWorkChain(WorkChain):
             'calculation_workchain',
             help='WorkChain which produces the result to be optimized.',
             **WORKCHAIN_INPUT_KWARGS
+        )
+        spec._inputs['calculation_inputs'] = PortNamespace(  # pylint: disable=protected-access
+            'calculation_inputs', required=False, help='Inputs that are passed to all calculation workchains.'
         )
 
         spec.outline(
@@ -89,7 +97,7 @@ class OptimizationWorkChain(WorkChain):
             for idx, inputs in opt.create_inputs().items():
                 calcs[self.calc_key(idx)] = submit(
                     self.get_deserialized_input('calculation_workchain'),
-                    **inputs
+                    **ChainMap(inputs, self.inputs.calculation_inputs)
                 )
                 self.report('Launching calculation {}'.format(idx))
                 self.indices_to_retrieve.append(idx)

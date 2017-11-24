@@ -32,7 +32,7 @@ if __name__ == '__main__':
         reentry_register=True,
         install_requires=['aiida-core', 'fsc.export', 'aiida-tools', 'future'],
         extras_require={
-            ':python_version < "3"': [],
+            ':python_version < "3"': ['chainmap'],
             'dev': [
                 'aiida-pytest', 'yapf==0.20', 'pre-commit', 'sphinx-rtd-theme',
                 'prospector'

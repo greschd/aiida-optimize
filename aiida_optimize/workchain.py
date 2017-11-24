@@ -12,6 +12,7 @@ from fsc.export import export
 from aiida_tools import check_workchain_step
 from aiida_tools.workchain_inputs import WORKCHAIN_INPUT_KWARGS
 
+from aiida.orm.data.base import Str
 from aiida.orm.data.parameter import ParameterData
 from aiida.work.workchain import WorkChain, ToContext, while_
 from aiida.work import submit
@@ -54,6 +55,7 @@ class OptimizationWorkChain(WorkChain):
             cls.finalize
         )
         spec.output('optimizer_result')
+        spec.output('calculation_uuid')
 
     @contextmanager
     def optimizer(self):
@@ -128,12 +130,8 @@ class OptimizationWorkChain(WorkChain):
         with self.optimizer() as opt:
             self.out('optimizer_result', opt.result_value)
             result_index = opt.result_index
-            # TODO: move this to an output group (namespace) once those are implemented
             result_calculation = self.ctx[self.calc_key(result_index)]
-            for label, output in result_calculation.get_outputs(
-                also_labels=True
-            ):
-                self.out('calculation_{}'.format(label), output)
+            self.out('calculation_uuid', Str(result_calculation.uuid))
 
     def calc_key(self, index):
         """

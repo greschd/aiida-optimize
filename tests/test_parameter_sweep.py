@@ -10,11 +10,10 @@ def test_parameter_sweep(configure, submit_as_async):  # pylint: disable=unused-
     Simple test of the OptimizationWorkChain with the ParameterSweep engine.
     """
 
-    from test_workchains import Echo
+    from sample_workchains import Echo
     from aiida_optimize.engines import ParameterSweep
-    from aiida.orm import WorkflowFactory
+    from aiida.orm import WorkflowFactory, load_node
     from aiida.orm.data.parameter import ParameterData
-    tolerance = 0.
     result = WorkflowFactory('optimize.optimize').run(
         engine=ParameterSweep,
         engine_kwargs=ParameterData(
@@ -27,8 +26,9 @@ def test_parameter_sweep(configure, submit_as_async):  # pylint: disable=unused-
         ),
         calculation_workchain=Echo
     )
-    assert np.isclose(result['calculation_result'].value, -2, atol=tolerance)
-    assert np.isclose(result['optimizer_result'].value, -2, atol=tolerance)
+    assert 'calculation_uuid' in result
+    assert load_node(result['calculation_uuid'].value).out.result.value == -2
+    assert result['optimizer_result'].value == -2
 
 
 def test_parameter_sweep_add(configure, submit_as_async):  # pylint: disable=unused-argument
@@ -36,12 +36,11 @@ def test_parameter_sweep_add(configure, submit_as_async):  # pylint: disable=unu
     Simple test of the OptimizationWorkChain with the ParameterSweep engine and an additional fixed input.
     """
 
-    from test_workchains import Add
+    from sample_workchains import Add
     from aiida_optimize.engines import ParameterSweep
-    from aiida.orm import WorkflowFactory
+    from aiida.orm import WorkflowFactory, load_node
     from aiida.orm.data.base import Float
     from aiida.orm.data.parameter import ParameterData
-    tolerance = 0.
     result = WorkflowFactory('optimize.optimize').run(
         engine=ParameterSweep,
         engine_kwargs=ParameterData(
@@ -57,5 +56,6 @@ def test_parameter_sweep_add(configure, submit_as_async):  # pylint: disable=unu
             'y': Float(1.)
         }
     )
-    assert np.isclose(result['calculation_result'].value, -1, atol=tolerance)
-    assert np.isclose(result['optimizer_result'].value, -1, atol=tolerance)
+    assert 'calculation_uuid' in result
+    assert load_node(result['calculation_uuid'].value).out.result.value == -1
+    assert result['optimizer_result'].value == -1

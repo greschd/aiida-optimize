@@ -9,8 +9,6 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from fsc.export import export
 from future.utils import with_metaclass
 
-from aiida.orm import DataFactory
-
 from ._result_mapping import ResultMapping
 
 
@@ -25,13 +23,11 @@ class OptimizationEngine(with_metaclass(ABCMeta, object)):
 
     @classmethod
     def from_state(cls, state):
-        return cls(**state.get_dict())
+        return cls(**state)
 
     @property
     def state(self):
-        return DataFactory('parameter')(
-            dict=dict(result_state=self._result_mapping.state, **self._state)
-        )
+        return dict(result_state=self._result_mapping.state, **self._state)
 
     @abstractproperty
     def _state(self):

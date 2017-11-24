@@ -14,7 +14,7 @@ from aiida_tools.workchain_inputs import WORKCHAIN_INPUT_KWARGS
 
 from aiida.orm.data.base import Str
 from aiida.orm.data.parameter import ParameterData
-from aiida.work.workchain import WorkChain, ToContext, while_
+from aiida.work.workchain import WorkChain, while_
 from aiida.work import submit
 from aiida.work.process import PortNamespace
 
@@ -73,10 +73,11 @@ class OptimizationWorkChain(WorkChain):
 
     @indices_to_retrieve.setter
     def indices_to_retrieve(self, value):
-        self.ctx['indices_to_retrieve'] = value
+        self.ctx.indices_to_retrieve = value
 
     @check_workchain_step
     def create_optimizer(self):
+        self.report('Creating optimizer instance.')
         optimizer = self.engine(**self.inputs.engine_kwargs.get_dict())  # pylint: disable=not-callable
         self.ctx.optimizer_state = optimizer.state
 
@@ -85,6 +86,7 @@ class OptimizationWorkChain(WorkChain):
         """
         Check if the optimization needs to continue.
         """
+        self.report('Checking if optimization is finished.')
         with self.optimizer() as opt:
             return not opt.is_finished
 
@@ -103,7 +105,8 @@ class OptimizationWorkChain(WorkChain):
                 )
                 self.report('Launching calculation {}'.format(idx))
                 self.indices_to_retrieve.append(idx)
-        return ToContext(**calcs)
+            self.report(opt.state)
+        return self.to_context(**calcs)
 
     @check_workchain_step
     def get_results(self):

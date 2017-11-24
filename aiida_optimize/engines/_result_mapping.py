@@ -9,7 +9,6 @@ class Result(object):
     """
     Data object for storing the input created by the optimization engine, and the output from the calculation workchain corresponding to that input.
     """
-    __slots__ = ['input', 'output']
 
     def __init__(self, input_, output=None):
         self.input = input_

@@ -1,5 +1,5 @@
 """
-Defines a simple calculation workchain which just returns the input.
+Defines simple workchains which are used in the tests.
 """
 
 from aiida.orm.data.base import Float

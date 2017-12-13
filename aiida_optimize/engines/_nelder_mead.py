@@ -23,7 +23,7 @@ from aiida.orm.data.base import List
 
 from ._base import OptimizationEngine
 
-RHO = 1  # alpha in Wikipedia
+RHO = 1
 CHI = 2
 PSI = 0.5
 SIGMA = 0.5

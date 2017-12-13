@@ -105,7 +105,7 @@ class OptimizationWorkChain(WorkChain):
                 )
                 self.report('Launching calculation {}'.format(idx))
                 self.indices_to_retrieve.append(idx)
-            self.report(opt.state)
+            # self.report('Optimizer state {}'.format(opt.state))
         return self.to_context(**calcs)
 
     @check_workchain_step

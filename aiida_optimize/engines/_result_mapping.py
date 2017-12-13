@@ -66,5 +66,8 @@ class ResultMapping(object):
     def __getattr__(self, key):
         return getattr(self._results, key)
 
+    def __getitem__(self, key):
+        return self._results[key]
+
     def __len__(self):
         return len(self._results)

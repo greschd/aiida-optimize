@@ -30,7 +30,10 @@ if __name__ == '__main__':
         include_package_data=True,
         setup_requires=['reentry'],
         reentry_register=True,
-        install_requires=['aiida-core', 'fsc.export', 'aiida-tools', 'future'],
+        install_requires=[
+            'aiida-core', 'fsc.export', 'aiida-tools', 'future', 'numpy',
+            'scipy', 'decorator'
+        ],
         extras_require={
             ':python_version < "3"': ['chainmap'],
             'dev': [

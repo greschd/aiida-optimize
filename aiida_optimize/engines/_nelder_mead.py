@@ -28,13 +28,16 @@ CHI = 2
 PSI = 0.5
 SIGMA = 0.5
 
+
 def update_method(next_submit=None):
     @decorator
     def inner(func, self, outputs):
         self.next_submit = next_submit
         self.next_update = None
         func(self, outputs)
+
     return inner
+
 
 def submit_method(next_update=None):
     @decorator
@@ -42,7 +45,9 @@ def submit_method(next_update=None):
         self.next_submit = None
         self.next_update = next_update
         return func(self)
+
     return inner
+
 
 @export
 class NelderMead(OptimizationEngine):

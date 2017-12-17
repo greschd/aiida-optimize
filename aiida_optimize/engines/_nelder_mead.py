@@ -64,6 +64,7 @@ class NelderMead(OptimizationEngine):
         num_iter=0,
         max_iter=1000,
         extra_points=None,
+        input_key='x',
         result_key='cost_value',
         next_submit='submit_initialize',
         next_update=None,
@@ -91,6 +92,7 @@ class NelderMead(OptimizationEngine):
         else:
             self.extra_points = dict(extra_points)
 
+        self.input_key = input_key
         self.result_key = result_key
 
         self.next_submit = next_submit
@@ -105,7 +107,7 @@ class NelderMead(OptimizationEngine):
 
     def _get_single_result(self, outputs):
         (idx, ) = outputs.keys()
-        x = np.array(self._result_mapping[idx].input['x'].get_attr('list'))
+        x = np.array(self._result_mapping[idx].input[self.input_key].get_attr('list'))
         f = outputs[idx][self.result_key].value
         return x, f
 
@@ -113,11 +115,10 @@ class NelderMead(OptimizationEngine):
     def submit_initialize(self):
         return [self._to_input_list(x) for x in self.simplex]
 
-    @staticmethod
-    def _to_input_list(x):
+    def _to_input_list(self, x):
         l = List()
         l.extend(x)
-        return {'x': l}
+        return {self.input_key: l}
 
     @update_method(next_submit='new_iter')
     def update_initialize(self, outputs):

@@ -37,8 +37,8 @@ if __name__ == '__main__':
         extras_require={
             ':python_version < "3"': ['chainmap'],
             'dev': [
-                'aiida-pytest', 'yapf==0.20', 'pre-commit', 'sphinx-rtd-theme',
-                'prospector'
+                'pytest', 'pytest-cov', 'aiida-pytest', 'yapf==0.20',
+                'pre-commit', 'sphinx-rtd-theme', 'prospector'
             ]
         },
         entry_points={

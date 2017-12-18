@@ -107,7 +107,9 @@ class NelderMead(OptimizationEngine):
 
     def _get_single_result(self, outputs):
         (idx, ) = outputs.keys()
-        x = np.array(self._result_mapping[idx].input[self.input_key].get_attr('list'))
+        x = np.array(
+            self._result_mapping[idx].input[self.input_key].get_attr('list')
+        )
         f = outputs[idx][self.result_key].value
         return x, f
 

@@ -99,13 +99,12 @@ class OptimizationWorkChain(WorkChain):
         with self.optimizer() as opt:
             calcs = {}
             for idx, inputs in opt.create_inputs().items():
+                self.report('Launching calculation {}'.format(idx))
                 calcs[self.calc_key(idx)] = submit(
                     self.get_deserialized_input('calculation_workchain'),
                     **ChainMap(inputs, self.inputs.calculation_inputs)
                 )
-                self.report('Launching calculation {}'.format(idx))
                 self.indices_to_retrieve.append(idx)
-            # self.report('Optimizer state {}'.format(opt.state))
         return self.to_context(**calcs)
 
     @check_workchain_step

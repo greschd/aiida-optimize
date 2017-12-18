@@ -46,7 +46,7 @@ def test_nelder_mead_submit(configure_with_daemon, wait_for):  # pylint: disable
     from aiida.orm import WorkflowFactory, load_node
     from aiida.orm.data.parameter import ParameterData
     from aiida.work.run import submit
-    tolerance = 0.5
+    tolerance = 0.1
     pid = submit(
         WorkflowFactory('optimize.optimize'),
         engine=NelderMead,

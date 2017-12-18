@@ -35,6 +35,36 @@ def test_nelder_mead(configure, submit_as_async):  # pylint: disable=unused-argu
     )
     assert np.isclose(result['optimizer_result'].value, 0, atol=tolerance)
 
+def test_nelder_mead_rosenbrock(configure, submit_as_async):  # pylint: disable=unused-argument
+    """
+    Simple test of the OptimizationWorkChain, with the Nelder-Mead engine.
+    """
+
+    from sample_workchains import RosenbrockFunction
+    from aiida_optimize.engines import NelderMead
+    from aiida.orm import WorkflowFactory, load_node
+    from aiida.orm.data.parameter import ParameterData
+    tolerance = 1e-1
+    result = WorkflowFactory('optimize.optimize').run(
+        engine=NelderMead,
+        engine_kwargs=ParameterData(
+            dict=dict(
+                xtol=tolerance,
+                ftol=tolerance,
+                simplex=[[1., 1.], [1., 2.], [2., 1.]],
+                result_key='result'
+            )
+        ),
+        calculation_workchain=RosenbrockFunction,
+    )
+    assert 'calculation_uuid' in result
+    assert np.isclose(
+        load_node(result['calculation_uuid'].value).out.result.value,
+        0.,
+        atol=tolerance
+    )
+    assert np.isclose(result['optimizer_result'].value, 0, atol=tolerance)
+
 
 def test_nelder_mead_submit(configure_with_daemon, wait_for):  # pylint: disable=unused-argument
     """

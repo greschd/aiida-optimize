@@ -48,6 +48,24 @@ class Norm(WorkChain):  # pylint: disable=abstract-method
         self.out('result', Float(la.norm(self.inputs.x.get_attr('list'))))
 
 
+class RosenbrockFunction(WorkChain):
+
+    @classmethod
+    def define(cls, spec):
+        super(RosenbrockFunction, cls).define(spec)
+
+        spec.input('x', valid_type=List)
+        spec.output('result', valid_type=Float)
+        spec.outline(cls.evaluate)
+
+    @check_workchain_step
+    def evaluate(self):
+        self.report('Starting evaluate')
+        x, y = self.inputs.x.get_attr('list')
+        res = (1 - x)**2 + 100 * (y - x**2)**2
+        self.out('result', Float(res))
+
+
 class Add(WorkChain):  # pylint: disable=abstract-method
     """
     WorkChain which adds together two values.

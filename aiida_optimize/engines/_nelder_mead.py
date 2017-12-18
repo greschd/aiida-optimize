@@ -264,7 +264,7 @@ class NelderMead(OptimizationEngine):
 
     def _get_optimal_result(self):
         """
-        Return the index and optimizatin value of the best calculation workflow.
+        Return the index and optimization value of the best calculation workflow.
         """
         cost_values = {
             k: v.output[self.result_key]

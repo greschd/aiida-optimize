@@ -15,11 +15,10 @@ from aiida_tools.workchain_inputs import WORKCHAIN_INPUT_KWARGS
 from aiida.orm.data.base import Str
 from aiida.orm.data.parameter import ParameterData
 from aiida.work.workchain import WorkChain, while_
-from aiida.work import submit
-from aiida.work.process import PortNamespace
+from aiida.work.class_loader import CLASS_LOADER
 
 
-@export  # pylint: disable=abstract-method
+@export
 class OptimizationWorkChain(WorkChain):
     """
     Runs an optimization procedure, given an optimization engine that defines the optimization algorithm, and a CalculationWorkChain which evaluates the function to be optimized.
@@ -45,8 +44,10 @@ class OptimizationWorkChain(WorkChain):
             help='WorkChain which produces the result to be optimized.',
             **WORKCHAIN_INPUT_KWARGS
         )
-        spec._inputs['calculation_inputs'] = PortNamespace(  # pylint: disable=protected-access
-            'calculation_inputs', required=False, help='Inputs that are passed to all calculation workchains.'
+        spec.input_namespace(
+            'calculation_inputs',
+            required=False,
+            help='Inputs that are passed to all calculation workchains.'
         )
 
         spec.outline(
@@ -65,7 +66,7 @@ class OptimizationWorkChain(WorkChain):
 
     @property
     def engine(self):
-        return self.get_deserialized_input('engine')
+        return CLASS_LOADER.load_class(self.inputs.engine.value)
 
     @property
     def indices_to_retrieve(self):
@@ -100,9 +101,13 @@ class OptimizationWorkChain(WorkChain):
             calcs = {}
             for idx, inputs in opt.create_inputs().items():
                 self.report('Launching calculation {}'.format(idx))
-                calcs[self.calc_key(idx)] = submit(
-                    self.get_deserialized_input('calculation_workchain'),
-                    **ChainMap(inputs, self.inputs.calculation_inputs)
+                calcs[self.calc_key(idx)] = self.submit(
+                    CLASS_LOADER.load_class(
+                        self.inputs.calculation_workchain.value
+                    ),
+                    **ChainMap(
+                        inputs, self.inputs.get('calculation_inputs', {})
+                    )
                 )
                 self.indices_to_retrieve.append(idx)
         return self.to_context(**calcs)

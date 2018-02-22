@@ -5,7 +5,7 @@ Tests for the OptimizationWorkChain.
 import numpy as np
 
 
-def test_bisect(configure, submit_as_async):  # pylint: disable=unused-argument
+def test_bisect(configure):  # pylint: disable=unused-argument
     """
     Simple test of the OptimizationWorkChain, with the Bisection engine.
     """
@@ -14,8 +14,10 @@ def test_bisect(configure, submit_as_async):  # pylint: disable=unused-argument
     from aiida_optimize.engines import Bisection
     from aiida.orm import WorkflowFactory, load_node
     from aiida.orm.data.parameter import ParameterData
+    from aiida.work.launch import run
     tolerance = 1e-1
-    result = WorkflowFactory('optimize.optimize').run(
+    result = run(
+        WorkflowFactory('optimize.optimize'),
         engine=Bisection,
         engine_kwargs=ParameterData(
             dict=dict(lower=-1, upper=1, tol=tolerance)
@@ -40,7 +42,7 @@ def test_bisect_submit(configure_with_daemon, wait_for):  # pylint: disable=unus
     from aiida_optimize.engines import Bisection
     from aiida.orm import WorkflowFactory, load_node
     from aiida.orm.data.parameter import ParameterData
-    from aiida.work.run import submit
+    from aiida.work.launch import submit
     tolerance = 1e-1
     pid = submit(
         WorkflowFactory('optimize.optimize'),

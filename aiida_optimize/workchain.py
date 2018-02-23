@@ -47,7 +47,8 @@ class OptimizationWorkChain(WorkChain):
         spec.input_namespace(
             'calculation_inputs',
             required=False,
-            help='Inputs that are passed to all calculation workchains.'
+            help='Inputs that are passed to all calculation workchains.',
+            dynamic=True
         )
 
         spec.outline(

@@ -5,7 +5,7 @@ Tests for the OptimizationWorkChain.
 import numpy as np
 
 
-def test_nelder_mead(configure, submit_as_async):  # pylint: disable=unused-argument
+def test_nelder_mead(configure):  # pylint: disable=unused-argument
     """
     Simple test of the OptimizationWorkChain, with the Nelder-Mead engine.
     """
@@ -14,8 +14,10 @@ def test_nelder_mead(configure, submit_as_async):  # pylint: disable=unused-argu
     from aiida_optimize.engines import NelderMead
     from aiida.orm import WorkflowFactory, load_node
     from aiida.orm.data.parameter import ParameterData
+    from aiida.work.launch import run
     tolerance = 1e-1
-    result = WorkflowFactory('optimize.optimize').run(
+    result = run(
+        WorkflowFactory('optimize.optimize'),
         engine=NelderMead,
         engine_kwargs=ParameterData(
             dict=dict(
@@ -35,7 +37,8 @@ def test_nelder_mead(configure, submit_as_async):  # pylint: disable=unused-argu
     )
     assert np.isclose(result['optimizer_result'].value, 0, atol=tolerance)
 
-def test_nelder_mead_rosenbrock(configure, submit_as_async):  # pylint: disable=unused-argument
+
+def test_nelder_mead_rosenbrock(configure):  # pylint: disable=unused-argument
     """
     Simple test of the OptimizationWorkChain, with the Nelder-Mead engine.
     """
@@ -44,8 +47,10 @@ def test_nelder_mead_rosenbrock(configure, submit_as_async):  # pylint: disable=
     from aiida_optimize.engines import NelderMead
     from aiida.orm import WorkflowFactory, load_node
     from aiida.orm.data.parameter import ParameterData
+    from aiida.work.launch import run
     tolerance = 1e-1
-    result = WorkflowFactory('optimize.optimize').run(
+    result = run(
+        WorkflowFactory('optimize.optimize'),
         engine=NelderMead,
         engine_kwargs=ParameterData(
             dict=dict(
@@ -75,7 +80,7 @@ def test_nelder_mead_submit(configure_with_daemon, wait_for):  # pylint: disable
     from aiida_optimize.engines import NelderMead
     from aiida.orm import WorkflowFactory, load_node
     from aiida.orm.data.parameter import ParameterData
-    from aiida.work.run import submit
+    from aiida.work.launch import submit
     tolerance = 0.1
     pid = submit(
         WorkflowFactory('optimize.optimize'),

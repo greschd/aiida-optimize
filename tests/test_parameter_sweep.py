@@ -5,7 +5,7 @@ Tests for the OptimizationWorkChain.
 import numpy as np
 
 
-def test_parameter_sweep(configure, submit_as_async):  # pylint: disable=unused-argument
+def test_parameter_sweep(configure):  # pylint: disable=unused-argument
     """
     Simple test of the OptimizationWorkChain with the ParameterSweep engine.
     """
@@ -14,7 +14,9 @@ def test_parameter_sweep(configure, submit_as_async):  # pylint: disable=unused-
     from aiida_optimize.engines import ParameterSweep
     from aiida.orm import WorkflowFactory, load_node
     from aiida.orm.data.parameter import ParameterData
-    result = WorkflowFactory('optimize.optimize').run(
+    from aiida.work.launch import run
+    result = run(
+        WorkflowFactory('optimize.optimize'),
         engine=ParameterSweep,
         engine_kwargs=ParameterData(
             dict=dict(
@@ -61,7 +63,7 @@ def test_parameter_sweep_submit(configure_with_daemon, wait_for):  # pylint: dis
     assert load_node(calc.out.calculation_uuid.value).out.result.value == -2
 
 
-def test_parameter_sweep_add(configure, submit_as_async):  # pylint: disable=unused-argument
+def test_parameter_sweep_add(configure):  # pylint: disable=unused-argument
     """
     Simple test of the OptimizationWorkChain with the ParameterSweep engine and an additional fixed input.
     """
@@ -71,7 +73,9 @@ def test_parameter_sweep_add(configure, submit_as_async):  # pylint: disable=unu
     from aiida.orm import WorkflowFactory, load_node
     from aiida.orm.data.base import Float
     from aiida.orm.data.parameter import ParameterData
-    result = WorkflowFactory('optimize.optimize').run(
+    from aiida.work.launch import run
+    result = run(
+        WorkflowFactory('optimize.optimize'),
         engine=ParameterSweep,
         engine_kwargs=ParameterData(
             dict=dict(

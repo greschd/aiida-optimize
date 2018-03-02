@@ -6,7 +6,7 @@ from __future__ import division, print_function, unicode_literals
 
 from fsc.export import export
 
-from aiida.orm.data.base import to_aiida_type
+from aiida.orm.data import to_aiida_type
 
 from ._base import OptimizationEngine
 

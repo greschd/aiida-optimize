@@ -32,7 +32,7 @@ if __name__ == '__main__':
         reentry_register=True,
         install_requires=[
             'aiida-core', 'fsc.export', 'aiida-tools', 'future', 'numpy',
-            'scipy', 'decorator'
+            'scipy', 'decorator', 'pyyaml'
         ],
         extras_require={
             ':python_version < "3"': ['chainmap'],

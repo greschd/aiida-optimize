@@ -82,7 +82,7 @@ def test_nelder_mead_submit(configure_with_daemon, wait_for):  # pylint: disable
     from aiida.orm.data.parameter import ParameterData
     from aiida.work.launch import submit
     tolerance = 0.1
-    pid = submit(
+    pk = submit(
         WorkflowFactory('optimize.optimize'),
         engine=NelderMead,
         engine_kwargs=ParameterData(
@@ -94,11 +94,17 @@ def test_nelder_mead_submit(configure_with_daemon, wait_for):  # pylint: disable
             )
         ),
         calculation_workchain=Norm,
-    ).pid
-    wait_for(pid)
-    calc = load_node(pid)
+    ).pk
+    wait_for(pk)
+    calc = load_node(pk)
+    calc_uuid = calc.out.calculation_uuid
+    print(calc_uuid)
+    uuid_value = calc_uuid.value
+    print(uuid_value)
+    opt_calc_node = load_node(uuid_value)
+    print(opt_calc_node)
     assert np.isclose(
-        load_node(calc.out.calculation_uuid.value).out.result.value,
+        opt_calc_node.out.result.value,
         0.,
         atol=tolerance
     )

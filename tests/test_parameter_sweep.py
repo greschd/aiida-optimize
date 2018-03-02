@@ -43,7 +43,7 @@ def test_parameter_sweep_submit(configure_with_daemon, wait_for):  # pylint: dis
     from aiida.orm import WorkflowFactory, load_node
     from aiida.orm.data.parameter import ParameterData
     from aiida.work.run import submit
-    pid = submit(
+    pk = submit(
         WorkflowFactory('optimize.optimize'),
         engine=ParameterSweep,
         engine_kwargs=ParameterData(
@@ -55,9 +55,9 @@ def test_parameter_sweep_submit(configure_with_daemon, wait_for):  # pylint: dis
             )
         ),
         calculation_workchain=Echo,
-    ).pid
-    wait_for(pid)
-    calc = load_node(pid)
+    ).pk
+    wait_for(pk)
+    calc = load_node(pk)
     assert 'calculation_uuid' in calc.get_outputs_dict()
     assert calc.out.optimizer_result.value == -2
     assert load_node(calc.out.calculation_uuid.value).out.result.value == -2

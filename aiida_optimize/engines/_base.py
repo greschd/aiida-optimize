@@ -6,11 +6,13 @@ from __future__ import division, print_function, unicode_literals
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 
+import yaml
 from fsc.export import export
 from future.utils import with_metaclass
 
 from ._result_mapping import ResultMapping
 
+yaml.representer.Representer.add_representer(ABCMeta, yaml.representer.Representer.represent_name)
 
 @export
 class OptimizationEngine(with_metaclass(ABCMeta, object)):

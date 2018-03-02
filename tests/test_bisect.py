@@ -44,16 +44,19 @@ def test_bisect_submit(configure_with_daemon, wait_for):  # pylint: disable=unus
     from aiida.orm.data.parameter import ParameterData
     from aiida.work.launch import submit
     tolerance = 1e-1
-    pid = submit(
+    print('submit')
+    pk = submit(
         WorkflowFactory('optimize.optimize'),
         engine=Bisection,
         engine_kwargs=ParameterData(
             dict=dict(lower=-1, upper=1, tol=tolerance)
         ),
         calculation_workchain=Echo
-    ).pid
-    wait_for(pid)
-    calc = load_node(pid)
+    ).pk
+    print('wait')
+    wait_for(pk)
+    print('load')
+    calc = load_node(pk)
     assert np.isclose(
         load_node(calc.out.calculation_uuid.value).out.result.value,
         0.,

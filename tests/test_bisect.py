@@ -2,6 +2,8 @@
 Tests for the OptimizationWorkChain.
 """
 
+from __future__ import print_function
+
 import numpy as np
 
 
@@ -45,7 +47,7 @@ def test_bisect_submit(configure_with_daemon, wait_for):  # pylint: disable=unus
     from aiida.work.launch import submit
     tolerance = 1e-1
     print('submit')
-    pk = submit(
+    pk = submit(  # pylint: disable=invalid-name
         WorkflowFactory('optimize.optimize'),
         engine=Bisection,
         engine_kwargs=ParameterData(

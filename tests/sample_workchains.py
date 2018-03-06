@@ -49,7 +49,6 @@ class Norm(WorkChain):  # pylint: disable=abstract-method
 
 
 class RosenbrockFunction(WorkChain):
-
     @classmethod
     def define(cls, spec):
         super(RosenbrockFunction, cls).define(spec)

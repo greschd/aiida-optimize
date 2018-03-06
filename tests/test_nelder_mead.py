@@ -2,6 +2,8 @@
 Tests for the OptimizationWorkChain.
 """
 
+from __future__ import print_function
+
 import numpy as np
 
 
@@ -82,7 +84,7 @@ def test_nelder_mead_submit(configure_with_daemon, wait_for):  # pylint: disable
     from aiida.orm.data.parameter import ParameterData
     from aiida.work.launch import submit
     tolerance = 0.1
-    pk = submit(
+    pk = submit(  # pylint: disable=invalid-name
         WorkflowFactory('optimize.optimize'),
         engine=NelderMead,
         engine_kwargs=ParameterData(
@@ -103,9 +105,5 @@ def test_nelder_mead_submit(configure_with_daemon, wait_for):  # pylint: disable
     print(uuid_value)
     opt_calc_node = load_node(uuid_value)
     print(opt_calc_node)
-    assert np.isclose(
-        opt_calc_node.out.result.value,
-        0.,
-        atol=tolerance
-    )
+    assert np.isclose(opt_calc_node.out.result.value, 0., atol=tolerance)
     assert np.isclose(calc.out.optimizer_result.value, 0, atol=tolerance)

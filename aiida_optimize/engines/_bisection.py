@@ -8,17 +8,16 @@ from fsc.export import export
 
 from aiida.orm.data.base import Float
 
-from ._base import OptimizationEngine
+from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
 
 
-@export
-class Bisection(OptimizationEngine):
+class _BisectionImpl(OptimizationEngineImpl):
     """
-    TODO
+    Implementation class for the bisection optimization engine.
     """
 
-    def __init__(self, lower, upper, tol=1e-6, result_state=None):
-        super(Bisection, self).__init__(result_state=result_state)
+    def __init__(self, lower, upper, tol, result_state=None):
+        super(_BisectionImpl, self).__init__(result_state=result_state)
         self.lower, self.upper = sorted([lower, upper])
         self.tol = tol
 
@@ -52,3 +51,24 @@ class Bisection(OptimizationEngine):
     @property
     def result_index(self):
         return max(self._result_mapping.keys())
+
+
+@export
+class Bisection(OptimizationEngineWrapper):
+    """
+    Optimization engine that performs a bisection.
+
+    :param lower: Lower boundary for the bisection.
+    :type lower: float
+
+    :param upper: Upper boundary for the bisection.
+    :type upper: float
+
+    :param tol: Tolerance in the input value.
+    :type tol: float
+    """
+
+    _IMPL_CLASS = _BisectionImpl
+
+    def __new__(cls, lower, upper, tol=1e-6):  # pylint: disable=arguments-differ
+        return cls._IMPL_CLASS(lower=lower, upper=upper, tol=tol)

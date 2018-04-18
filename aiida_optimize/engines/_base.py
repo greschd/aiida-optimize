@@ -77,14 +77,3 @@ class OptimizationEngineWrapper(with_metaclass(ABCMeta, object)):
     @classmethod
     def from_state(cls, state):
         return cls._IMPL_CLASS(**state)
-
-
-@export  # pylint: disable=abstract-method
-class OptimizationEngine(OptimizationEngineImpl):
-    """
-    Base class for stateful optimization engines.
-    """
-
-    @classmethod
-    def from_state(cls, state):
-        return cls(**state)

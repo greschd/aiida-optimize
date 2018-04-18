@@ -30,8 +30,8 @@ import aiida_optimize
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.mathjax',
-    'sphinx.ext.viewcode', 'aiida.sphinxext'
+    'sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.mathjax', 'sphinx.ext.viewcode',
+    'aiida.sphinxext'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -126,8 +126,8 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (
-        master_doc, 'aiida-optimize.tex', u'aiida-optimize Documentation',
-        u'Dominik Gresch', 'manual'
+        master_doc, 'aiida-optimize.tex', u'aiida-optimize Documentation', u'Dominik Gresch',
+        'manual'
     ),
 ]
 
@@ -135,9 +135,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(
-    master_doc, 'aiida-optimize', u'aiida-optimize Documentation', [author], 1
-)]
+man_pages = [(master_doc, 'aiida-optimize', u'aiida-optimize Documentation', [author], 1)]
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -146,8 +144,8 @@ man_pages = [(
 #  dir menu entry, description, category)
 texinfo_documents = [
     (
-        master_doc, 'aiida-optimize', u'aiida-optimize Documentation', author,
-        'aiida-optimize', 'One line description of project.', 'Miscellaneous'
+        master_doc, 'aiida-optimize', u'aiida-optimize Documentation', author, 'aiida-optimize',
+        'One line description of project.', 'Miscellaneous'
     ),
 ]
 

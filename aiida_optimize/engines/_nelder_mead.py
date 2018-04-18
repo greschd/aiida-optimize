@@ -21,7 +21,7 @@ from decorator import decorator
 
 from aiida.orm.data.base import List
 
-from ._base import OptimizationEngine
+from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
 
 RHO = 1
 CHI = 2
@@ -57,29 +57,27 @@ def submit_method(next_update=None):
     return inner
 
 
-@export
-class NelderMead(OptimizationEngine):
+class _NelderMeadImpl(OptimizationEngineImpl):
     """
-    TODO
+    Implementation class for the Nelder-Mead optimization engine.
     """
-
     def __init__(  # pylint: disable=too-many-arguments
         self,
         simplex,
-        fun_simplex=None,
-        xtol=1e-4,
-        ftol=1e-4,
+        fun_simplex,
+        xtol,
+        ftol,
+        max_iter,
+        input_key,
+        result_key,
         num_iter=0,
-        max_iter=1000,
         extra_points=None,
-        input_key='x',
-        result_key='cost_value',
         next_submit='submit_initialize',
         next_update=None,
         finished=False,
         result_state=None,
     ):
-        super(NelderMead, self).__init__(result_state=result_state)
+        super(_NelderMeadImpl, self).__init__(result_state=result_state)
 
         self.simplex = np.array(simplex)
         assert len(self.simplex) == self.simplex.shape[1] + 1
@@ -109,15 +107,11 @@ class NelderMead(OptimizationEngine):
         self.finished = finished
 
     def _get_values(self, outputs):
-        return [
-            res[self.result_key].value for _, res in sorted(outputs.items())
-        ]
+        return [res[self.result_key].value for _, res in sorted(outputs.items())]
 
     def _get_single_result(self, outputs):
         (idx, ) = outputs.keys()
-        x = np.array(
-            self._result_mapping[idx].input[self.input_key].get_attr('list')
-        )
+        x = np.array(self._result_mapping[idx].input[self.input_key].get_attr('list'))
         f = outputs[idx][self.result_key].value
         return x, f
 
@@ -135,7 +129,7 @@ class NelderMead(OptimizationEngine):
         self.fun_simplex = np.array(self._get_values(outputs))
 
     @submit_method()
-    def new_iter(self):
+    def new_iter(self):  # pylint: disable=missing-docstring
         self.do_sort()
         self.check_finished()
         if self.finished:
@@ -161,10 +155,8 @@ class NelderMead(OptimizationEngine):
 
     def check_finished(self):
         self.finished = (
-            np.max(la.norm(self.simplex[1:] - self.simplex[0], axis=-1)
-                   ) < self.xtol
-            and np.max(np.abs(self.fun_simplex[1:] - self.fun_simplex[0])
-                       ) < self.ftol
+            np.max(la.norm(self.simplex[1:] - self.simplex[0], axis=-1)) < self.xtol
+            and np.max(np.abs(self.fun_simplex[1:] - self.fun_simplex[0])) < self.ftol
         )
 
     @update_method()
@@ -232,9 +224,7 @@ class NelderMead(OptimizationEngine):
 
     @submit_method(next_update='update_shrink')
     def submit_shrink(self):
-        self.simplex[
-            1:
-        ] = self.simplex[0] + SIGMA * (self.simplex[1:] - self.simplex[0])
+        self.simplex[1:] = self.simplex[0] + SIGMA * (self.simplex[1:] - self.simplex[0])
         self.fun_simplex[1:] = np.nan
         return [self._to_input_list(x) for x in self.simplex[1:]]
 
@@ -244,10 +234,7 @@ class NelderMead(OptimizationEngine):
 
     @property
     def _state(self):
-        return {
-            k: v
-            for k, v in self.__dict__.items() if k not in ['_result_mapping']
-        }
+        return {k: v for k, v in self.__dict__.items() if k not in ['_result_mapping']}
 
     @property
     def is_finished(self):
@@ -274,8 +261,54 @@ class NelderMead(OptimizationEngine):
         """
         Return the index and optimization value of the best calculation workflow.
         """
-        cost_values = {
-            k: v.output[self.result_key]
-            for k, v in self._result_mapping.items()
-        }
+        cost_values = {k: v.output[self.result_key] for k, v in self._result_mapping.items()}
         return min(cost_values.items(), key=lambda item: item[1].value)
+
+
+@export
+class NelderMead(OptimizationEngineWrapper):
+    """
+    Engine to perform the Nelder-Mead (downhill simplex) method.
+
+    :param simplex: The current / initial simplex. Must be of shape (N + 1, N), where N is the dimension of the problem.
+    :type simplex: array
+
+    :param fun_simplex: Function values at the simplex positions.
+    :type fun_simplex: array
+
+    :param xtol: Tolerance for the input x.
+    :type xtol: float
+
+    :param ftol: Tolerance for the function value.
+    :type ftol: float
+
+    :param max_iter: Maximum number of iteration steps.
+    :type max_iter: int
+
+    :param input_key: Name of the input argument in the calculation workchain.
+    :type input_key: str
+
+    :param result_key: Name of the output argument in the calculation workchain.
+    :type result_key: str
+    """
+    _IMPL_CLASS = _NelderMeadImpl
+
+    def __new__(  # pylint: disable=arguments-differ,too-many-arguments
+        cls,
+        simplex,
+        fun_simplex=None,
+        xtol=1e-4,
+        ftol=1e-4,
+        max_iter=1000,
+        input_key='x',
+        result_key='cost_value',
+    ):
+        return cls._IMPL_CLASS(
+            simplex=simplex,
+            fun_simplex=fun_simplex,
+            xtol=xtol,
+            ftol=ftol,
+            max_iter=max_iter,
+            input_key=input_key,
+            result_key=result_key
+        )

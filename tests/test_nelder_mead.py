@@ -22,20 +22,13 @@ def test_nelder_mead(configure):  # pylint: disable=unused-argument
         WorkflowFactory('optimize.optimize'),
         engine=NelderMead,
         engine_kwargs=ParameterData(
-            dict=dict(
-                xtol=tolerance,
-                ftol=tolerance,
-                simplex=[[0.], [1.]],
-                result_key='result'
-            )
+            dict=dict(xtol=tolerance, ftol=tolerance, simplex=[[0.], [1.]], result_key='result')
         ),
         calculation_workchain=Norm,
     )
     assert 'calculation_uuid' in result
     assert np.isclose(
-        load_node(result['calculation_uuid'].value).out.result.value,
-        0.,
-        atol=tolerance
+        load_node(result['calculation_uuid'].value).out.result.value, 0., atol=tolerance
     )
     assert np.isclose(result['optimizer_result'].value, 0, atol=tolerance)
 
@@ -66,9 +59,7 @@ def test_nelder_mead_rosenbrock(configure):  # pylint: disable=unused-argument
     )
     assert 'calculation_uuid' in result
     assert np.isclose(
-        load_node(result['calculation_uuid'].value).out.result.value,
-        0.,
-        atol=tolerance
+        load_node(result['calculation_uuid'].value).out.result.value, 0., atol=tolerance
     )
     assert np.isclose(result['optimizer_result'].value, 0, atol=tolerance)
 
@@ -84,7 +75,7 @@ def test_nelder_mead_submit(configure_with_daemon, wait_for):  # pylint: disable
     from aiida.orm.data.parameter import ParameterData
     from aiida.work.launch import submit
     tolerance = 0.1
-    pk = submit(  # pylint: disable=invalid-name
+    pk = submit(
         WorkflowFactory('optimize.optimize'),
         engine=NelderMead,
         engine_kwargs=ParameterData(

@@ -24,10 +24,7 @@ class Bisection(OptimizationEngine):
 
     @property
     def _state(self):
-        return {
-            k: v
-            for k, v in self.__dict__.items() if k not in ['_result_mapping']
-        }
+        return {k: v for k, v in self.__dict__.items() if k not in ['_result_mapping']}
 
     @property
     def is_finished(self):

@@ -30,14 +30,11 @@ class ParameterSweep(OptimizationEngine):
     def is_finished(self):
         if len(self._result_mapping) < len(self._parameters):
             return False
-        return not any(
-            res.output is None for res in self._result_mapping.values()
-        )
+        return not any(res.output is None for res in self._result_mapping.values())
 
     def _create_inputs(self):
         return [{k: to_aiida_type(v)
-                 for k, v in param_dict.items()}
-                for param_dict in self._parameters]
+                 for k, v in param_dict.items()} for param_dict in self._parameters]
 
     def _update(self, outputs):
         pass
@@ -56,8 +53,5 @@ class ParameterSweep(OptimizationEngine):
         """
         Return the index and optimizatin value of the best calculation workflow.
         """
-        cost_values = {
-            k: v.output[self._result_key]
-            for k, v in self._result_mapping.items()
-        }
+        cost_values = {k: v.output[self._result_key] for k, v in self._result_mapping.items()}
         return min(cost_values.items(), key=lambda item: item[1].value)

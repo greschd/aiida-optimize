@@ -19,12 +19,9 @@ def test_parameter_sweep(configure):  # pylint: disable=unused-argument
         WorkflowFactory('optimize.optimize'),
         engine=ParameterSweep,
         engine_kwargs=ParameterData(
-            dict=dict(
-                result_key='result',
-                parameters=[{
-                    'x': x
-                } for x in np.linspace(-2, 2, 10)]
-            )
+            dict=dict(result_key='result', parameters=[{
+                'x': x
+            } for x in np.linspace(-2, 2, 10)])
         ),
         calculation_workchain=Echo
     )
@@ -47,12 +44,9 @@ def test_parameter_sweep_submit(configure_with_daemon, wait_for):  # pylint: dis
         WorkflowFactory('optimize.optimize'),
         engine=ParameterSweep,
         engine_kwargs=ParameterData(
-            dict=dict(
-                result_key='result',
-                parameters=[{
-                    'x': x
-                } for x in np.linspace(-2, 2, 10)]
-            )
+            dict=dict(result_key='result', parameters=[{
+                'x': x
+            } for x in np.linspace(-2, 2, 10)])
         ),
         calculation_workchain=Echo,
     ).pk
@@ -78,12 +72,9 @@ def test_parameter_sweep_add(configure):  # pylint: disable=unused-argument
         WorkflowFactory('optimize.optimize'),
         engine=ParameterSweep,
         engine_kwargs=ParameterData(
-            dict=dict(
-                result_key='result',
-                parameters=[{
-                    'x': x
-                } for x in np.linspace(-2, 2, 10)]
-            )
+            dict=dict(result_key='result', parameters=[{
+                'x': x
+            } for x in np.linspace(-2, 2, 10)])
         ),
         calculation_workchain=Add,
         calculation_inputs={

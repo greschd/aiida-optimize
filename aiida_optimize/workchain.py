@@ -29,11 +29,7 @@ class OptimizationWorkChain(WorkChain):
     def define(cls, spec):
         super(cls, OptimizationWorkChain).define(spec)
 
-        spec.input(
-            'engine',
-            help='Engine that runs the optimization.',
-            **WORKCHAIN_INPUT_KWARGS
-        )
+        spec.input('engine', help='Engine that runs the optimization.', **WORKCHAIN_INPUT_KWARGS)
         spec.input(
             'engine_kwargs',
             valid_type=ParameterData,
@@ -53,8 +49,7 @@ class OptimizationWorkChain(WorkChain):
 
         spec.outline(
             cls.create_optimizer,
-            while_(cls.not_finished)(cls.launch_calculations, cls.get_results),
-            cls.finalize
+            while_(cls.not_finished)(cls.launch_calculations, cls.get_results), cls.finalize
         )
         spec.output('optimizer_result')
         spec.output('calculation_uuid')
@@ -103,12 +98,8 @@ class OptimizationWorkChain(WorkChain):
             for idx, inputs in opt.create_inputs().items():
                 self.report('Launching calculation {}'.format(idx))
                 calcs[self.calc_key(idx)] = self.submit(
-                    CLASS_LOADER.load_class(
-                        self.inputs.calculation_workchain.value
-                    ),
-                    **ChainMap(
-                        inputs, self.inputs.get('calculation_inputs', {})
-                    )
+                    CLASS_LOADER.load_class(self.inputs.calculation_workchain.value),
+                    **ChainMap(inputs, self.inputs.get('calculation_inputs', {}))
                 )
                 self.indices_to_retrieve.append(idx)
         return self.to_context(**calcs)

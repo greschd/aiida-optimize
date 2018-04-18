@@ -10,7 +10,7 @@ from aiida.work.workchain import WorkChain
 from aiida_tools import check_workchain_step
 
 
-class Echo(WorkChain):  # pylint: disable=abstract-method
+class Echo(WorkChain):
     """
     WorkChain which returns the input.
     """
@@ -29,7 +29,7 @@ class Echo(WorkChain):  # pylint: disable=abstract-method
         self.out('result', self.inputs.x)
 
 
-class Norm(WorkChain):  # pylint: disable=abstract-method
+class Norm(WorkChain):
     """
     WorkChain which returns the norm of the input list.
     """
@@ -49,6 +49,10 @@ class Norm(WorkChain):  # pylint: disable=abstract-method
 
 
 class RosenbrockFunction(WorkChain):
+    """
+    Workchain that evaluates the Rosenbrock function.
+    """
+
     @classmethod
     def define(cls, spec):
         super(RosenbrockFunction, cls).define(spec)
@@ -65,7 +69,7 @@ class RosenbrockFunction(WorkChain):
         self.out('result', Float(res))
 
 
-class Add(WorkChain):  # pylint: disable=abstract-method
+class Add(WorkChain):
     """
     WorkChain which adds together two values.
     """

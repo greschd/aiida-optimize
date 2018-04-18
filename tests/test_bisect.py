@@ -21,16 +21,12 @@ def test_bisect(configure):  # pylint: disable=unused-argument
     result = run(
         WorkflowFactory('optimize.optimize'),
         engine=Bisection,
-        engine_kwargs=ParameterData(
-            dict=dict(lower=-1, upper=1, tol=tolerance)
-        ),
+        engine_kwargs=ParameterData(dict=dict(lower=-1, upper=1, tol=tolerance)),
         calculation_workchain=Echo
     )
     assert 'calculation_uuid' in result
     assert np.isclose(
-        load_node(result['calculation_uuid'].value).out.result.value,
-        0.,
-        atol=tolerance
+        load_node(result['calculation_uuid'].value).out.result.value, 0., atol=tolerance
     )
     assert np.isclose(result['optimizer_result'].value, 0, atol=tolerance)
 
@@ -47,12 +43,10 @@ def test_bisect_submit(configure_with_daemon, wait_for):  # pylint: disable=unus
     from aiida.work.launch import submit
     tolerance = 1e-1
     print('submit')
-    pk = submit(  # pylint: disable=invalid-name
+    pk = submit(
         WorkflowFactory('optimize.optimize'),
         engine=Bisection,
-        engine_kwargs=ParameterData(
-            dict=dict(lower=-1, upper=1, tol=tolerance)
-        ),
+        engine_kwargs=ParameterData(dict=dict(lower=-1, upper=1, tol=tolerance)),
         calculation_workchain=Echo
     ).pk
     print('wait')
@@ -60,8 +54,6 @@ def test_bisect_submit(configure_with_daemon, wait_for):  # pylint: disable=unus
     print('load')
     calc = load_node(pk)
     assert np.isclose(
-        load_node(calc.out.calculation_uuid.value).out.result.value,
-        0.,
-        atol=tolerance
+        load_node(calc.out.calculation_uuid.value).out.result.value, 0., atol=tolerance
     )
     assert np.isclose(calc.out.optimizer_result.value, 0, atol=tolerance)

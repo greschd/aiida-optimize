@@ -12,15 +12,13 @@ from future.utils import with_metaclass
 
 from ._result_mapping import ResultMapping
 
-yaml.representer.Representer.add_representer(
-    ABCMeta, yaml.representer.Representer.represent_name
-)
+yaml.representer.Representer.add_representer(ABCMeta, yaml.representer.Representer.represent_name)
 
 
 @export
-class OptimizationEngine(with_metaclass(ABCMeta, object)):
+class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
     """
-    Base class for stateful optimization engines.
+    Base class for the stateful optimization engine implementation.
     """
 
     def __init__(self, result_state=None):
@@ -64,3 +62,29 @@ class OptimizationEngine(with_metaclass(ABCMeta, object)):
     @abstractproperty
     def result_index(self):
         pass
+
+
+@export
+class OptimizationEngineWrapper(with_metaclass(ABCMeta, object)):
+    """
+    Base class for wrappers that supply the public interface for optimization engines.
+    """
+    _IMPL_CLASS = NotImplementedError
+
+    def __new__(cls, *args, **kwargs):
+        return cls._IMPL_CLASS(*args, **kwargs)
+
+    @classmethod
+    def from_state(cls, state):
+        return cls._IMPL_CLASS(**state)
+
+
+@export  # pylint: disable=abstract-method
+class OptimizationEngine(OptimizationEngineImpl):
+    """
+    Base class for stateful optimization engines.
+    """
+
+    @classmethod
+    def from_state(cls, state):
+        return cls(**state)

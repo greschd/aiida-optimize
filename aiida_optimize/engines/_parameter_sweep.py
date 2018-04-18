@@ -8,17 +8,16 @@ from fsc.export import export
 
 from aiida.orm.data import to_aiida_type
 
-from ._base import OptimizationEngine
+from ._base import OptimizationEngineWrapper, OptimizationEngineImpl
 
 
-@export
-class ParameterSweep(OptimizationEngine):
+class _ParameterSweepImpl(OptimizationEngineImpl):
     """
-    TODO
+    Implementation class for the parameter sweep engine.
     """
 
-    def __init__(self, parameters, result_key='cost_value', result_state=None):
-        super(ParameterSweep, self).__init__(result_state=result_state)
+    def __init__(self, parameters, result_key, result_state=None):
+        super(_ParameterSweepImpl, self).__init__(result_state=result_state)
         self._parameters = parameters
         self._result_key = result_key
 
@@ -55,3 +54,20 @@ class ParameterSweep(OptimizationEngine):
         """
         cost_values = {k: v.output[self._result_key] for k, v in self._result_mapping.items()}
         return min(cost_values.items(), key=lambda item: item[1].value)
+
+
+@export
+class ParameterSweep(OptimizationEngineWrapper):
+    """
+    Optimization engine that performs a parameter sweep.
+
+    :param parameters: List of parameter dictionaries. For each entry, a calculation with the given parameters will be run.
+    :type parameters: list(dict)
+
+    :param result_key: Name of the calculation workchain output argument.
+    :type result_key: str
+    """
+    _IMPL_CLASS = _ParameterSweepImpl
+
+    def __new__(cls, parameters, result_key='cost_value'):  # pylint: disable=arguments-differ
+        return cls._IMPL_CLASS(parameters=parameters, result_key=result_key)

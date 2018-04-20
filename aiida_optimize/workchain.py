@@ -10,12 +10,13 @@ except ImportError:
 
 from fsc.export import export
 from aiida_tools import check_workchain_step
-from aiida_tools.workchain_inputs import WORKCHAIN_INPUT_KWARGS
+from aiida_tools.workchain_inputs import WORKCHAIN_INPUT_KWARGS, load_object
 
 from aiida.orm.data.base import Str
 from aiida.orm.data.parameter import ParameterData
 from aiida.work.workchain import WorkChain, while_
-from aiida.work.class_loader import CLASS_LOADER
+from aiida.work.utils import is_workfunction
+from aiida.work.launch import run_get_node
 
 
 @export
@@ -62,7 +63,7 @@ class OptimizationWorkChain(WorkChain):
 
     @property
     def engine(self):
-        return CLASS_LOADER.load_class(self.inputs.engine.value)
+        return load_object(self.inputs.engine)
 
     @property
     def indices_to_retrieve(self):
@@ -95,12 +96,17 @@ class OptimizationWorkChain(WorkChain):
         self.report('Launching pending calculations.')
         with self.optimizer() as opt:
             calcs = {}
+            calculation_workchain = load_object(self.inputs.calculation_workchain)
             for idx, inputs in opt.create_inputs().items():
                 self.report('Launching calculation {}'.format(idx))
-                calcs[self.calc_key(idx)] = self.submit(
-                    CLASS_LOADER.load_class(self.inputs.calculation_workchain.value),
-                    **ChainMap(inputs, self.inputs.get('calculation_inputs', {}))
-                )
+                inputs_merged = ChainMap(inputs, self.inputs.get('calculation_inputs', {}))
+                if is_workfunction(calculation_workchain):
+                    _, node = run_get_node(calculation_workchain, **inputs_merged)
+                else:
+                    node = self.submit(
+                        load_object(self.inputs.calculation_workchain), **inputs_merged
+                    )
+                calcs[self.calc_key(idx)] = node
                 self.indices_to_retrieve.append(idx)
         return self.to_context(**calcs)
 

@@ -8,21 +8,25 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    ['func_workchain_name', 'simplex', 'xtol', 'ftol', 'x_exact', 'f_exact', 'check_x'],
+    [
+        'func_workchain_name', 'simplex', 'xtol_input', 'ftol_input', 'xtol', 'ftol', 'x_exact',
+        'f_exact'
+    ],
     (
-        ['Norm', [[0.], [1.]], 1e-1, 1e-1, [0.], 0., True],
-        ['rosenbrock', [[1.2, 0.9], [1., 2.], [2., 1.]], 1e-1, 1e-1, [1., 1.], 0., False],
+        ['Norm', [[0.], [1.]], 1e-1, 1e-1, 1e-1, 1e-1, [0.], 0.],
+        ['rosenbrock', [[1.2, 0.9], [1., 2.], [2., 1.]], 2e-2, 1e-1, 1e-1, 1e-1, [1., 1.], 0.],
     )  # pylint: disable=too-many-arguments
 )
 def test_nelder_mead(
     check_optimization,
     func_workchain_name,
     simplex,
+    xtol_input,
+    ftol_input,
     xtol,
     ftol,
     x_exact,
     f_exact,
-    check_x,
 ):
     """
     Simple test of the OptimizationWorkChain, with the Nelder-Mead engine.
@@ -33,13 +37,12 @@ def test_nelder_mead(
         engine=NelderMead,
         engine_kwargs=dict(
             simplex=simplex,
-            xtol=xtol,
-            ftol=ftol,
+            xtol=xtol_input,
+            ftol=ftol_input,
         ),
         func_workchain_name=func_workchain_name,
         xtol=xtol,
         ftol=ftol,
         x_exact=x_exact,
         f_exact=f_exact,
-        check_x=check_x,
     )

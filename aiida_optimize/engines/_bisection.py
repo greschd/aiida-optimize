@@ -20,7 +20,7 @@ class _BisectionImpl(OptimizationEngineImpl):
         super(_BisectionImpl, self).__init__(result_state=result_state)
         self.lower, self.upper = sorted([lower, upper])
         self.tol = tol
-        self._result_key = result_key
+        self.result_key = result_key
 
     @property
     def _state(self):
@@ -39,7 +39,7 @@ class _BisectionImpl(OptimizationEngineImpl):
 
     def _update(self, outputs):
         assert len(outputs.values()) == 1
-        res = outputs.values()[0][self._result_key]
+        res = outputs.values()[0][self.result_key]
         if res > 0:
             self.upper = self.average
         else:

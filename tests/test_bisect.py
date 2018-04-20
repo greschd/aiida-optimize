@@ -4,60 +4,25 @@ Tests for the OptimizationWorkChain.
 
 from __future__ import print_function
 
-import numpy as np
 
-
-def test_bisect(configure):  # pylint: disable=unused-argument
+def test_bisect(check_optimization):
     """
     Simple test of the OptimizationWorkChain, with the Bisection engine.
     """
 
-    from sample_workchains import Echo
     from aiida_optimize.engines import Bisection
-    from aiida.orm import WorkflowFactory, load_node
-    from aiida.orm.data.parameter import ParameterData
-    from aiida.work.launch import run
-    tolerance = 1e-1
-    result = run(
-        WorkflowFactory('optimize.optimize'),
+
+    tol = 1e-1
+    check_optimization(
         engine=Bisection,
-        engine_kwargs=ParameterData(
-            dict=dict(lower=-1, upper=1, tol=tolerance, result_key='return')
+        engine_kwargs=dict(
+            lower=-1.1,
+            upper=1.,
+            tol=tol,
         ),
-        calculation_workchain=Echo
+        func_workchain_name='Echo',
+        xtol=tol,
+        ftol=tol,
+        x_exact=0.,
+        f_exact=0.,
     )
-    assert 'calculation_uuid' in result
-    assert np.isclose(
-        load_node(result['calculation_uuid'].value).out.result.value, 0., atol=tolerance
-    )
-    assert np.isclose(result['optimizer_result'].value, 0, atol=tolerance)
-
-
-def test_bisect_submit(configure_with_daemon, wait_for):  # pylint: disable=unused-argument
-    """
-    Test that submits the OptimizationWorkChain with the Bisection engine.
-    """
-
-    from sample_workchains import Echo
-    from aiida_optimize.engines import Bisection
-    from aiida.orm import WorkflowFactory, load_node
-    from aiida.orm.data.parameter import ParameterData
-    from aiida.work.launch import submit
-    tolerance = 1e-1
-    print('submit')
-    pk = submit(
-        WorkflowFactory('optimize.optimize'),
-        engine=Bisection,
-        engine_kwargs=ParameterData(
-            dict=dict(lower=-1, upper=1, tol=tolerance, result_key='return')
-        ),
-        calculation_workchain=Echo
-    ).pk
-    print('wait')
-    wait_for(pk)
-    print('load')
-    calc = load_node(pk)
-    assert np.isclose(
-        load_node(calc.out.calculation_uuid.value).out.result.value, 0., atol=tolerance
-    )
-    assert np.isclose(calc.out.optimizer_result.value, 0, atol=tolerance)

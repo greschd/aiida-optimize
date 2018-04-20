@@ -27,6 +27,7 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
         engine,
         func_workchain,
         engine_kwargs,
+        calculation_inputs=None
     ):
         from aiida_optimize.workchain import OptimizationWorkChain
         from aiida.orm import load_node
@@ -36,7 +37,8 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
         inputs = dict(
             engine=engine,
             engine_kwargs=ParameterData(dict=dict(engine_kwargs)),
-            calculation_workchain=func_workchain
+            calculation_workchain=func_workchain,
+            calculation_inputs=calculation_inputs if calculation_inputs is not None else {},
         )
 
         if request.param == 'run':
@@ -53,14 +55,14 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
 
 @pytest.fixture
 def check_optimization(
-    configure,  # pylint: disable=unused-argument
-    run_optimization,
+    configure,  # pylint: disable=unused-argument,redefined-outer-name
+    run_optimization,  # pylint: disable=redefined-outer-name
 ):
     """
     Runs and checks an optimization with a given engine and parameters.
     """
 
-    def inner(
+    def inner(  # pylint: disable=missing-docstring,too-many-arguments
         engine,
         func_workchain_name,
         engine_kwargs,
@@ -68,7 +70,7 @@ def check_optimization(
         ftol,
         x_exact,
         f_exact,
-        check_x,
+        calculation_inputs=None,
     ):
 
         from aiida.orm import load_node
@@ -82,12 +84,12 @@ def check_optimization(
                 'result_key': 'return'
             }),
             func_workchain=func_workchain,
+            calculation_inputs=calculation_inputs
         )
 
         assert 'calculation_uuid' in result
         assert np.isclose(result['optimizer_result'].value, f_exact, atol=ftol)
         calc = load_node(result['calculation_uuid'].value)
-        if check_x:
-            assert np.allclose(list(calc.get_inputs_dict()['x']), x_exact, atol=xtol)
+        assert np.allclose(type(x_exact)(calc.get_inputs_dict()['x']), x_exact, atol=xtol)
 
     return inner

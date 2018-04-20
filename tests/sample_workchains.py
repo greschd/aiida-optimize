@@ -6,6 +6,7 @@ import scipy.linalg as la
 
 from aiida.orm.data.base import Float, List
 from aiida.work.workchain import WorkChain
+from aiida.work.workfunctions import workfunction
 
 from aiida_tools import check_workchain_step
 
@@ -48,14 +49,14 @@ class Norm(WorkChain):
         self.out('result', Float(la.norm(self.inputs.x.get_attr('list'))))
 
 
-class RosenbrockFunction(WorkChain):
+class HimmelblauFunction(WorkChain):
     """
-    Workchain that evaluates the Rosenbrock function.
+    Workchain which evaluates Himmelblau's function.
     """
 
     @classmethod
     def define(cls, spec):
-        super(RosenbrockFunction, cls).define(spec)
+        super(HimmelblauFunction, cls).define(spec)
 
         spec.input('x', valid_type=List)
         spec.output('result', valid_type=Float)
@@ -65,8 +66,14 @@ class RosenbrockFunction(WorkChain):
     def evaluate(self):
         self.report('Starting evaluate')
         x, y = self.inputs.x.get_attr('list')
-        res = (1 - x)**2 + 100 * (y - x**2)**2
+        res = (x**2 + y - 11)**2 + (x + y**2 - 7)**2
         self.out('result', Float(res))
+
+
+@workfunction
+def rosenbrock(x):
+    x, y = x
+    return Float((1 - x)**2 + 100 * (y - x**2)**2)
 
 
 class Add(WorkChain):

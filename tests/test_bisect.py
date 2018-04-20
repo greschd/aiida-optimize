@@ -21,7 +21,9 @@ def test_bisect(configure):  # pylint: disable=unused-argument
     result = run(
         WorkflowFactory('optimize.optimize'),
         engine=Bisection,
-        engine_kwargs=ParameterData(dict=dict(lower=-1, upper=1, tol=tolerance)),
+        engine_kwargs=ParameterData(
+            dict=dict(lower=-1, upper=1, tol=tolerance, result_key='return')
+        ),
         calculation_workchain=Echo
     )
     assert 'calculation_uuid' in result
@@ -46,7 +48,9 @@ def test_bisect_submit(configure_with_daemon, wait_for):  # pylint: disable=unus
     pk = submit(
         WorkflowFactory('optimize.optimize'),
         engine=Bisection,
-        engine_kwargs=ParameterData(dict=dict(lower=-1, upper=1, tol=tolerance)),
+        engine_kwargs=ParameterData(
+            dict=dict(lower=-1, upper=1, tol=tolerance, result_key='return')
+        ),
         calculation_workchain=Echo
     ).pk
     print('wait')

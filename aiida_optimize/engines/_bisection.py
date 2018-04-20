@@ -16,10 +16,11 @@ class _BisectionImpl(OptimizationEngineImpl):
     Implementation class for the bisection optimization engine.
     """
 
-    def __init__(self, lower, upper, tol, result_state=None):
+    def __init__(self, lower, upper, tol, result_key, result_state=None):
         super(_BisectionImpl, self).__init__(result_state=result_state)
         self.lower, self.upper = sorted([lower, upper])
         self.tol = tol
+        self._result_key = result_key
 
     @property
     def _state(self):
@@ -38,7 +39,7 @@ class _BisectionImpl(OptimizationEngineImpl):
 
     def _update(self, outputs):
         assert len(outputs.values()) == 1
-        res = outputs.values()[0]['result']
+        res = outputs.values()[0][self._result_key]
         if res > 0:
             self.upper = self.average
         else:
@@ -70,5 +71,5 @@ class Bisection(OptimizationEngineWrapper):
 
     _IMPL_CLASS = _BisectionImpl
 
-    def __new__(cls, lower, upper, tol=1e-6):  # pylint: disable=arguments-differ
-        return cls._IMPL_CLASS(lower=lower, upper=upper, tol=tol)
+    def __new__(cls, lower, upper, tol=1e-6, result_key='cost_value'):  # pylint: disable=arguments-differ
+        return cls._IMPL_CLASS(lower=lower, upper=upper, tol=tol, result_key=result_key)

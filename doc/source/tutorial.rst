@@ -14,3 +14,15 @@ It would be much nicer then to create the optimization process in such a way tha
 
 A simple bisection
 ------------------
+
+.. include:: ../../examples/function_workchains.py
+    :code: python
+
+
+.. include:: ../../examples/bisection.py
+    :code: python
+
+...other engines...
+
+Developing an optimization engine
+--------------------------------- 

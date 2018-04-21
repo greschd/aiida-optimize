@@ -18,6 +18,9 @@ A simple bisection
 .. include:: ../../examples/function_workchains.py
     :code: python
 
+.. include:: ../../examples/function_workchains.py
+    :code: python
+
 
 .. include:: ../../examples/bisection.py
     :code: python
@@ -25,4 +28,4 @@ A simple bisection
 ...other engines...
 
 Developing an optimization engine
---------------------------------- 
+---------------------------------

@@ -301,7 +301,7 @@ class NelderMead(OptimizationEngineWrapper):
         ftol=1e-4,
         max_iter=1000,
         input_key='x',
-        result_key='cost_value',
+        result_key='return',
     ):
         return cls._IMPL_CLASS(
             simplex=simplex,

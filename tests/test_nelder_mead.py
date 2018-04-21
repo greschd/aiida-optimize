@@ -4,6 +4,7 @@ Tests for the OptimizationWorkChain.
 
 from __future__ import print_function
 
+import numpy as np
 import pytest
 
 
@@ -14,7 +15,9 @@ import pytest
     ],
     (
         ['Norm', [[0.], [1.]], 1e-1, 1e-1, 1e-1, 1e-1, [0.], 0.],
-        ['rosenbrock', [[1.2, 0.9], [1., 2.], [2., 1.]], 2e-2, 1e-1, 1e-1, 1e-1, [1., 1.], 0.],
+        ['rosenbrock', [[1.2, 0.9], [1., 2.], [2., 1.]], 1e-1, 1e-1, 0.63, 1e-1, [1., 1.], 0.],
+        ['sin_list', [[-np.pi / 2 + 1e-3], [np.pi]], 1e-1, 1e-1, 1e-1, 1e-1, [-np.pi / 2], -1.],
+        ['sin_list', [[-np.pi / 2 - 1e-3], [np.pi]], 1e-1, 1e-1, 1e-1, 1e-1, [-np.pi / 2], -1.],
     )  # pylint: disable=too-many-arguments
 )
 def test_nelder_mead(

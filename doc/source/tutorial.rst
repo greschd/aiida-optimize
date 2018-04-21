@@ -21,6 +21,9 @@ Now, we will see how to perform an optimization with ``aiida-optimize``. First, 
     :code: python
     :start-line: 
 
+.. include:: ../../examples/function_workchains.py
+    :code: python
+
 
 .. include:: ../../examples/bisection.py
     :code: python

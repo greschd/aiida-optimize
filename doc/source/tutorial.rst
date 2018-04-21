@@ -15,8 +15,11 @@ It would be much nicer then to create the optimization process in such a way tha
 A simple bisection
 ------------------
 
+Now, we will see how to perform an optimization with ``aiida-optimize``. First, we need an AiiDA WorkChain or workfunction to optimize. As a simple example, we create a workfunction that evaluates the sine:
+
 .. include:: ../../examples/function_workchains.py
     :code: python
+    :start-line: 
 
 
 .. include:: ../../examples/bisection.py
@@ -25,4 +28,4 @@ A simple bisection
 ...other engines...
 
 Developing an optimization engine
---------------------------------- 
+---------------------------------

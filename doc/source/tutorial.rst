@@ -40,3 +40,11 @@ The other optimization engines which are included in ``aiida-optimize`` are desc
 
 Developing an optimization engine
 ---------------------------------
+
+In this section, we give a rough description of how the optimization engines itself are structured. If you wish to develop your own optimization engine, we also highly recommend looking at the code of the existing engines for inspiration.
+
+The optimization engines are usually split into two parts: The implementation, and a small wrapper class. These classes have corresponding base classes, :class:`.OptimizationEngineImpl` and :class:`.OptimizationEngineWrapper`. While the implementation contains the logic of the optimization engine itself, the wrapper is a factory class which is exposed to the user, used only to instantiate an instance of the implementation.
+
+The reason for this split is that the engine itself needs to be serializable into a "state" which can be stored between steps of the AiiDA workchain, and then re-created from that state. Since the state usually contains more parameters than what needs to be exposed when the engine is first instantiated, the wrapper is added to hide away these parameters from the end user.
+
+The :class:`.OptimizationEngineImpl` describes the methods which need to be implemented by an optimization engine. In particular, methods for creating new inputs, updating the engine from calculation outputs, and serializing it to its state need to be provided. The base class itself keeps track of which calculations have been launched. This is done using the :class:`.ResultMapping` class, which contains a dictionary that maps a key to a :class:`.Result` containing the calculations inputs and outputs. The :class:`.OptimizationWorkChain` uses these same keys to identify the corresponding processes.

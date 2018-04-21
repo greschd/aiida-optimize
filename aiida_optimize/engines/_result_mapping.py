@@ -5,6 +5,7 @@ Defines the datastructures used by optimization engines to keep track of results
 from fsc.export import export
 
 
+@export
 class Result(object):
     """
     Data object for storing the input created by the optimization engine, and the output from the calculation workchain corresponding to that input.

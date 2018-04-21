@@ -17,3 +17,20 @@ Engines
 
 .. automodule:: aiida_optimize.engines
     :members:
+
+Internals
+---------
+
+This section describes internal classes. They are useful for developing custom optimization engines.
+
+Engine base classes
+'''''''''''''''''''
+
+.. automodule:: aiida_optimize.engines._base
+    :members:
+
+Result mapping
+''''''''''''''
+
+.. automodule:: aiida_optimize.engines._result_mapping
+    :members:

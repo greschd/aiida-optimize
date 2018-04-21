@@ -13,6 +13,7 @@ with open('./aiida_optimize/__init__.py') as f:
 if __name__ == '__main__':
     setup(
         name='aiida-optimize',
+        url='http://z2pack.ethz.ch/aiida-plugins/aiida-optimize',
         version=VERSION,
         description='AiiDA Plugin for running optimization algorithms.',
         author='Dominik Gresch',

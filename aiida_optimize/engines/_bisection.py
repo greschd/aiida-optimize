@@ -16,15 +16,15 @@ class _BisectionImpl(OptimizationEngineImpl):
     Implementation class for the bisection optimization engine.
     """
 
-    def __init__(self, lower, upper, tol, result_key, result_state=None):
-        super(_BisectionImpl, self).__init__(result_state=result_state)
+    def __init__(self, lower, upper, tol, result_key, logger, result_state=None):  # pylint: disable=too-many-arguments
+        super(_BisectionImpl, self).__init__(logger=logger, result_state=result_state)
         self.lower, self.upper = sorted([lower, upper])
         self.tol = tol
         self.result_key = result_key
 
     @property
     def _state(self):
-        return {k: v for k, v in self.__dict__.items() if k not in ['_result_mapping']}
+        return {k: v for k, v in self.__dict__.items() if k not in ['_result_mapping', '_logger']}
 
     @property
     def is_finished(self):
@@ -71,5 +71,7 @@ class Bisection(OptimizationEngineWrapper):
 
     _IMPL_CLASS = _BisectionImpl
 
-    def __new__(cls, lower, upper, tol=1e-6, result_key='return'):  # pylint: disable=arguments-differ
-        return cls._IMPL_CLASS(lower=lower, upper=upper, tol=tol, result_key=result_key)
+    def __new__(cls, lower, upper, tol=1e-6, result_key='return', logger=None):  # pylint: disable=arguments-differ
+        return cls._IMPL_CLASS(
+            lower=lower, upper=upper, tol=tol, result_key=result_key, logger=logger
+        )

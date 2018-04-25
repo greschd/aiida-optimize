@@ -21,7 +21,8 @@ class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
     Base class for the stateful optimization engine implementation.
     """
 
-    def __init__(self, result_state=None):
+    def __init__(self, logger, result_state=None):
+        self._logger = logger
         self._result_mapping = ResultMapping.from_state(result_state)
 
     @classmethod
@@ -105,5 +106,5 @@ class OptimizationEngineWrapper(with_metaclass(ABCMeta, object)):
         return cls._IMPL_CLASS(*args, **kwargs)
 
     @classmethod
-    def from_state(cls, state):
-        return cls._IMPL_CLASS(**state)
+    def from_state(cls, state, logger):
+        return cls._IMPL_CLASS(logger=logger, **state)

@@ -16,8 +16,8 @@ class _ParameterSweepImpl(OptimizationEngineImpl):
     Implementation class for the parameter sweep engine.
     """
 
-    def __init__(self, parameters, result_key, result_state=None):
-        super(_ParameterSweepImpl, self).__init__(result_state=result_state)
+    def __init__(self, parameters, result_key, logger, result_state=None):
+        super(_ParameterSweepImpl, self).__init__(logger=logger, result_state=result_state)
         self._parameters = parameters
         self._result_key = result_key
 
@@ -69,5 +69,5 @@ class ParameterSweep(OptimizationEngineWrapper):
     """
     _IMPL_CLASS = _ParameterSweepImpl
 
-    def __new__(cls, parameters, result_key='return'):  # pylint: disable=arguments-differ
-        return cls._IMPL_CLASS(parameters=parameters, result_key=result_key)
+    def __new__(cls, parameters, result_key='return', logger=None):  # pylint: disable=arguments-differ
+        return cls._IMPL_CLASS(parameters=parameters, result_key=result_key, logger=logger)

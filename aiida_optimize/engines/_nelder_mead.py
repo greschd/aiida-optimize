@@ -70,6 +70,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         max_iter,
         input_key,
         result_key,
+        logger,
         num_iter=0,
         extra_points=None,
         next_submit='submit_initialize',
@@ -77,7 +78,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         finished=False,
         result_state=None,
     ):
-        super(_NelderMeadImpl, self).__init__(result_state=result_state)
+        super(_NelderMeadImpl, self).__init__(logger=logger, result_state=result_state)
 
         self.simplex = np.array(simplex)
         assert len(self.simplex) == self.simplex.shape[1] + 1
@@ -154,10 +155,14 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         self.simplex = np.take(self.simplex, idx, axis=0)
 
     def check_finished(self):
-        self.finished = (
-            np.max(la.norm(self.simplex[1:] - self.simplex[0], axis=-1)) < self.xtol
-            and np.max(np.abs(self.fun_simplex[1:] - self.fun_simplex[0])) < self.ftol
-        )
+        """
+        Updates the 'finished' attribute.
+        """
+        x_dist_max = np.max(la.norm(self.simplex[1:] - self.simplex[0], axis=-1))
+        self._logger.report('Maximum distance value for the simplex: {}'.format(x_dist_max))
+        f_diff_max = np.max(np.abs(self.fun_simplex[1:] - self.fun_simplex[0]))
+        self._logger.report('Maximum function difference: {}'.format(f_diff_max))
+        self.finished = (x_dist_max < self.xtol) and (f_diff_max < self.ftol)
 
     @update_method()
     def choose_step(self, outputs):
@@ -234,7 +239,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @property
     def _state(self):
-        return {k: v for k, v in self.__dict__.items() if k not in ['_result_mapping']}
+        return {k: v for k, v in self.__dict__.items() if k not in ['_result_mapping', '_logger']}
 
     @property
     def is_finished(self):
@@ -302,6 +307,7 @@ class NelderMead(OptimizationEngineWrapper):
         max_iter=1000,
         input_key='x',
         result_key='return',
+        logger=None
     ):
         return cls._IMPL_CLASS(
             simplex=simplex,
@@ -310,5 +316,6 @@ class NelderMead(OptimizationEngineWrapper):
             ftol=ftol,
             max_iter=max_iter,
             input_key=input_key,
-            result_key=result_key
+            result_key=result_key,
+            logger=logger
         )

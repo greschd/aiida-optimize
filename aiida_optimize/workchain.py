@@ -57,7 +57,7 @@ class OptimizationWorkChain(WorkChain):
 
     @contextmanager
     def optimizer(self):
-        optimizer = self.engine.from_state(self.ctx.optimizer_state)
+        optimizer = self.engine.from_state(state=self.ctx.optimizer_state, logger=self)
         yield optimizer
         self.ctx.optimizer_state = optimizer.state
 
@@ -76,7 +76,7 @@ class OptimizationWorkChain(WorkChain):
     @check_workchain_step
     def create_optimizer(self):
         self.report('Creating optimizer instance.')
-        optimizer = self.engine(**self.inputs.engine_kwargs.get_dict())  # pylint: disable=not-callable
+        optimizer = self.engine(logger=self, **self.inputs.engine_kwargs.get_dict())  # pylint: disable=not-callable
         self.ctx.optimizer_state = optimizer.state
 
     @check_workchain_step

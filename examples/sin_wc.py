@@ -14,9 +14,9 @@ class Sin(WorkChain):
         super(Sin, cls).define(spec)
 
         spec.input('x', valid_type=Float)
-        spec.output('return', valid_type=Float)
+        spec.output('result', valid_type=Float)
 
         spec.outline(cls.evaluate)
 
     def evaluate(self):
-        self.out('return', Float(np.sin(self.inputs.x.value)))
+        self.out('result', Float(np.sin(self.inputs.x.value)))

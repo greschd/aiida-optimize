@@ -71,7 +71,7 @@ class Bisection(OptimizationEngineWrapper):
 
     _IMPL_CLASS = _BisectionImpl
 
-    def __new__(cls, lower, upper, tol=1e-6, result_key='return', logger=None):  # pylint: disable=arguments-differ
+    def __new__(cls, lower, upper, tol=1e-6, result_key='result', logger=None):  # pylint: disable=arguments-differ
         return cls._IMPL_CLASS(
             lower=lower, upper=upper, tol=tol, result_key=result_key, logger=logger
         )

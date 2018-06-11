@@ -14,14 +14,14 @@ from sin_wc import Sin
 result_wf = run(
     OptimizationWorkChain,
     engine=Bisection,
-    engine_kwargs=ParameterData(dict=dict(upper=1.3, lower=-1., tol=1e-3, result_key='return')),
+    engine_kwargs=ParameterData(dict=dict(upper=1.3, lower=-1., tol=1e-3, result_key='result')),
     calculation_workchain=sin
 )
 
 result_wc = run(
     OptimizationWorkChain,
     engine=Bisection,
-    engine_kwargs=ParameterData(dict=dict(upper=1.3, lower=-1., tol=1e-3, result_key='return')),
+    engine_kwargs=ParameterData(dict=dict(upper=1.3, lower=-1., tol=1e-3, result_key='result')),
     calculation_workchain=Sin
 )
 

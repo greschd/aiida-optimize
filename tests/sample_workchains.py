@@ -22,13 +22,13 @@ class Echo(WorkChain):
         super(Echo, cls).define(spec)
 
         spec.input('x', valid_type=Float)
-        spec.output('return', valid_type=Float)
+        spec.output('result', valid_type=Float)
         spec.outline(cls.echo)
 
     @check_workchain_step
     def echo(self):
         self.report('Starting echo')
-        self.out('return', self.inputs.x)
+        self.out('result', self.inputs.x)
 
 
 class Norm(WorkChain):
@@ -41,13 +41,13 @@ class Norm(WorkChain):
         super(Norm, cls).define(spec)
 
         spec.input('x', valid_type=List)
-        spec.output('return', valid_type=Float)
+        spec.output('result', valid_type=Float)
         spec.outline(cls.evaluate)
 
     @check_workchain_step
     def evaluate(self):
         self.report('Starting evaluate')
-        self.out('return', Float(la.norm(self.inputs.x.get_attr('list'))))
+        self.out('result', Float(la.norm(self.inputs.x.get_attr('list'))))
 
 
 @workfunction

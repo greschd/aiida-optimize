@@ -306,7 +306,7 @@ class NelderMead(OptimizationEngineWrapper):
         ftol=1e-4,
         max_iter=1000,
         input_key='x',
-        result_key='return',
+        result_key='result',
         logger=None
     ):
         return cls._IMPL_CLASS(

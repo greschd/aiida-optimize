@@ -88,7 +88,7 @@ class OptimizationWorkChain(WorkChain):
         with self.optimizer() as opt:
             return not opt.is_finished
 
-    @check_workchain_step
+    # @check_workchain_step
     def launch_calculations(self):
         """
         Create calculations for the current iteration step.
@@ -97,15 +97,14 @@ class OptimizationWorkChain(WorkChain):
         with self.optimizer() as opt:
             calcs = {}
             calculation_workchain = load_object(self.inputs.calculation_workchain)
+            self.report(calculation_workchain)
             for idx, inputs in opt.create_inputs().items():
                 self.report('Launching calculation {}'.format(idx))
                 inputs_merged = ChainMap(inputs, self.inputs.get('calculation_inputs', {}))
                 if is_workfunction(calculation_workchain):
                     _, node = run_get_node(calculation_workchain, **inputs_merged)
                 else:
-                    node = self.submit(
-                        load_object(self.inputs.calculation_workchain), **inputs_merged
-                    )
+                    node = self.submit(calculation_workchain, **inputs_merged)
                 calcs[self.calc_key(idx)] = node
                 self.indices_to_retrieve.append(idx)
         return self.to_context(**calcs)

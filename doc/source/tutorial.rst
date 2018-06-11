@@ -28,7 +28,7 @@ Equivalently, we could also write a workchain that does the same:
 Now we can use ``aiida-optimize`` with the :class:`.Bisection` engine to find a nodal point. To do this, we run the :class:`.OptimizationWorkChain`, with the following inputs:
 
 * ``engine`` is the optimization engine that we use. In this case, we pass the :class:`.Bisection` class.
-* ``engine_kwargs`` are parameters that will be passed to the optimization engine. In the case of bisection, we pass the upper and lower boundaries of the bisection interval, and the target tolerance. Also, we need to pass the ``result_key``, which is the name of the output argument of the workfunction or workchain that we are optimizing. For workfunctions, this is always ``return``.
+* ``engine_kwargs`` are parameters that will be passed to the optimization engine. In the case of bisection, we pass the upper and lower boundaries of the bisection interval, and the target tolerance. Also, we need to pass the ``result_key``, which is the name of the output argument of the workfunction or workchain that we are optimizing. For workfunctions, this is always ``result``.
 * ``calculation_workchain`` is the workchain function that we want to optimize. In our case, that's the ``sin`` workfunction or ``Sin`` workchain.
 
 .. include:: ../../examples/bisection.py

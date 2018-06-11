@@ -80,9 +80,7 @@ def check_optimization(
 
         result = run_optimization(
             engine=engine,
-            engine_kwargs=ChainMap(engine_kwargs, {
-                'result_key': 'return'
-            }),
+            engine_kwargs=ChainMap(engine_kwargs, {'result_key': 'result'}),
             func_workchain=func_workchain,
             calculation_inputs=calculation_inputs
         )

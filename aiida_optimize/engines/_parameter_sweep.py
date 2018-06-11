@@ -69,5 +69,5 @@ class ParameterSweep(OptimizationEngineWrapper):
     """
     _IMPL_CLASS = _ParameterSweepImpl
 
-    def __new__(cls, parameters, result_key='return', logger=None):  # pylint: disable=arguments-differ
+    def __new__(cls, parameters, result_key='result', logger=None):  # pylint: disable=arguments-differ
         return cls._IMPL_CLASS(parameters=parameters, result_key=result_key, logger=logger)

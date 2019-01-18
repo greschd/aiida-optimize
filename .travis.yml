@@ -12,7 +12,7 @@ install:
   # - pip install git+https://github.com/greschd/plumpy@submit_with_process_type
   - pip install git+https://github.com/greschd/aiida_core@edge_new#egg=aiida_core
   - pip install git+https://github.com/greschd/aiida-tools#egg=aiida_tools
-  - pip install git+https://github.com/greschd/aiida_pytest#egg=aiida_pytest
+  - pip install git+https://github.com/greschd/aiida_pytest@develop#egg=aiida_pytest
   - pip install .[dev]
 env:
   - TEST_TYPE="tests"

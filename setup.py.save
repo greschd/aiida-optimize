@@ -42,7 +42,7 @@ if __name__ == '__main__':
             ':python_version < "3"': ['chainmap'],
             'dev': [
                 'pytest>=3.6', 'pytest-cov', 'aiida-pytest', 'yapf==0.25', 'pre-commit',
-                'sphinx-rtd-theme', 'prospector==0.12.11'
+                'sphinx-rtd-theme', 'prospectorexclude: '^(doc/)|(examples/)|(futures/)'
             ]
         },
         entry_points={

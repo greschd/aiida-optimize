@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+# © 2017-2019, ETH Zurich, Institut für Theoretische Physik
+# Author: Dominik Gresch <greschd@gmx.ch>
 """
 Tests for the OptimizationWorkChain.
 """
@@ -46,7 +50,5 @@ def test_parameter_sweep_add(check_optimization, sweep_parameters):  # pylint: d
         ftol=0,
         x_exact=-2.,
         f_exact=-1.,
-        calculation_inputs={
-            'y': Float(1.)
-        }
+        calculation_inputs={'y': Float(1.)}
     )

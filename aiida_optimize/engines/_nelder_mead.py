@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # ******NOTICE***************
 # optimize.py module by Travis E. Oliphant
 #
@@ -8,6 +10,9 @@
 # The additional license terms given in ADDITIONAL_TERMS.txt apply to this
 # file.
 # pylint: disable=invalid-name
+
+# © 2017-2019, ETH Zurich, Institut für Theoretische Physik
+# Author: Dominik Gresch <greschd@gmx.ch>
 """
 Defines a Nelder-Mead optimization engine.
 """
@@ -121,9 +126,9 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         return [self._to_input_list(x) for x in self.simplex]
 
     def _to_input_list(self, x):
-        l = List()
-        l.extend(x)
-        return {self.input_key: l}
+        input_list = List()
+        input_list.extend(x)
+        return {self.input_key: input_list}
 
     @update_method(next_submit='new_iter')
     def update_initialize(self, outputs):
@@ -166,6 +171,9 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @update_method()
     def choose_step(self, outputs):
+        """
+        Method which selects the next step to be performed.
+        """
         xr, fxr = self._get_single_result(outputs)
         self.extra_points = {'xr': (xr, fxr)}
         if fxr < self.fun_simplex[0]:
@@ -191,6 +199,9 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @update_method(next_submit='new_iter')
     def update_expansion(self, outputs):
+        """
+        Retrieve the results of an expansion step.
+        """
         xe, fxe = self._get_single_result(outputs)
         xr, fxr = self.extra_points['xr']
         if fxe < fxr:
@@ -205,6 +216,9 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @update_method()
     def update_contraction(self, outputs):
+        """
+        Retrieve the results of a contraction step.
+        """
         xc, fxc = self._get_single_result(outputs)
         _, fxr = self.extra_points['xr']
         if fxc < fxr:
@@ -220,6 +234,9 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @update_method()
     def update_inside_contraction(self, outputs):
+        """
+        Retrieve the results of an inside contraction step.
+        """
         xcc, fxcc = self._get_single_result(outputs)
         if fxcc < self.fun_simplex[-1]:
             self._update_last(xcc, fxcc)

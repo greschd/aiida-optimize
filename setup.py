@@ -36,7 +36,7 @@ if __name__ == '__main__':
         extras_require={
             ':python_version < "3"': ['chainmap'],
             'dev': [
-                'pytest', 'pytest-cov', 'aiida-pytest', 'yapf==0.20', 'pre-commit',
+                'pytest>=3.6', 'pytest-cov', 'aiida-pytest', 'yapf==0.20', 'pre-commit',
                 'sphinx-rtd-theme', 'prospector'
             ]
         },

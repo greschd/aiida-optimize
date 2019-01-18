@@ -8,9 +8,7 @@ addons:
   postgresql: "9.5"
 install:
   - pip install -U pip wheel setuptools
-  # Unreleased plum version required for fast-forwarding
-  # - pip install git+https://github.com/greschd/plumpy@submit_with_process_type
-  - pip install git+https://github.com/greschd/aiida_core@edge_new#egg=aiida_core
+  - pip install git+https://github.com/aiidateam/aiida_core#egg=aiida_core
   - pip install git+https://github.com/greschd/aiida-tools#egg=aiida_tools
   - pip install git+https://github.com/greschd/aiida_pytest@develop#egg=aiida_pytest
   - pip install .[dev]

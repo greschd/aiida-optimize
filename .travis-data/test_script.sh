@@ -11,6 +11,6 @@ case "$TEST_TYPE" in
         cd ${TRAVIS_BUILD_DIR}/tests; py.test --quiet-wipe
         ;;
     pre-commit)
-        pre-commit run --all-files || git status --short && git diff
+        pre-commit run --all-files
         ;;
 esac

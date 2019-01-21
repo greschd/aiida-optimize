@@ -5,4 +5,4 @@ future
 numpy==1.14.3
 scipy
 decorator
-pyyaml
+pyyaml==3.12

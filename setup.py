@@ -27,7 +27,8 @@ if __name__ == '__main__':
             'Development Status :: 3 - Alpha', 'Environment :: Plugins',
             'Intended Audience :: Science/Research',
             'License :: OSI Approved :: Apache Software License',
-            'Programming Language :: Python :: 2.7', 'Topic :: Scientific/Engineering :: Physics'
+            'Programming Language :: Python :: 2.7', 'Programming Language :: Python :: 3.6',
+            'Topic :: Scientific/Engineering :: Physics'
         ],
         keywords=['AiiDA', 'workflows', 'optimization'],
         packages=find_packages(),

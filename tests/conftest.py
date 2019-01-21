@@ -18,7 +18,7 @@ except ImportError:
 import numpy as np
 import pytest
 
-from aiida_pytest import *  # pylint: disable=unused-wildcard-import
+from aiida_pytest import *  # pylint: disable=unused-wildcard-import,redefined-builtin
 
 
 @pytest.fixture(params=['run', 'submit'])

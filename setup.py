@@ -24,7 +24,7 @@ if __name__ == '__main__':
         author_email='greschd@gmx.ch',
         license='MIT',
         classifiers=[
-            'Development Status :: 3 - Alpha', 'Environment :: Plugins', 'Framework :: AiiDA',
+            'Development Status :: 3 - Alpha', 'Environment :: Plugins',
             'Intended Audience :: Science/Research',
             'License :: OSI Approved :: Apache Software License',
             'Programming Language :: Python :: 2.7', 'Topic :: Scientific/Engineering :: Physics'

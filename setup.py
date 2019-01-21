@@ -17,12 +17,12 @@ with open('./aiida_optimize/__init__.py') as f:
 if __name__ == '__main__':
     setup(
         name='aiida-optimize',
-        url='http://z2pack.ethz.ch/aiida-plugins/aiida-optimize',
+        url='https://aiida-optimize.readthedocs.io/',
         version=VERSION,
         description='AiiDA Plugin for running optimization algorithms.',
         author='Dominik Gresch',
         author_email='greschd@gmx.ch',
-        license='MIT',
+        license='Apache 2.0',
         classifiers=[
             'Development Status :: 3 - Alpha', 'Environment :: Plugins',
             'Intended Audience :: Science/Research',

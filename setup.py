@@ -36,13 +36,13 @@ if __name__ == '__main__':
         reentry_register=True,
         install_requires=[
             'aiida-core', 'fsc.export', 'aiida-tools', 'future', 'numpy', 'scipy', 'decorator',
-            'pyyaml', 'pylint==1.9.3'
+            'pyyaml'
         ],
         extras_require={
             ':python_version < "3"': ['chainmap'],
             'dev': [
                 'pytest>=3.6', 'pytest-cov', 'aiida-pytest', 'yapf==0.25', 'pre-commit',
-                'sphinx-rtd-theme', 'prospector==0.12.11'
+                'sphinx-rtd-theme', 'prospector==0.12.11', 'pylint==1.9.3'
             ]
         },
         entry_points={

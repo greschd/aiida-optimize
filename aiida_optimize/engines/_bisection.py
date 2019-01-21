@@ -43,7 +43,7 @@ class _BisectionImpl(OptimizationEngineImpl):
 
     def _update(self, outputs):
         assert len(outputs.values()) == 1
-        res = outputs.values()[0][self.result_key]
+        res = next(iter(outputs.values()))[self.result_key]
         if res > 0:
             self.upper = self.average
         else:

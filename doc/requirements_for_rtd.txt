@@ -1,0 +1,8 @@
+aiida-core>=1.0.0a1
+fsc.export
+git+https://github.com/greschd/aiida-tools#egg=aiida_tools
+future
+numpy
+scipy
+decorator
+pyyaml

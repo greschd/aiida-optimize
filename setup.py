@@ -7,6 +7,8 @@ usage: pip install .[dev]
 """
 
 import re
+import os
+import json
 from setuptools import setup, find_packages
 
 # Get the version number
@@ -14,40 +16,9 @@ with open('./aiida_optimize/__init__.py') as f:
     MATCH_EXPR = "__version__[^'\"]+['\"]([^'\"]+)"
     VERSION = re.search(MATCH_EXPR, f.read()).group(1).strip()
 
+SETUP_JSON_PATH = os.path.join(os.path.abspath(__file__), 'setup.json')
+with open(SETUP_JSON_PATH, 'r') as json_file:
+    SETUP_KWARGS = json.load(json_file)
+
 if __name__ == '__main__':
-    setup(
-        name='aiida-optimize',
-        url='https://aiida-optimize.readthedocs.io/',
-        version=VERSION,
-        description='AiiDA Plugin for running optimization algorithms.',
-        author='Dominik Gresch',
-        author_email='greschd@gmx.ch',
-        license='Apache 2.0',
-        classifiers=[
-            'Development Status :: 3 - Alpha', 'Environment :: Plugins',
-            'Intended Audience :: Science/Research',
-            'License :: OSI Approved :: Apache Software License',
-            'Programming Language :: Python :: 2.7', 'Programming Language :: Python :: 3.6',
-            'Topic :: Scientific/Engineering :: Physics'
-        ],
-        keywords=['AiiDA', 'workflows', 'optimization'],
-        packages=find_packages(),
-        include_package_data=True,
-        setup_requires=['reentry'],
-        reentry_register=True,
-        install_requires=[
-            'aiida-core', 'fsc.export', 'aiida-tools', 'future', 'numpy', 'scipy', 'decorator',
-            'pyyaml'
-        ],
-        extras_require={
-            ':python_version < "3"': ['chainmap'],
-            'dev': [
-                'pytest>=3.6', 'pytest-cov', 'aiida-pytest', 'yapf==0.25', 'pre-commit',
-                'sphinx-rtd-theme', 'prospector==0.12.11', 'pylint==1.9.3'
-            ]
-        },
-        entry_points={
-            'aiida.workflows':
-            ['optimize.optimize = aiida_optimize.workchain:OptimizationWorkChain']
-        },
-    )
+    setup(version=VERSION, packages=find_packages(), **SETUP_KWARGS)

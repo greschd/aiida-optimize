@@ -13,6 +13,7 @@ install:
   - pip install git+https://github.com/aiidateam/aiida_core@v1.0.0a4#egg=aiida_core
   - pip install git+https://github.com/greschd/aiida_pytest@support_alpha_4#egg=aiida_pytest
   - pip install .[dev]
+  - reentry scan
 env:
   - TEST_TYPE="tests"
   - TEST_TYPE="pre-commit"

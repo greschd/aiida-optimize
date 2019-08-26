@@ -19,7 +19,7 @@ from aiida_tools.workchain_inputs import WORKCHAIN_INPUT_KWARGS, load_object
 from aiida.orm import Str
 from aiida.orm import Dict
 from aiida.engine import WorkChain, while_
-from aiida.engine.utils import is_workfunction
+from aiida.engine.utils import is_process_function
 from aiida.engine.launch import run_get_node
 
 
@@ -37,7 +37,7 @@ class OptimizationWorkChain(WorkChain):
         spec.input('engine', help='Engine that runs the optimization.', **WORKCHAIN_INPUT_KWARGS)
         spec.input(
             'engine_kwargs',
-            valid_type=ParameterData,
+            valid_type=Dict,
             help='Keyword arguments passed to the optimization engine.'
         )
         spec.input(
@@ -67,7 +67,7 @@ class OptimizationWorkChain(WorkChain):
 
     @property
     def engine(self):
-        return load_object(self.inputs.engine)
+        return load_object(self.inputs.engine.value)
 
     @property
     def indices_to_retrieve(self):
@@ -100,12 +100,12 @@ class OptimizationWorkChain(WorkChain):
         self.report('Launching pending calculations.')
         with self.optimizer() as opt:
             calcs = {}
-            calculation_workchain = load_object(self.inputs.calculation_workchain)
+            calculation_workchain = load_object(self.inputs.calculation_workchain.value)
             self.report(calculation_workchain)
             for idx, inputs in opt.create_inputs().items():
                 self.report('Launching calculation {}'.format(idx))
                 inputs_merged = ChainMap(inputs, self.inputs.get('calculation_inputs', {}))
-                if is_workfunction(calculation_workchain):
+                if is_process_function(calculation_workchain):
                     _, node = run_get_node(calculation_workchain, **inputs_merged)
                 else:
                     node = self.submit(calculation_workchain, **inputs_merged)

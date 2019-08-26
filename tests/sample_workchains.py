@@ -9,9 +9,8 @@ Defines simple workchains which are used in the tests.
 import numpy as np
 import scipy.linalg as la
 
-from aiida.orm.data.base import Float, List
-from aiida.work.workchain import WorkChain
-from aiida.work.workfunctions import workfunction
+from aiida.orm import Float, List
+from aiida.engine import WorkChain, workfunction
 
 from aiida_tools import check_workchain_step
 

@@ -35,12 +35,12 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
     ):
         from aiida_optimize.workchain import OptimizationWorkChain
         from aiida.orm import load_node
-        from aiida.orm.data.parameter import ParameterData
-        from aiida.work.launch import run, submit
+        from aiida.orm import Dict
+        from aiida.engine.launch import run, submit
 
         inputs = dict(
             engine=engine,
-            engine_kwargs=ParameterData(dict=dict(engine_kwargs)),
+            engine_kwargs=Dict(dict=dict(engine_kwargs)),
             calculation_workchain=func_workchain,
             calculation_inputs=calculation_inputs if calculation_inputs is not None else {},
         )

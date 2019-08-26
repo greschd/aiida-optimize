@@ -16,11 +16,11 @@ from fsc.export import export
 from aiida_tools import check_workchain_step
 from aiida_tools.workchain_inputs import WORKCHAIN_INPUT_KWARGS, load_object
 
-from aiida.orm.data.base import Str
-from aiida.orm.data.parameter import ParameterData
-from aiida.work.workchain import WorkChain, while_
-from aiida.work.utils import is_workfunction
-from aiida.work.launch import run_get_node
+from aiida.orm import Str
+from aiida.orm import Dict
+from aiida.engine import WorkChain, while_
+from aiida.engine.utils import is_workfunction
+from aiida.engine.launch import run_get_node
 
 
 @export

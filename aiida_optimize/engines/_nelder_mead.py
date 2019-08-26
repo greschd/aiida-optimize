@@ -24,7 +24,7 @@ import scipy.linalg as la
 from fsc.export import export
 from decorator import decorator
 
-from aiida.orm.data.base import List
+from aiida.orm import List
 
 from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
 

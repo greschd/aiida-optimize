@@ -50,7 +50,9 @@ class Norm(WorkChain):
     @check_workchain_step
     def evaluate(self):
         self.report('Starting evaluate')
-        self.out('result', Float(la.norm(self.inputs.x.get_attr('list'))))
+        res = Float(la.norm(self.inputs.x.get_attr('list')))
+        res.store()
+        self.out('result', res)
 
 
 @workfunction
@@ -66,4 +68,6 @@ def rosenbrock(x):
 
 @workfunction
 def add(x, y):
-    return Float(x + y)
+    res = Float(x + y)
+    res.store()
+    return res

@@ -5,8 +5,8 @@
 
 import numpy as np
 
-from aiida.orm.data.float import Float
-from aiida.work.workchain import WorkChain
+from aiida.orm.nodes.data.float import Float
+from aiida.engine import WorkChain
 
 
 class Sin(WorkChain):
@@ -24,4 +24,5 @@ class Sin(WorkChain):
         spec.outline(cls.evaluate)
 
     def evaluate(self):
-        self.out('result', Float(np.sin(self.inputs.x.value)))
+        # This is a bit improper: The new value should be created in a calculation.
+        self.out('result', Float(np.sin(self.inputs.x.value)).store())

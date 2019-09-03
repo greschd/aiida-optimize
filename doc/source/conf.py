@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'rtd_settings'
 
 import aiida
-from aiida.backends import settings
+from aiida.manage.configuration import settings
 
 # We set that we are in documentation mode - even for local compilation
 settings.IN_DOC_MODE = True
@@ -24,10 +24,10 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
     html_theme = 'sphinx_rtd_theme'
     # Loading the dbenv. The backend should be fixed before compiling the
     # documentation.
-    aiida.try_load_dbenv()
+    aiida.load_profile()
 else:
     # Back-end settings for readthedocs online documentation.
-    # from aiida.backends import settings
+    # from aiida.manage.configuration import settings
     settings.IN_RT_DOC_MODE = True
     settings.BACKEND = "django"
     settings.AIIDADB_PROFILE = "default"

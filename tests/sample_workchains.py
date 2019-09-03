@@ -50,24 +50,22 @@ class Norm(WorkChain):
     @check_workchain_step
     def evaluate(self):
         self.report('Starting evaluate')
-        res = Float(la.norm(self.inputs.x.get_attr('list')))
+        res = Float(la.norm(self.inputs.x.get_attribute('list')))
         res.store()
         self.out('result', res)
 
 
 @workfunction
 def sin_list(x):
-    return Float(np.sin(list(x)[0]))
+    return Float(np.sin(list(x)[0])).store()
 
 
 @workfunction
 def rosenbrock(x):
     x, y = x
-    return Float((1 - x)**2 + 100 * (y - x**2)**2)
+    return Float((1 - x)**2 + 100 * (y - x**2)**2).store()
 
 
 @workfunction
 def add(x, y):
-    res = Float(x + y)
-    res.store()
-    return res
+    return Float(x + y).store()

@@ -22,9 +22,12 @@ from aiida.engine import WorkChain, while_
 from aiida.engine.utils import is_process_function
 from aiida.engine.launch import run_get_node
 from aiida.common.links import LinkType
+from aiida.common import AIIDA_LOGGER
 
 # helper for old AiiDA functionality
 def _get_outputs_dict(workchain):
+    if not workchain.is_finished_ok:
+        raise ValueError('Optimization failed due to sub-workchain {} not finishing ok.'.format(workchain.pk))
     return {
         link_triplet.link_label: link_triplet.node for link_triplet in workchain.get_outgoing(link_type=LinkType.RETURN)
     }

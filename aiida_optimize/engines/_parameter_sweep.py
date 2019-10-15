@@ -10,7 +10,7 @@ from __future__ import division, print_function, unicode_literals
 
 from fsc.export import export
 
-from aiida.orm.data import to_aiida_type
+from aiida.orm.nodes.data.base import to_aiida_type
 
 from ._base import OptimizationEngineWrapper, OptimizationEngineImpl
 
@@ -19,7 +19,6 @@ class _ParameterSweepImpl(OptimizationEngineImpl):
     """
     Implementation class for the parameter sweep engine.
     """
-
     def __init__(self, parameters, result_key, logger, result_state=None):
         super(_ParameterSweepImpl, self).__init__(logger=logger, result_state=result_state)
         self._parameters = parameters

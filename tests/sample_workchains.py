@@ -9,9 +9,8 @@ Defines simple workchains which are used in the tests.
 import numpy as np
 import scipy.linalg as la
 
-from aiida.orm.data.base import Float, List
-from aiida.work.workchain import WorkChain
-from aiida.work.workfunctions import workfunction
+from aiida.orm import Float, List
+from aiida.engine import WorkChain, workfunction
 
 from aiida_tools import check_workchain_step
 
@@ -20,7 +19,6 @@ class Echo(WorkChain):
     """
     WorkChain which returns the input.
     """
-
     @classmethod
     def define(cls, spec):
         super(Echo, cls).define(spec)
@@ -39,7 +37,6 @@ class Norm(WorkChain):
     """
     WorkChain which returns the norm of the input list.
     """
-
     @classmethod
     def define(cls, spec):
         super(Norm, cls).define(spec)
@@ -49,22 +46,24 @@ class Norm(WorkChain):
         spec.outline(cls.evaluate)
 
     @check_workchain_step
-    def evaluate(self):
+    def evaluate(self):  # pylint: disable=missing-docstring
         self.report('Starting evaluate')
-        self.out('result', Float(la.norm(self.inputs.x.get_attr('list'))))
+        res = Float(la.norm(self.inputs.x.get_attribute('list')))
+        res.store()
+        self.out('result', res)
 
 
 @workfunction
 def sin_list(x):
-    return Float(np.sin(list(x)[0]))
+    return Float(np.sin(list(x)[0])).store()
 
 
 @workfunction
 def rosenbrock(x):
     x, y = x
-    return Float((1 - x)**2 + 100 * (y - x**2)**2)
+    return Float((1 - x)**2 + 100 * (y - x**2)**2).store()
 
 
 @workfunction
 def add(x, y):
-    return Float(x + y)
+    return Float(x + y).store()

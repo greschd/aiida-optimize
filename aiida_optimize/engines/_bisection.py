@@ -10,7 +10,7 @@ from __future__ import division, print_function, unicode_literals
 
 from fsc.export import export
 
-from aiida.orm.data.base import Float
+from aiida.orm import Float
 
 from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
 
@@ -19,7 +19,6 @@ class _BisectionImpl(OptimizationEngineImpl):
     """
     Implementation class for the bisection optimization engine.
     """
-
     def __init__(self, lower, upper, tol, result_key, logger, result_state=None):  # pylint: disable=too-many-arguments
         super(_BisectionImpl, self).__init__(logger=logger, result_state=result_state)
         self.lower, self.upper = sorted([lower, upper])

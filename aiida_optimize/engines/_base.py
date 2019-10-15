@@ -24,7 +24,6 @@ class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
     """
     Base class for the stateful optimization engine implementation.
     """
-
     def __init__(self, logger, result_state=None):
         self._logger = logger
         self._result_mapping = ResultMapping.from_state(result_state)
@@ -48,15 +47,11 @@ class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
         """
         The serialized state of the instance, without the result mapping. This function needs to be implemented by child classes.
         """
-        pass
-
     @abstractproperty
     def is_finished(self):
         """
         Returns true if the optimization is finished.
         """
-        pass
-
     def create_inputs(self):
         """
         Creates the inputs and adds them to the result mapping.
@@ -68,8 +63,6 @@ class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
         """
         Creates the inputs for calculations that need to be launched. This function needs to be implemented by child classes.
         """
-        pass
-
     def update(self, outputs):
         """
         Updates the result mapping and engine instance with the calculation outputs.
@@ -82,23 +75,16 @@ class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
         """
         Updates the engine instance with the calculation outputs. This method needs to be implemented by child classes.
         """
-        pass
-
     @abstractproperty
     def result_value(self):
         """
         Return the value of the optimal calculation.
         """
-        pass
-
     @abstractproperty
     def result_index(self):
         """
         Returns the index (in the result mapping) of the optimal calculation.
         """
-        pass
-
-
 @export
 class OptimizationEngineWrapper(with_metaclass(ABCMeta, object)):
     """

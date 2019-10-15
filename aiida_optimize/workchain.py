@@ -16,11 +16,26 @@ from fsc.export import export
 from aiida_tools import check_workchain_step
 from aiida_tools.workchain_inputs import WORKCHAIN_INPUT_KWARGS, load_object
 
-from aiida.orm.data.base import Str
-from aiida.orm.data.parameter import ParameterData
-from aiida.work.workchain import WorkChain, while_
-from aiida.work.utils import is_workfunction
-from aiida.work.launch import run_get_node
+from aiida.orm import Str
+from aiida.orm import Dict
+from aiida.engine import WorkChain, while_
+from aiida.engine.utils import is_process_function
+from aiida.engine.launch import run_get_node
+from aiida.common.links import LinkType
+
+
+def _get_outputs_dict(workchain):
+    """
+    Helper function to mimic the behaviour of the old AiiDA .get_outputs_dict() method.
+    """
+    if not workchain.is_finished_ok:
+        raise ValueError(
+            'Optimization failed due to sub-workchain {} not finishing ok.'.format(workchain.pk)
+        )
+    return {
+        link_triplet.link_label: link_triplet.node
+        for link_triplet in workchain.get_outgoing(link_type=LinkType.RETURN)
+    }
 
 
 @export
@@ -37,7 +52,7 @@ class OptimizationWorkChain(WorkChain):
         spec.input('engine', help='Engine that runs the optimization.', **WORKCHAIN_INPUT_KWARGS)
         spec.input(
             'engine_kwargs',
-            valid_type=ParameterData,
+            valid_type=Dict,
             help='Keyword arguments passed to the optimization engine.'
         )
         spec.input(
@@ -67,7 +82,7 @@ class OptimizationWorkChain(WorkChain):
 
     @property
     def engine(self):
-        return load_object(self.inputs.engine)
+        return load_object(self.inputs.engine.value)
 
     @property
     def indices_to_retrieve(self):
@@ -100,12 +115,12 @@ class OptimizationWorkChain(WorkChain):
         self.report('Launching pending calculations.')
         with self.optimizer() as opt:
             calcs = {}
-            calculation_workchain = load_object(self.inputs.calculation_workchain)
+            calculation_workchain = load_object(self.inputs.calculation_workchain.value)
             self.report(calculation_workchain)
             for idx, inputs in opt.create_inputs().items():
                 self.report('Launching calculation {}'.format(idx))
                 inputs_merged = ChainMap(inputs, self.inputs.get('calculation_inputs', {}))
-                if is_workfunction(calculation_workchain):
+                if is_process_function(calculation_workchain):
                     _, node = run_get_node(calculation_workchain, **inputs_merged)
                 else:
                     node = self.submit(calculation_workchain, **inputs_merged)
@@ -124,7 +139,7 @@ class OptimizationWorkChain(WorkChain):
             idx = self.indices_to_retrieve.pop(0)
             key = self.calc_key(idx)
             self.report('Retrieving output for calculation {}'.format(idx))
-            outputs[idx] = self.ctx[key].get_outputs_dict()
+            outputs[idx] = _get_outputs_dict(self.ctx[key])
 
         with self.optimizer() as opt:
             opt.update(outputs)
@@ -136,10 +151,14 @@ class OptimizationWorkChain(WorkChain):
         """
         self.report('Finalizing optimization procedure.')
         with self.optimizer() as opt:
-            self.out('optimizer_result', opt.result_value)
+            optimizer_result = opt.result_value
+            optimizer_result.store()
+            self.out('optimizer_result', optimizer_result)
             result_index = opt.result_index
             result_calculation = self.ctx[self.calc_key(result_index)]
-            self.out('calculation_uuid', Str(result_calculation.uuid))
+            calc_uuid = Str(result_calculation.uuid)
+            calc_uuid.store()
+            self.out('calculation_uuid', calc_uuid)
 
     def calc_key(self, index):
         """

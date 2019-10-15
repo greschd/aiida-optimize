@@ -39,7 +39,7 @@ def test_parameter_sweep_add(check_optimization, sweep_parameters):  # pylint: d
     Test the ParameterSweep Engine with the add workfunction, using 'calculation_inputs'.
     """
 
-    from aiida.orm.data.float import Float
+    from aiida.orm.nodes.data.float import Float
     from aiida_optimize.engines import ParameterSweep
 
     check_optimization(

@@ -2,16 +2,20 @@ language: python
 python:
   - "2.7"
   - "3.6"
+  - "3.7"
 cache: pip
+sudo: true
 services:
-  - postgresql
   - rabbitmq
+  - postgresql
 addons:
-  postgresql: "9.5"
+  apt:
+    packages:
+      - rabbitmq-server
+before_install:
+  - sudo service postgresql restart
 install:
   - pip install -U 'pip<19' wheel setuptools
-  - pip install git+https://github.com/aiidateam/aiida_core@v1.0.0a4#egg=aiida_core
-  - pip install git+https://github.com/greschd/aiida_pytest@support_alpha_4#egg=aiida_pytest
   - pip install .[dev]
   - reentry scan
 env:

@@ -21,4 +21,12 @@ with open(SETUP_JSON_PATH, 'r') as json_file:
     SETUP_KWARGS = json.load(json_file)
 
 if __name__ == '__main__':
-    setup(version=VERSION, packages=find_packages(), **SETUP_KWARGS)
+    setup(
+        version=VERSION,
+        packages=find_packages(),
+        long_description=open(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.md')
+        ).read(),
+        long_description_content_type="text/markdown",
+        **SETUP_KWARGS
+    )

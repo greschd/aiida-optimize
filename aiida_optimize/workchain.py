@@ -21,6 +21,21 @@ from aiida.orm import Dict
 from aiida.engine import WorkChain, while_
 from aiida.engine.utils import is_process_function
 from aiida.engine.launch import run_get_node
+from aiida.common.links import LinkType
+
+
+def _get_outputs_dict(workchain):
+    """
+    Helper function to mimic the behaviour of the old AiiDA .get_outputs_dict() method.
+    """
+    if not workchain.is_finished_ok:
+        raise ValueError(
+            'Optimization failed due to sub-workchain {} not finishing ok.'.format(workchain.pk)
+        )
+    return {
+        link_triplet.link_label: link_triplet.node
+        for link_triplet in workchain.get_outgoing(link_type=LinkType.RETURN)
+    }
 
 
 @export
@@ -124,7 +139,7 @@ class OptimizationWorkChain(WorkChain):
             idx = self.indices_to_retrieve.pop(0)
             key = self.calc_key(idx)
             self.report('Retrieving output for calculation {}'.format(idx))
-            outputs[idx] = self.ctx[key].get_outputs_dict()
+            outputs[idx] = _get_outputs_dict(self.ctx[key])
 
         with self.optimizer() as opt:
             opt.update(outputs)
@@ -136,10 +151,14 @@ class OptimizationWorkChain(WorkChain):
         """
         self.report('Finalizing optimization procedure.')
         with self.optimizer() as opt:
-            self.out('optimizer_result', opt.result_value)
+            optimizer_result = opt.result_value
+            optimizer_result.store()
+            self.out('optimizer_result', optimizer_result)
             result_index = opt.result_index
             result_calculation = self.ctx[self.calc_key(result_index)]
-            self.out('calculation_uuid', Str(result_calculation.uuid))
+            calc_uuid = Str(result_calculation.uuid)
+            calc_uuid.store()
+            self.out('calculation_uuid', calc_uuid)
 
     def calc_key(self, index):
         """

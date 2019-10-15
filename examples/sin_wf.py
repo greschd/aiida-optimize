@@ -5,10 +5,11 @@
 
 import numpy as np
 
-from aiida.orm.data.float import Float
-from aiida.work.workfunctions import workfunction
+from aiida.orm import Float
+from aiida.engine import workfunction
 
 
 @workfunction
 def sin(x):
-    return Float(np.sin(x.value))
+    # This is a bit improper: The new value should be created in a calculation.
+    return Float(np.sin(x.value)).store()

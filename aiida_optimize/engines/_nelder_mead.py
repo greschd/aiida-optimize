@@ -38,7 +38,6 @@ def update_method(next_submit=None):
     """
     Decorator for methods which update the results.
     """
-
     @decorator
     def inner(func, self, outputs):
         self.next_submit = next_submit
@@ -52,7 +51,6 @@ def submit_method(next_update=None):
     """
     Decorator for methods which submit new calculations.
     """
-
     @decorator
     def inner(func, self):
         self.next_submit = None
@@ -117,7 +115,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     def _get_single_result(self, outputs):
         (idx, ) = outputs.keys()
-        x = np.array(self._result_mapping[idx].input[self.input_key].get_attr('list'))
+        x = np.array(self._result_mapping[idx].input[self.input_key].get_attribute('list'))
         f = outputs[idx][self.result_key].value
         return x, f
 

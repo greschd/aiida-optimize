@@ -26,17 +26,11 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
     """
     Checks an optimization engine with the given parameters.
     """
-
-    def inner(  # pylint: disable=missing-docstring
-        engine,
-        func_workchain,
-        engine_kwargs,
-        calculation_inputs=None
-    ):
+    def inner(engine, func_workchain, engine_kwargs, calculation_inputs=None):  # pylint: disable=missing-docstring,useless-suppression
         from aiida_optimize.workchain import OptimizationWorkChain
         from aiida.orm import load_node
         from aiida.orm import Dict
-        from aiida.engine.launch import run, submit
+        from aiida.engine.launch import run_get_node, submit
 
         inputs = dict(
             engine=engine,
@@ -46,13 +40,13 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
         )
 
         if request.param == 'run':
-            result = run(OptimizationWorkChain, **inputs)
+            _, result_node = run_get_node(OptimizationWorkChain, **inputs)
         else:
             assert request.param == 'submit'
             pk = submit(OptimizationWorkChain, **inputs).pk
             wait_for(pk)
-            result = load_node(pk).get_outputs_dict()
-        return result
+            result_node = load_node(pk)
+        return result_node
 
     return inner
 
@@ -66,7 +60,7 @@ def check_optimization(
     Runs and checks an optimization with a given engine and parameters.
     """
 
-    def inner(  # pylint: disable=missing-docstring,too-many-arguments
+    def inner(  # pylint: disable=too-many-arguments,missing-docstring,useless-suppression
         engine,
         func_workchain_name,
         engine_kwargs,
@@ -82,16 +76,16 @@ def check_optimization(
         import sample_workchains
         func_workchain = getattr(sample_workchains, func_workchain_name)
 
-        result = run_optimization(
+        result_node = run_optimization(
             engine=engine,
             engine_kwargs=ChainMap(engine_kwargs, {'result_key': 'result'}),
             func_workchain=func_workchain,
             calculation_inputs=calculation_inputs
         )
 
-        assert 'calculation_uuid' in result
-        assert np.isclose(result['optimizer_result'].value, f_exact, atol=ftol)
-        calc = load_node(result['calculation_uuid'].value)
-        assert np.allclose(type(x_exact)(calc.get_inputs_dict()['x']), x_exact, atol=xtol)
+        assert 'calculation_uuid' in result_node.outputs
+        assert np.isclose(result_node.outputs.optimizer_result.value, f_exact, atol=ftol)
+        calc = load_node(result_node.outputs.calculation_uuid.value)
+        assert np.allclose(type(x_exact)(calc.inputs.x), x_exact, atol=xtol)
 
     return inner

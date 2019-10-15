@@ -49,6 +49,24 @@ class EchoDifferentNames(WorkChain):
         self.report('Starting echo')
         self.out('the_result', self.inputs.y)
 
+
+class Negative(WorkChain):
+    """
+    WorkChain which returns the negative of the input.
+    """
+    @classmethod
+    def define(cls, spec):
+        super(Negative, cls).define(spec)
+
+        spec.input('x', valid_type=Float)
+        spec.output('result', valid_type=Float)
+        spec.outline(cls.run_negative)
+
+    @check_workchain_step
+    def run_negative(self):
+        self.report('Starting negative, input {}'.format(self.inputs.x.value))
+        self.out('result', Float(-self.inputs.x.value).store())
+
 class Norm(WorkChain):
     """
     WorkChain which returns the norm of the input list.

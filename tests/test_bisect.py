@@ -31,6 +31,52 @@ def test_bisect(check_optimization):
         f_exact=0.,
     )
 
+
+def test_bisect_switch_lower_upper(check_optimization):
+    """
+    Test bisection with switched values for upper / lower.
+    """
+
+    from aiida_optimize.engines import Bisection
+
+    tol = 1e-1
+    check_optimization(
+        engine=Bisection,
+        engine_kwargs=dict(
+            upper=-1.1,
+            lower=1.,
+            tol=tol,
+        ),
+        func_workchain_name='Echo',
+        xtol=tol,
+        ftol=tol,
+        x_exact=0.,
+        f_exact=0.,
+    )
+
+def test_bisect_negative(check_optimization):
+    """
+    Simple test of the OptimizationWorkChain, with the Bisection engine.
+    """
+
+    from aiida_optimize.engines import Bisection
+
+    tol = 1e-1
+    check_optimization(
+        engine=Bisection,
+        engine_kwargs=dict(
+            lower=-2.,
+            upper=1.,
+            tol=tol,
+            target_value=-0.2
+        ),
+        func_workchain_name='Negative',
+        xtol=tol,
+        ftol=tol,
+        x_exact=0.2,
+        f_exact=-0.2,
+    )
+
 def test_target_value(check_optimization):
     """
     Test of the Bisection engine with a non-zero target value.

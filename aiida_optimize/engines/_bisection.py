@@ -19,9 +19,11 @@ class _BisectionImpl(OptimizationEngineImpl):
     """
     Implementation class for the bisection optimization engine.
     """
-    def __init__(self, *, lower, upper, tol, input_key, result_key, target_value, logger, result_state=None):  # pylint: disable=too-many-arguments
+    def __init__(self, *, lower, upper, tol, input_key, result_key, target_value, logger, result_state=None, initialized=False):  # pylint: disable=too-many-arguments
         super(_BisectionImpl, self).__init__(logger=logger, result_state=result_state)
-        self.lower, self.upper = sorted([lower, upper])
+        self.lower = lower
+        self.upper = upper
+        self.initialized = initialized
         self.tol = tol
         self.input_key = input_key
         self.result_key = result_key
@@ -40,19 +42,38 @@ class _BisectionImpl(OptimizationEngineImpl):
         return (self.upper + self.lower) / 2.
 
     def _create_inputs(self):
+        if not self.initialized:
+            return [{self.input_key: Float(self.lower)}, {self.input_key: Float(self.upper)}]
         return [{self.input_key: Float(self.average)}]
 
-    def _update(self, outputs):
-        assert len(outputs.values()) == 1
-        res = next(iter(outputs.values()))[self.result_key]
-        if (res - self.target_value) > 0:
-            self.upper = self.average
+    def _update(self, outputs):  
+        output_values = outputs.values()
+        num_vals = len(output_values)
+        if not self.initialized:
+            self.initialized = True
+            assert num_vals == 2
+            # initial step: change upper such that the _result_ of upper is higher
+            results = [val[self.result_key] for val in output_values]
+            lower_val, upper_val = results
+            if lower_val > upper_val:
+                self.lower, self.upper = self.upper, self.lower
+            if min(results) > self.target_value:
+                # TODO: add exit code
+                raise ValueError("Target value '{}' is outside range '{}'".format(self.target_value, results))
+            if max(results) < self.target_value:
+                # TODO: add exit code
+                raise ValueError("Target value '{}' is outside range '{}'".format(self.target_value, results))
         else:
-            self.lower = self.average
+            assert num_vals == 1
+            res = next(iter(output_values))[self.result_key]
+            if (res - self.target_value) > 0:
+                self.upper = self.average
+            else:
+                self.lower = self.average
 
     @property
     def result_value(self):
-        return Float(self.average)
+        return self._result_mapping[self.result_index].output[self.result_key]
 
     @property
     def result_index(self):

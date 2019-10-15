@@ -78,7 +78,7 @@ class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
     @abstractproperty
     def result_value(self):
         """
-        Return the value of the optimal calculation.
+        Return the output value of the optimal calculation.
         """
     @abstractproperty
     def result_index(self):

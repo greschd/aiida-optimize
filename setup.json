@@ -38,13 +38,18 @@
     ":python_version < \"3\"": [
       "chainmap"
     ],
-    "dev": [
+    "docs": [
+      "sphinx",
+      "sphinx-rtd-theme"
+    ],
+    "testing": [
       "pytest>=3.6",
       "pytest-cov",
-      "aiida-pytest",
+      "aiida-pytest"
+    ],
+    "dev_precommit": [
       "yapf==0.28",
       "pre-commit",
-      "sphinx-rtd-theme",
       "prospector==1.1.7",
       "pylint==1.9.4; python_version<'3.0'",
       "pylint==2.3.1; python_version>='3.0'"

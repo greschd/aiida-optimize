@@ -19,11 +19,13 @@ class _BisectionImpl(OptimizationEngineImpl):
     """
     Implementation class for the bisection optimization engine.
     """
-    def __init__(self, lower, upper, tol, result_key, logger, result_state=None):  # pylint: disable=too-many-arguments
+    def __init__(self, *, lower, upper, tol, input_key, result_key, target_value, logger, result_state=None):  # pylint: disable=too-many-arguments
         super(_BisectionImpl, self).__init__(logger=logger, result_state=result_state)
         self.lower, self.upper = sorted([lower, upper])
         self.tol = tol
+        self.input_key = input_key
         self.result_key = result_key
+        self.target_value = target_value
 
     @property
     def _state(self):
@@ -38,12 +40,12 @@ class _BisectionImpl(OptimizationEngineImpl):
         return (self.upper + self.lower) / 2.
 
     def _create_inputs(self):
-        return [{'x': Float(self.average)}]
+        return [{self.input_key: Float(self.average)}]
 
     def _update(self, outputs):
         assert len(outputs.values()) == 1
         res = next(iter(outputs.values()))[self.result_key]
-        if res > 0:
+        if (res - self.target_value) > 0:
             self.upper = self.average
         else:
             self.lower = self.average
@@ -70,11 +72,20 @@ class Bisection(OptimizationEngineWrapper):
 
     :param tol: Tolerance in the input value.
     :type tol: float
+
+    :param input_key: Name of the input to be varied in the optimization.
+    :type input_key: str
+
+    :param result_key: Name of the output which contains the evaluated function.
+    :type result_key: str
+
+    :param target_value: Target value of the function towards which it should be optimized.
+    :type target_value: float
     """
 
     _IMPL_CLASS = _BisectionImpl
 
-    def __new__(cls, lower, upper, tol=1e-6, result_key='result', logger=None):  # pylint: disable=arguments-differ
+    def __new__(cls, lower, upper, *, tol=1e-6, input_key='x', result_key='result', target_value=0., logger=None):  # pylint: disable=arguments-differ
         return cls._IMPL_CLASS(
-            lower=lower, upper=upper, tol=tol, result_key=result_key, logger=logger
+            lower=lower, upper=upper, tol=tol, input_key=input_key, result_key=result_key, target_value=target_value, logger=logger
         )

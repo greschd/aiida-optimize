@@ -32,6 +32,22 @@ class Echo(WorkChain):
         self.report('Starting echo')
         self.out('result', self.inputs.x)
 
+class EchoDifferentNames(WorkChain):
+    """
+    WorkChain which returns the input, with "non-standard" input / output names.
+    """
+    @classmethod
+    def define(cls, spec):
+        super(EchoDifferentNames, cls).define(spec)
+
+        spec.input('y', valid_type=Float)
+        spec.output('the_result', valid_type=Float)
+        spec.outline(cls.echo)
+
+    @check_workchain_step
+    def echo(self):
+        self.report('Starting echo')
+        self.out('the_result', self.inputs.y)
 
 class Norm(WorkChain):
     """

@@ -19,7 +19,6 @@ class Echo(WorkChain):
     """
     WorkChain which returns the input.
     """
-
     @classmethod
     def define(cls, spec):
         super(Echo, cls).define(spec)
@@ -38,7 +37,6 @@ class Norm(WorkChain):
     """
     WorkChain which returns the norm of the input list.
     """
-
     @classmethod
     def define(cls, spec):
         super(Norm, cls).define(spec)
@@ -48,7 +46,7 @@ class Norm(WorkChain):
         spec.outline(cls.evaluate)
 
     @check_workchain_step
-    def evaluate(self):
+    def evaluate(self):  # pylint: disable=missing-docstring
         self.report('Starting evaluate')
         res = Float(la.norm(self.inputs.x.get_attribute('list')))
         res.store()

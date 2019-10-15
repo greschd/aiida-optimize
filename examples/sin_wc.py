@@ -13,7 +13,6 @@ class Sin(WorkChain):
     """
     A simple workchain which represents the function to be optimized.
     """
-
     @classmethod
     def define(cls, spec):
         super(Sin, cls).define(spec)

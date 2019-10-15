@@ -26,13 +26,7 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
     """
     Checks an optimization engine with the given parameters.
     """
-
-    def inner(  # pylint: disable=missing-docstring
-        engine,
-        func_workchain,
-        engine_kwargs,
-        calculation_inputs=None
-    ):
+    def inner(engine, func_workchain, engine_kwargs, calculation_inputs=None):
         from aiida_optimize.workchain import OptimizationWorkChain
         from aiida.orm import load_node
         from aiida.orm import Dict
@@ -66,7 +60,7 @@ def check_optimization(
     Runs and checks an optimization with a given engine and parameters.
     """
 
-    def inner(  # pylint: disable=missing-docstring,too-many-arguments
+    def inner(  # pylint: disable=too-many-arguments
         engine,
         func_workchain_name,
         engine_kwargs,

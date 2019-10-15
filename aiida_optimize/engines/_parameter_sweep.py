@@ -19,7 +19,6 @@ class _ParameterSweepImpl(OptimizationEngineImpl):
     """
     Implementation class for the parameter sweep engine.
     """
-
     def __init__(self, parameters, result_key, logger, result_state=None):
         super(_ParameterSweepImpl, self).__init__(logger=logger, result_state=result_state)
         self._parameters = parameters

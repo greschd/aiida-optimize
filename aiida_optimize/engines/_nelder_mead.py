@@ -38,7 +38,6 @@ def update_method(next_submit=None):
     """
     Decorator for methods which update the results.
     """
-
     @decorator
     def inner(func, self, outputs):
         self.next_submit = next_submit
@@ -52,7 +51,6 @@ def submit_method(next_update=None):
     """
     Decorator for methods which submit new calculations.
     """
-
     @decorator
     def inner(func, self):
         self.next_submit = None

@@ -42,11 +42,12 @@
       "pytest>=3.6",
       "pytest-cov",
       "aiida-pytest",
-      "yapf==0.25",
+      "yapf==0.28",
       "pre-commit",
       "sphinx-rtd-theme",
-      "prospector==0.12.11",
-      "pylint==1.9.3"
+      "prospector==1.1.7",
+      "pylint==1.9.4; python_version<'3.0'",
+      "pylint==2.3.1; python_version>='3.0'"
     ]
   },
   "entry_points": {

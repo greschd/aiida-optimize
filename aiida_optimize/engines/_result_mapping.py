@@ -14,7 +14,6 @@ class Result(object):
     """
     Data object for storing the input created by the optimization engine, and the output from the calculation workchain corresponding to that input.
     """
-
     def __init__(self, input_, output=None):
         self.input = input_
         self.output = output
@@ -25,7 +24,6 @@ class ResultMapping(object):
     """
     Maps the keys used to identify calculations to their inputs / outputs.
     """
-
     def __init__(self):
         self._results = {}
 

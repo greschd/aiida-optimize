@@ -124,3 +124,26 @@ def test_input_output_key(check_optimization):
         f_exact=0.,
         input_key='y',
     )
+
+def test_exact_value(check_optimization):
+    """
+    Check that the exact value is returned, even if it is not the
+    last value evaluated.
+    """
+
+    from aiida_optimize.engines import Bisection
+
+    tol = 1e-1
+    check_optimization(
+        engine=Bisection,
+        engine_kwargs=dict(
+            lower=0,
+            upper=1.,
+            tol=tol,
+        ),
+        func_workchain_name='Echo',
+        xtol=0.,
+        ftol=0.,
+        x_exact=0.,
+        f_exact=0.,
+    )

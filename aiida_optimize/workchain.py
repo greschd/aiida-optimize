@@ -71,8 +71,8 @@ class OptimizationWorkChain(WorkChain):
             cls.create_optimizer,
             while_(cls.not_finished)(cls.launch_calculations, cls.get_results), cls.finalize
         )
-        spec.output('optimizer_result')
-        spec.output('calculation_uuid')
+        spec.output('optimizer_result', help='Output value of the optimal calculation workflow.')
+        spec.output('calculation_uuid', help='UUID of the optimal calculation workflow.')
 
     @contextmanager
     def optimizer(self):

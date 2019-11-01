@@ -9,9 +9,8 @@ Reference
 Optimization workchain
 ----------------------
 
-.. automodule:: aiida_optimize.workchain
-    :members:
-    :imported-members:
+.. aiida-workchain:: OptimizationWorkChain
+    :module: aiida_optimize.workchain
 
 .. _engine_reference:
 

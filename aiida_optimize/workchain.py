@@ -15,7 +15,7 @@ from aiida.engine.launch import run_get_node
 from aiida.engine.utils import is_process_function
 from aiida.orm import Dict, Str
 from aiida_tools import check_workchain_step
-from aiida_tools.workchain_inputs import WORKCHAIN_INPUT_KWARGS, load_object
+from aiida_tools.process_inputs import PROCESS_INPUT_KWARGS, load_object
 from fsc.export import export
 
 
@@ -25,7 +25,7 @@ def _get_outputs_dict(process):
     """
     if not process.is_finished_ok:
         raise ValueError(
-            'Optimization failed due to sub-workchain {} not finishing ok.'.format(process.pk)
+            'Optimization failed due to sub-process {} not finishing ok.'.format(process.pk)
         )
     return {
         link_triplet.link_label: link_triplet.node
@@ -36,38 +36,41 @@ def _get_outputs_dict(process):
 @export
 class OptimizationWorkChain(WorkChain):
     """
-    Runs an optimization procedure, given an optimization engine that defines the optimization algorithm, and a CalculationWorkChain which evaluates the function to be optimized.
+    Runs an optimization procedure, given an optimization engine that defines the optimization
+    algorithm, and a process which evaluates the function to be optimized.
     """
-    _CALC_PREFIX = 'calc_'
+    _EVAL_PREFIX = 'eval_'
 
     @classmethod
     def define(cls, spec):
         super(cls, OptimizationWorkChain).define(spec)
 
-        spec.input('engine', help='Engine that runs the optimization.', **WORKCHAIN_INPUT_KWARGS)
+        spec.input('engine', help='Engine that runs the optimization.', **PROCESS_INPUT_KWARGS)
         spec.input(
             'engine_kwargs',
             valid_type=Dict,
             help='Keyword arguments passed to the optimization engine.'
         )
         spec.input(
-            'calculation_workchain',
-            help='WorkChain which produces the result to be optimized.',
-            **WORKCHAIN_INPUT_KWARGS
+            'evaluate_process',
+            help='Process which produces the result to be optimized.',
+            **PROCESS_INPUT_KWARGS
         )
         spec.input_namespace(
-            'calculation_inputs',
+            'evaluate',
             required=False,
-            help='Inputs that are passed to all calculation workchains.',
+            help='Inputs that are passed to all evaluation processes.',
             dynamic=True
         )
 
         spec.outline(
             cls.create_optimizer,
-            while_(cls.not_finished)(cls.launch_calculations, cls.get_results), cls.finalize
+            while_(cls.not_finished)(cls.launch_evaluations, cls.get_results), cls.finalize
         )
-        spec.output('optimizer_result', help='Output value of the optimal calculation workflow.')
-        spec.output('calculation_uuid', help='UUID of the optimal calculation workflow.')
+        spec.output(
+            'optimal_process_output', help='Output value of the optimal evaluation process.'
+        )
+        spec.output('optimal_process_uuid', help='UUID of the optimal evaluation process.')
 
     @contextmanager
     def optimizer(self):
@@ -103,36 +106,36 @@ class OptimizationWorkChain(WorkChain):
             return not opt.is_finished
 
     @check_workchain_step
-    def launch_calculations(self):
+    def launch_evaluations(self):
         """
-        Create calculations for the current iteration step.
+        Create evaluations for the current iteration step.
         """
-        self.report('Launching pending calculations.')
+        self.report('Launching pending evaluations.')
         with self.optimizer() as opt:
-            calcs = {}
-            calculation_workchain = load_object(self.inputs.calculation_workchain.value)
+            evals = {}
+            evaluate_process = load_object(self.inputs.evaluate_process.value)
             for idx, inputs in opt.create_inputs().items():
-                self.report('Launching calculation {}'.format(idx))
-                inputs_merged = ChainMap(inputs, self.inputs.get('calculation_inputs', {}))
-                if is_process_function(calculation_workchain):
-                    _, node = run_get_node(calculation_workchain, **inputs_merged)
+                self.report('Launching evaluation {}'.format(idx))
+                inputs_merged = ChainMap(inputs, self.inputs.get('evaluate', {}))
+                if is_process_function(evaluate_process):
+                    _, node = run_get_node(evaluate_process, **inputs_merged)
                 else:
-                    node = self.submit(calculation_workchain, **inputs_merged)
-                calcs[self.calc_key(idx)] = node
+                    node = self.submit(evaluate_process, **inputs_merged)
+                evals[self.eval_key(idx)] = node
                 self.indices_to_retrieve.append(idx)
-        return self.to_context(**calcs)
+        return self.to_context(**evals)
 
     @check_workchain_step
     def get_results(self):
         """
-        Retrieve results of the current iteration step's calculations.
+        Retrieve results of the current iteration step's evaluations.
         """
-        self.report('Checking finished calculations.')
+        self.report('Checking finished evaluations.')
         outputs = {}
         while self.indices_to_retrieve:
             idx = self.indices_to_retrieve.pop(0)
-            key = self.calc_key(idx)
-            self.report('Retrieving output for calculation {}'.format(idx))
+            key = self.eval_key(idx)
+            self.report('Retrieving output for evaluation {}'.format(idx))
             outputs[idx] = _get_outputs_dict(self.ctx[key])
 
         with self.optimizer() as opt:
@@ -145,17 +148,15 @@ class OptimizationWorkChain(WorkChain):
         """
         self.report('Finalizing optimization procedure.')
         with self.optimizer() as opt:
-            optimizer_result = opt.result_value
-            optimizer_result.store()
-            self.out('optimizer_result', optimizer_result)
+            optimal_process_output = opt.result_value
+            optimal_process_output.store()
+            self.out('optimal_process_output', optimal_process_output)
             result_index = opt.result_index
-            result_calculation = self.ctx[self.calc_key(result_index)]
-            calc_uuid = Str(result_calculation.uuid)
-            calc_uuid.store()
-            self.out('calculation_uuid', calc_uuid)
+            optimal_process = self.ctx[self.eval_key(result_index)]
+            self.out('optimal_process_uuid', Str(optimal_process.uuid).store())
 
-    def calc_key(self, index):
+    def eval_key(self, index):
         """
-        Returns the calculation key corresponding to a given index.
+        Returns the evaluation key corresponding to a given index.
         """
-        return self._CALC_PREFIX + str(index)
+        return self._EVAL_PREFIX + str(index)

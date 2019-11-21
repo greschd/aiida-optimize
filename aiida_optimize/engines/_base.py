@@ -61,11 +61,11 @@ class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
     @abstractmethod
     def _create_inputs(self):
         """
-        Creates the inputs for calculations that need to be launched. This function needs to be implemented by child classes.
+        Creates the inputs for evaluations that need to be launched. This function needs to be implemented by child classes.
         """
     def update(self, outputs):
         """
-        Updates the result mapping and engine instance with the calculation outputs.
+        Updates the result mapping and engine instance with the evaluation outputs.
         """
         self._result_mapping.add_outputs(outputs)
         self._update(outputs)
@@ -73,17 +73,17 @@ class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
     @abstractmethod
     def _update(self, outputs):
         """
-        Updates the engine instance with the calculation outputs. This method needs to be implemented by child classes.
+        Updates the engine instance with the evaluation outputs. This method needs to be implemented by child classes.
         """
     @abstractproperty
     def result_value(self):
         """
-        Return the output value of the optimal calculation.
+        Return the output value of the optimal evaluation.
         """
     @abstractproperty
     def result_index(self):
         """
-        Returns the index (in the result mapping) of the optimal calculation.
+        Returns the index (in the result mapping) of the optimal evaluation.
         """
 @export
 class OptimizationEngineWrapper(with_metaclass(ABCMeta, object)):

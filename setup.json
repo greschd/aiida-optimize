@@ -1,5 +1,6 @@
 {
   "name": "aiida-optimize",
+  "version": "0.3.0",
   "url": "https://aiida-optimize.readthedocs.io/",
   "description": "AiiDA Plugin for running optimization algorithms.",
   "author": "Dominik Gresch",
@@ -29,7 +30,7 @@
   "install_requires": [
     "aiida-core>=1.0.0<2.0.0",
     "fsc.export",
-    "aiida-tools>=0.2.0",
+    "aiida-tools>=0.3.0",
     "numpy",
     "scipy",
     "decorator",

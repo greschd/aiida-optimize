@@ -48,7 +48,7 @@ def update_method(next_submit=None):
 
 def submit_method(next_update=None):
     """
-    Decorator for methods which submit new calculations.
+    Decorator for methods which submit new evaluations.
     """
     @decorator
     def inner(func, self):
@@ -283,7 +283,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     def _get_optimal_result(self):
         """
-        Return the index and optimization value of the best calculation workflow.
+        Return the index and optimization value of the best evaluation process.
         """
         cost_values = {k: v.output[self.result_key] for k, v in self._result_mapping.items()}
         return min(cost_values.items(), key=lambda item: item[1].value)
@@ -309,10 +309,10 @@ class NelderMead(OptimizationEngineWrapper):
     :param max_iter: Maximum number of iteration steps.
     :type max_iter: int
 
-    :param input_key: Name of the input argument in the calculation workchain.
+    :param input_key: Name of the input argument in the evaluation process.
     :type input_key: str
 
-    :param result_key: Name of the output argument in the calculation workchain.
+    :param result_key: Name of the output argument in the evaluation process.
     :type result_key: str
     """
     _IMPL_CLASS = _NelderMeadImpl

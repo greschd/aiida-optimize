@@ -26,7 +26,7 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
     """
     Checks an optimization engine with the given parameters.
     """
-    def inner(engine, func_workchain, engine_kwargs, calculation_inputs=None):  # pylint: disable=missing-docstring,useless-suppression
+    def inner(engine, func_workchain, engine_kwargs, evaluate=None):  # pylint: disable=missing-docstring,useless-suppression
         from aiida_optimize.workchain import OptimizationWorkChain
         from aiida.orm import load_node
         from aiida.orm import Dict
@@ -35,8 +35,8 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
         inputs = dict(
             engine=engine,
             engine_kwargs=Dict(dict=dict(engine_kwargs)),
-            calculation_workchain=func_workchain,
-            calculation_inputs=calculation_inputs if calculation_inputs is not None else {},
+            evaluate_process=func_workchain,
+            evaluate=evaluate if evaluate is not None else {},
         )
 
         if request.param == 'run':
@@ -68,7 +68,7 @@ def check_optimization(
         ftol,
         x_exact,
         f_exact,
-        calculation_inputs=None,
+        evaluate=None,
         input_key='x',
     ):
 
@@ -81,12 +81,12 @@ def check_optimization(
             engine=engine,
             engine_kwargs=ChainMap(engine_kwargs, {'result_key': 'result'}),
             func_workchain=func_workchain,
-            calculation_inputs=calculation_inputs
+            evaluate=evaluate
         )
 
-        assert 'calculation_uuid' in result_node.outputs
-        assert np.isclose(result_node.outputs.optimizer_result.value, f_exact, atol=ftol)
-        calc = load_node(result_node.outputs.calculation_uuid.value)
+        assert 'optimal_process_uuid' in result_node.outputs
+        assert np.isclose(result_node.outputs.optimal_process_output.value, f_exact, atol=ftol)
+        calc = load_node(result_node.outputs.optimal_process_uuid.value)
         assert np.allclose(type(x_exact)(getattr(calc.inputs, input_key)), x_exact, atol=xtol)
 
     return inner

@@ -35,7 +35,7 @@ def test_parameter_sweep(check_optimization, sweep_parameters):  # pylint: disab
 
 def test_parameter_sweep_add(check_optimization, sweep_parameters):  # pylint: disable=redefined-outer-name
     """
-    Test the ParameterSweep Engine with the add workfunction, using 'calculation_inputs'.
+    Test the ParameterSweep Engine with the add workfunction, using 'evaluate'.
     """
 
     from aiida.orm.nodes.data.float import Float
@@ -49,5 +49,5 @@ def test_parameter_sweep_add(check_optimization, sweep_parameters):  # pylint: d
         ftol=0,
         x_exact=-2.,
         f_exact=-1.,
-        calculation_inputs={'y': Float(1.)}
+        evaluate={'y': Float(1.)}
     )

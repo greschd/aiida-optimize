@@ -8,8 +8,8 @@ Defines a 1D bisection optimization engine.
 
 from __future__ import division, print_function, unicode_literals
 
-from aiida.orm import Float
 from fsc.export import export
+from aiida.orm import Float
 
 from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
 

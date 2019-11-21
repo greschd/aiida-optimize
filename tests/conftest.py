@@ -7,6 +7,11 @@ Configuration file for pytest tests of aiida-optimize.
 """
 
 import os
+
+import numpy as np
+import pytest
+from aiida_pytest import *  # pylint: disable=unused-wildcard-import,redefined-builtin
+
 os.environ['PYTHONPATH'] = (
     os.environ.get('PYTHONPATH', '') + ':' + os.path.dirname(os.path.abspath(__file__))
 )
@@ -14,11 +19,6 @@ try:
     from collections import ChainMap
 except ImportError:
     from chainmap import ChainMap
-
-import numpy as np
-import pytest
-
-from aiida_pytest import *  # pylint: disable=unused-wildcard-import,redefined-builtin
 
 
 @pytest.fixture(params=['run', 'submit'])

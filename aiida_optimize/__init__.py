@@ -8,6 +8,6 @@ A plugin for AiiDA which defines a generic optimization WorkChain.
 
 __version__ = '0.2.0'
 
-from . import workchain, engines
+from . import engines, workchain
 
 __all__ = ['workchain', 'engines']

@@ -8,9 +8,8 @@ Defines a 1D bisection optimization engine.
 
 from __future__ import division, print_function, unicode_literals
 
-from fsc.export import export
-
 from aiida.orm import Float
+from fsc.export import export
 
 from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
 
@@ -31,7 +30,7 @@ class _BisectionImpl(OptimizationEngineImpl):
         logger,
         result_state=None,
         initialized=False
-    ):  # pylint: disable=too-many-arguments
+    ):
         super(_BisectionImpl, self).__init__(logger=logger, result_state=result_state)
         self.lower = lower
         self.upper = upper

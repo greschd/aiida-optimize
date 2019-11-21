@@ -3,9 +3,12 @@
 # © 2017-2019, ETH Zurich, Institut für Theoretische Physik
 # Author: Dominik Gresch <greschd@gmx.ch>
 
-import sys, os
+import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+
+import aiida_optimize  # isort:skip
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'rtd_settings'
 
@@ -49,8 +52,6 @@ else:
     # during post-install.
     import reentry
     reentry.manager.scan()
-
-import aiida_optimize
 
 # -- General configuration ------------------------------------------------
 

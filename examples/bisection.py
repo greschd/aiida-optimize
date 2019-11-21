@@ -6,14 +6,13 @@
 
 from __future__ import print_function
 
-from aiida.orm import Dict
 from aiida.engine.launch import run
+from aiida.orm import Dict
+from sin_wc import Sin
+from sin_wf import sin
 
 from aiida_optimize.engines import Bisection
 from aiida_optimize.workchain import OptimizationWorkChain
-
-from sin_wf import sin
-from sin_wc import Sin
 
 result_wf = run(
     OptimizationWorkChain,

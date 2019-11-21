@@ -7,7 +7,6 @@ Tests for the OptimizationWorkChain.
 """
 
 import numpy as np
-
 import pytest
 
 

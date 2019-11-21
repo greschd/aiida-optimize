@@ -4,9 +4,8 @@
 # Author: Dominik Gresch <greschd@gmx.ch>
 
 import numpy as np
-
-from aiida.orm.nodes.data.float import Float
 from aiida.engine import WorkChain
+from aiida.orm.nodes.data.float import Float
 
 
 class Sin(WorkChain):

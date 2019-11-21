@@ -54,6 +54,7 @@ def test_bisect_switch_lower_upper(check_optimization):
         f_exact=0.,
     )
 
+
 def test_bisect_negative(check_optimization):
     """
     Simple test of the OptimizationWorkChain, with the Bisection engine.
@@ -64,18 +65,14 @@ def test_bisect_negative(check_optimization):
     tol = 1e-1
     check_optimization(
         engine=Bisection,
-        engine_kwargs=dict(
-            lower=-2.,
-            upper=1.,
-            tol=tol,
-            target_value=-0.2
-        ),
+        engine_kwargs=dict(lower=-2., upper=1., tol=tol, target_value=-0.2),
         func_workchain_name='Negative',
         xtol=tol,
         ftol=tol,
         x_exact=0.2,
         f_exact=-0.2,
     )
+
 
 def test_target_value(check_optimization):
     """
@@ -87,18 +84,14 @@ def test_target_value(check_optimization):
     tol = 1e-1
     check_optimization(
         engine=Bisection,
-        engine_kwargs=dict(
-            lower=-1.1,
-            upper=1.,
-            tol=tol,
-            target_value=0.5
-        ),
+        engine_kwargs=dict(lower=-1.1, upper=1., tol=tol, target_value=0.5),
         func_workchain_name='Echo',
         xtol=tol,
         ftol=tol,
         x_exact=0.5,
         f_exact=0.5,
     )
+
 
 def test_input_output_key(check_optimization):
     """
@@ -110,13 +103,7 @@ def test_input_output_key(check_optimization):
     tol = 1e-1
     check_optimization(
         engine=Bisection,
-        engine_kwargs=dict(
-            lower=-1.1,
-            upper=1.,
-            tol=tol,
-            input_key='y',
-            result_key='the_result'
-        ),
+        engine_kwargs=dict(lower=-1.1, upper=1., tol=tol, input_key='y', result_key='the_result'),
         func_workchain_name='EchoDifferentNames',
         xtol=tol,
         ftol=tol,
@@ -124,6 +111,7 @@ def test_input_output_key(check_optimization):
         f_exact=0.,
         input_key='y',
     )
+
 
 def test_exact_value(check_optimization):
     """

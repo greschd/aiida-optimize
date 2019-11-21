@@ -6,22 +6,17 @@
 Defines the WorkChain which runs the optimization procedure.
 """
 
+from collections import ChainMap
 from contextlib import contextmanager
-try:
-    from collections import ChainMap
-except ImportError:
-    from chainmap import ChainMap
 
-from fsc.export import export
+from aiida.common.links import LinkType
+from aiida.engine import WorkChain, while_
+from aiida.engine.launch import run_get_node
+from aiida.engine.utils import is_process_function
+from aiida.orm import Dict, Str
 from aiida_tools import check_workchain_step
 from aiida_tools.workchain_inputs import WORKCHAIN_INPUT_KWARGS, load_object
-
-from aiida.orm import Str
-from aiida.orm import Dict
-from aiida.engine import WorkChain, while_
-from aiida.engine.utils import is_process_function
-from aiida.engine.launch import run_get_node
-from aiida.common.links import LinkType
+from fsc.export import export
 
 
 def _get_outputs_dict(process):
@@ -30,7 +25,7 @@ def _get_outputs_dict(process):
     """
     if not process.is_finished_ok:
         raise ValueError(
-            'Optimization failed due to sub-workchain {} not finishing ok.'.format(workchain.pk)
+            'Optimization failed due to sub-workchain {} not finishing ok.'.format(process.pk)
         )
     return {
         link_triplet.link_label: link_triplet.node

@@ -6,10 +6,11 @@
 usage: pip install .[dev]
 """
 
-import re
-import os
 import json
-from setuptools import setup, find_packages
+import os
+import re
+
+from setuptools import find_packages, setup
 
 # Get the version number
 with open('./aiida_optimize/__init__.py') as f:

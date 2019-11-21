@@ -8,10 +8,8 @@ Defines simple workchains which are used in the tests.
 
 import numpy as np
 import scipy.linalg as la
-
-from aiida.orm import Float, List
 from aiida.engine import WorkChain, workfunction
-
+from aiida.orm import Float, List
 from aiida_tools import check_workchain_step
 
 
@@ -31,6 +29,7 @@ class Echo(WorkChain):
     def echo(self):
         self.report('Starting echo')
         self.out('result', self.inputs.x)
+
 
 class EchoDifferentNames(WorkChain):
     """
@@ -66,6 +65,7 @@ class Negative(WorkChain):
     def run_negative(self):
         self.report('Starting negative, input {}'.format(self.inputs.x.value))
         self.out('result', Float(-self.inputs.x.value).store())
+
 
 class Norm(WorkChain):
     """

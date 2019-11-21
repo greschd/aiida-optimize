@@ -21,10 +21,9 @@ from __future__ import division, print_function, unicode_literals
 
 import numpy as np
 import scipy.linalg as la
-from fsc.export import export
-from decorator import decorator
-
 from aiida.orm import List
+from decorator import decorator
+from fsc.export import export
 
 from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
 
@@ -247,7 +246,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
             self.next_submit = 'submit_shrink'
 
     @submit_method(next_update='update_shrink')
-    def submit_shrink(self):
+    def submit_shrink(self):  # pylint: disable=missing-docstring
         self._logger.report('Submitting shrink step.')
         self.simplex[1:] = self.simplex[0] + SIGMA * (self.simplex[1:] - self.simplex[0])
         self.fun_simplex[1:] = np.nan

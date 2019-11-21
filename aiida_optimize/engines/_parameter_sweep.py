@@ -8,11 +8,10 @@ Defines a parameter sweep optimization engine.
 
 from __future__ import division, print_function, unicode_literals
 
+from aiida.orm.nodes.data.base import to_aiida_type
 from fsc.export import export
 
-from aiida.orm.nodes.data.base import to_aiida_type
-
-from ._base import OptimizationEngineWrapper, OptimizationEngineImpl
+from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
 
 
 class _ParameterSweepImpl(OptimizationEngineImpl):

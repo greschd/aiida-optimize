@@ -19,11 +19,27 @@ class _BisectionImpl(OptimizationEngineImpl):
     """
     Implementation class for the bisection optimization engine.
     """
-    def __init__(self, lower, upper, tol, result_key, logger, result_state=None):  # pylint: disable=too-many-arguments
+    def __init__(
+        self,
+        *,
+        lower,
+        upper,
+        tol,
+        input_key,
+        result_key,
+        target_value,
+        logger,
+        result_state=None,
+        initialized=False
+    ):  # pylint: disable=too-many-arguments
         super(_BisectionImpl, self).__init__(logger=logger, result_state=result_state)
-        self.lower, self.upper = sorted([lower, upper])
+        self.lower = lower
+        self.upper = upper
+        self.initialized = initialized
         self.tol = tol
+        self.input_key = input_key
         self.result_key = result_key
+        self.target_value = target_value
 
     @property
     def _state(self):
@@ -38,23 +54,56 @@ class _BisectionImpl(OptimizationEngineImpl):
         return (self.upper + self.lower) / 2.
 
     def _create_inputs(self):
-        return [{'x': Float(self.average)}]
+        if not self.initialized:
+            return [{self.input_key: Float(self.lower)}, {self.input_key: Float(self.upper)}]
+        return [{self.input_key: Float(self.average)}]
 
     def _update(self, outputs):
-        assert len(outputs.values()) == 1
-        res = next(iter(outputs.values()))[self.result_key]
-        if res > 0:
-            self.upper = self.average
+        output_values = outputs.values()
+        num_vals = len(output_values)
+        if not self.initialized:
+            self.initialized = True
+            assert num_vals == 2
+            # initial step: change upper such that the _result_ of upper is higher
+            results = [val[self.result_key] for val in output_values]
+            lower_val, upper_val = results
+            if lower_val > upper_val:
+                self.lower, self.upper = self.upper, self.lower
+            if min(results) > self.target_value:
+                # TODO: add exit code
+                raise ValueError(
+                    "Target value '{}' is outside range '{}'".format(self.target_value, results)
+                )
+            if max(results) < self.target_value:
+                # TODO: add exit code
+                raise ValueError(
+                    "Target value '{}' is outside range '{}'".format(self.target_value, results)
+                )
         else:
-            self.lower = self.average
+            assert num_vals == 1
+            res = next(iter(output_values))[self.result_key]
+            if (res - self.target_value) > 0:
+                self.upper = self.average
+            else:
+                self.lower = self.average
+
+    def _get_optimal_result(self):
+        """
+        Return the index and optimization value of the best evaluation workflow.
+        """
+        output_values = {
+            key: value.output[self.result_key]
+            for key, value in self._result_mapping.items()
+        }
+        return min(output_values.items(), key=lambda item: abs(item[1].value - self.target_value))
 
     @property
     def result_value(self):
-        return Float(self.average)
+        return self._get_optimal_result()[1]
 
     @property
     def result_index(self):
-        return max(self._result_mapping.keys())
+        return self._get_optimal_result()[0]
 
 
 @export
@@ -70,11 +119,36 @@ class Bisection(OptimizationEngineWrapper):
 
     :param tol: Tolerance in the input value.
     :type tol: float
+
+    :param input_key: Name of the input to be varied in the optimization.
+    :type input_key: str
+
+    :param result_key: Name of the output which contains the evaluated function.
+    :type result_key: str
+
+    :param target_value: Target value of the function towards which it should be optimized.
+    :type target_value: float
     """
 
     _IMPL_CLASS = _BisectionImpl
 
-    def __new__(cls, lower, upper, tol=1e-6, result_key='result', logger=None):  # pylint: disable=arguments-differ
+    def __new__(
+        cls,
+        lower,
+        upper,
+        *,
+        tol=1e-6,
+        input_key='x',
+        result_key='result',
+        target_value=0.,
+        logger=None
+    ):  # pylint: disable=arguments-differ
         return cls._IMPL_CLASS(
-            lower=lower, upper=upper, tol=tol, result_key=result_key, logger=logger
+            lower=lower,
+            upper=upper,
+            tol=tol,
+            input_key=input_key,
+            result_key=result_key,
+            target_value=target_value,
+            logger=logger
         )

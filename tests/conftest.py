@@ -69,6 +69,7 @@ def check_optimization(
         x_exact,
         f_exact,
         calculation_inputs=None,
+        input_key='x',
     ):
 
         from aiida.orm import load_node
@@ -86,6 +87,6 @@ def check_optimization(
         assert 'calculation_uuid' in result_node.outputs
         assert np.isclose(result_node.outputs.optimizer_result.value, f_exact, atol=ftol)
         calc = load_node(result_node.outputs.calculation_uuid.value)
-        assert np.allclose(type(x_exact)(calc.inputs.x), x_exact, atol=xtol)
+        assert np.allclose(type(x_exact)(getattr(calc.inputs, input_key)), x_exact, atol=xtol)
 
     return inner

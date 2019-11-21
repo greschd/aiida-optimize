@@ -24,17 +24,17 @@ from aiida.engine.launch import run_get_node
 from aiida.common.links import LinkType
 
 
-def _get_outputs_dict(workchain):
+def _get_outputs_dict(process):
     """
     Helper function to mimic the behaviour of the old AiiDA .get_outputs_dict() method.
     """
-    if not workchain.is_finished_ok:
+    if not process.is_finished_ok:
         raise ValueError(
             'Optimization failed due to sub-workchain {} not finishing ok.'.format(workchain.pk)
         )
     return {
         link_triplet.link_label: link_triplet.node
-        for link_triplet in workchain.get_outgoing(link_type=LinkType.RETURN)
+        for link_triplet in process.get_outgoing(link_type=(LinkType.RETURN, LinkType.CREATE))
     }
 
 
@@ -71,8 +71,8 @@ class OptimizationWorkChain(WorkChain):
             cls.create_optimizer,
             while_(cls.not_finished)(cls.launch_calculations, cls.get_results), cls.finalize
         )
-        spec.output('optimizer_result')
-        spec.output('calculation_uuid')
+        spec.output('optimizer_result', help='Output value of the optimal calculation workflow.')
+        spec.output('calculation_uuid', help='UUID of the optimal calculation workflow.')
 
     @contextmanager
     def optimizer(self):
@@ -107,7 +107,7 @@ class OptimizationWorkChain(WorkChain):
         with self.optimizer() as opt:
             return not opt.is_finished
 
-    # @check_workchain_step
+    @check_workchain_step
     def launch_calculations(self):
         """
         Create calculations for the current iteration step.
@@ -116,7 +116,6 @@ class OptimizationWorkChain(WorkChain):
         with self.optimizer() as opt:
             calcs = {}
             calculation_workchain = load_object(self.inputs.calculation_workchain.value)
-            self.report(calculation_workchain)
             for idx, inputs in opt.create_inputs().items():
                 self.report('Launching calculation {}'.format(idx))
                 inputs_merged = ChainMap(inputs, self.inputs.get('calculation_inputs', {}))

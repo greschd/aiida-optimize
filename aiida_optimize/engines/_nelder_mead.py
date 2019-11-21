@@ -121,6 +121,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @submit_method(next_update='update_initialize')
     def submit_initialize(self):
+        self._logger.report('Submitting initialization step.')
         return [self._to_input_list(x) for x in self.simplex]
 
     def _to_input_list(self, x):
@@ -192,6 +193,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @submit_method(next_update='update_expansion')
     def submit_expansion(self):
+        self._logger.report('Submitting expansion step.')
         xe = (1 + RHO * CHI) * self.xbar - RHO * CHI * self.simplex[-1]
         return [self._to_input_list(xe)]
 
@@ -209,6 +211,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @submit_method(next_update='update_contraction')
     def submit_contraction(self):
+        self._logger.report('Submitting contraction step.')
         xc = (1 + PSI * RHO) * self.xbar - PSI * RHO * self.simplex[-1]
         return [self._to_input_list(xc)]
 
@@ -227,6 +230,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @submit_method(next_update='update_inside_contraction')
     def submit_inside_contraction(self):
+        self._logger.report('Submitting inside contraction step.')
         xcc = ((1 - PSI) * self.xbar + PSI * self.simplex[-1])
         return [self._to_input_list(xcc)]
 
@@ -244,6 +248,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @submit_method(next_update='update_shrink')
     def submit_shrink(self):
+        self._logger.report('Submitting shrink step.')
         self.simplex[1:] = self.simplex[0] + SIGMA * (self.simplex[1:] - self.simplex[0])
         self.fun_simplex[1:] = np.nan
         return [self._to_input_list(x) for x in self.simplex[1:]]

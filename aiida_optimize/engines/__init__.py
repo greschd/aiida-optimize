@@ -2,6 +2,9 @@
 
 # © 2017-2019, ETH Zurich, Institut für Theoretische Physik
 # Author: Dominik Gresch <greschd@gmx.ch>
+
+# noqa
+# type: ignore
 """
 This module defines optimization routines to be used with the main optimization WorkChain.
 """

@@ -23,3 +23,9 @@ repos:
         aiida_optimize/__init__.py
       )$
     pass_filenames: false
+  - id: mypy
+    name: Run mypy
+    entry: mypy aiida_optimize
+    types: [file, python]
+    language: system
+    pass_filenames: false

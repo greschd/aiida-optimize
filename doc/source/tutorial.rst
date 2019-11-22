@@ -32,7 +32,7 @@ Now we can use ``aiida-optimize`` with the :class:`.Bisection` engine to find a 
 
 * ``engine`` is the optimization engine that we use. In this case, we pass the :class:`.Bisection` class.
 * ``engine_kwargs`` are parameters that will be passed to the optimization engine. In the case of bisection, we pass the upper and lower boundaries of the bisection interval, and the target tolerance. Also, we need to pass the ``result_key``, which is the name of the output argument of the workfunction or workchain that we are optimizing. For workfunctions, this is always ``result``.
-* ``calculation_workchain`` is the workchain function that we want to optimize. In our case, that's the ``sin`` workfunction or ``Sin`` workchain.
+* ``evaluate_process`` is the workchain function that we want to optimize. In our case, that's the ``sin`` workfunction or ``Sin`` workchain.
 
 .. include:: ../../examples/bisection.py
     :code: python
@@ -50,4 +50,4 @@ The optimization engines are usually split into two parts: The implementation, a
 
 The reason for this split is that the engine itself needs to be serializable into a "state" which can be stored between steps of the AiiDA workchain, and then re-created from that state. Since the state usually contains more parameters than what needs to be exposed when the engine is first instantiated, the wrapper is added to hide away these parameters from the end user.
 
-The :class:`.OptimizationEngineImpl` describes the methods which need to be implemented by an optimization engine. In particular, methods for creating new inputs, updating the engine from calculation outputs, and serializing it to its state need to be provided. The base class itself keeps track of which calculations have been launched. This is done using the :class:`.ResultMapping` class, which contains a dictionary that maps a key to a :class:`.Result` containing the calculations inputs and outputs. The :class:`.OptimizationWorkChain` uses these same keys to identify the corresponding processes.
+The :class:`.OptimizationEngineImpl` describes the methods which need to be implemented by an optimization engine. In particular, methods for creating new inputs, updating the engine from evaluation outputs, and serializing it to its state need to be provided. The base class itself keeps track of which evaluations have been launched. This is done using the :class:`.ResultMapping` class, which contains a dictionary that maps a key to a :class:`.Result` containing the evaluation inputs and outputs. The :class:`.OptimizationWorkChain` uses these same keys to identify the corresponding processes.

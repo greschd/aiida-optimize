@@ -7,27 +7,26 @@ Configuration file for pytest tests of aiida-optimize.
 """
 
 import os
-os.environ['PYTHONPATH'] = (
-    os.environ.get('PYTHONPATH', '') + ':' + os.path.dirname(os.path.abspath(__file__))
-)
-try:
-    from collections import ChainMap
-except ImportError:
-    from chainmap import ChainMap
+from collections import ChainMap
 
 import numpy as np
 import pytest
 
-from aiida_pytest import *  # pylint: disable=unused-wildcard-import,redefined-builtin
+pytest_plugins = ['aiida_pytest', 'aiida.manage.tests.pytest_fixtures']  # pylint: disable=invalid-name
+
+# This is needed so that the daemon can also load the local modules.
+os.environ['PYTHONPATH'] = (
+    os.environ.get('PYTHONPATH', '') + ':' + os.path.dirname(os.path.abspath(__file__))
+)
 
 
 @pytest.fixture(params=['run', 'submit'])
-def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disable=unused-argument,redefined-outer-name
+def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disable=unused-argument
     """
     Checks an optimization engine with the given parameters.
     """
-    def inner(engine, func_workchain, engine_kwargs, calculation_inputs=None):  # pylint: disable=missing-docstring,useless-suppression
-        from aiida_optimize.workchain import OptimizationWorkChain
+    def inner(engine, func_workchain, engine_kwargs, evaluate=None):  # pylint: disable=missing-docstring,useless-suppression
+        from aiida_optimize import OptimizationWorkChain
         from aiida.orm import load_node
         from aiida.orm import Dict
         from aiida.engine.launch import run_get_node, submit
@@ -35,8 +34,8 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
         inputs = dict(
             engine=engine,
             engine_kwargs=Dict(dict=dict(engine_kwargs)),
-            calculation_workchain=func_workchain,
-            calculation_inputs=calculation_inputs if calculation_inputs is not None else {},
+            evaluate_process=func_workchain,
+            evaluate=evaluate if evaluate is not None else {},
         )
 
         if request.param == 'run':
@@ -53,7 +52,7 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
 
 @pytest.fixture
 def check_optimization(
-    configure,  # pylint: disable=unused-argument,redefined-outer-name
+    configure,  # pylint: disable=unused-argument
     run_optimization,  # pylint: disable=redefined-outer-name
 ):
     """
@@ -68,24 +67,25 @@ def check_optimization(
         ftol,
         x_exact,
         f_exact,
-        calculation_inputs=None,
+        evaluate=None,
+        input_key='x',
     ):
 
         from aiida.orm import load_node
 
-        import sample_workchains
-        func_workchain = getattr(sample_workchains, func_workchain_name)
+        import sample_processes
+        func_workchain = getattr(sample_processes, func_workchain_name)
 
         result_node = run_optimization(
             engine=engine,
             engine_kwargs=ChainMap(engine_kwargs, {'result_key': 'result'}),
             func_workchain=func_workchain,
-            calculation_inputs=calculation_inputs
+            evaluate=evaluate
         )
 
-        assert 'calculation_uuid' in result_node.outputs
-        assert np.isclose(result_node.outputs.optimizer_result.value, f_exact, atol=ftol)
-        calc = load_node(result_node.outputs.calculation_uuid.value)
-        assert np.allclose(type(x_exact)(calc.inputs.x), x_exact, atol=xtol)
+        assert 'optimal_process_uuid' in result_node.outputs
+        assert np.isclose(result_node.outputs.optimal_process_output.value, f_exact, atol=ftol)
+        calc = load_node(result_node.outputs.optimal_process_uuid.value)
+        assert np.allclose(type(x_exact)(getattr(calc.inputs, input_key)), x_exact, atol=xtol)
 
     return inner

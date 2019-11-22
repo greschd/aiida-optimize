@@ -6,13 +6,10 @@
 Defines a parameter sweep optimization engine.
 """
 
-from __future__ import division, print_function, unicode_literals
-
+from aiida.orm.nodes.data.base import to_aiida_type
 from fsc.export import export
 
-from aiida.orm.nodes.data.base import to_aiida_type
-
-from ._base import OptimizationEngineWrapper, OptimizationEngineImpl
+from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
 
 
 class _ParameterSweepImpl(OptimizationEngineImpl):
@@ -53,7 +50,7 @@ class _ParameterSweepImpl(OptimizationEngineImpl):
 
     def _get_optimal_result(self):
         """
-        Return the index and optimizatin value of the best calculation workflow.
+        Return the index and optimizatin value of the best evaluation process.
         """
         cost_values = {k: v.output[self._result_key] for k, v in self._result_mapping.items()}
         return min(cost_values.items(), key=lambda item: item[1].value)
@@ -64,10 +61,10 @@ class ParameterSweep(OptimizationEngineWrapper):
     """
     Optimization engine that performs a parameter sweep.
 
-    :param parameters: List of parameter dictionaries. For each entry, a calculation with the given parameters will be run.
+    :param parameters: List of parameter dictionaries. For each entry, an evaluation with the given parameters will be run.
     :type parameters: list(dict)
 
-    :param result_key: Name of the calculation workchain output argument.
+    :param result_key: Name of the evaluation process output argument.
     :type result_key: str
     """
     _IMPL_CLASS = _ParameterSweepImpl

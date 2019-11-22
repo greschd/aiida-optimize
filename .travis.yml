@@ -1,8 +1,16 @@
 language: python
 python:
-  - "2.7"
   - "3.6"
   - "3.7"
+  - "3.8"
+env:
+  - TEST_TYPE="pre-commit" INSTALL_TYPE="dev_precommit"
+  - TEST_TYPE="tests" INSTALL_TYPE="testing"
+  - TEST_TYPE="tests" INSTALL_TYPE="testing_sdist"
+jobs:
+  exclude:
+  - python: "3.8"
+    env: TEST_TYPE="pre-commit" INSTALL_TYPE="dev_precommit"
 cache: pip
 sudo: true
 services:
@@ -15,11 +23,6 @@ addons:
 before_install:
   - sudo service postgresql restart
 install:
-  - pip install -U 'pip<19' wheel setuptools
-  - pip install .[dev]
-  - reentry scan
-env:
-  - TEST_TYPE="tests"
-  - TEST_TYPE="pre-commit"
+  - ./.travis-data/install_script.sh
 script:
   - ./.travis-data/test_script.sh

@@ -4,9 +4,8 @@
 # Author: Dominik Gresch <greschd@gmx.ch>
 
 import numpy as np
-
-from aiida.orm import Float
 from aiida.engine import workfunction
+from aiida.orm import Float
 
 
 @workfunction

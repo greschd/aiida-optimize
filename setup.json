@@ -50,14 +50,14 @@
       "yapf==0.28",
       "pre-commit",
       "prospector==1.1.7",
-      "pylint==2.3.1",
-      "isort==4.3.21",
-      "seed-isort-config==1.9.3"
+      "pylint==2.3.1"
     ]
   },
   "entry_points": {
     "aiida.workflows": [
-      "optimize.optimize = aiida_optimize.workchain:OptimizationWorkChain"
+      "optimize.optimize = aiida_optimize._optimization_workchain:OptimizationWorkChain",
+      "optimize.wrappers.add_inputs = aiida_optimize.wrappers._add_inputs:AddInputsWorkChain",
+      "optimize.wrappers.create_evaluate = aiida_optimize.wrappers._create_evaluate:CreateEvaluateWorkChain"
     ]
   }
 }

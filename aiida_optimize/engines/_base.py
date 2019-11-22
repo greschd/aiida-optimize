@@ -6,13 +6,10 @@
 Defines the optimization engine base class.
 """
 
-from __future__ import division, print_function, unicode_literals
-
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 import yaml
 from fsc.export import export
-from future.utils import with_metaclass
 
 from ._result_mapping import ResultMapping
 
@@ -20,10 +17,12 @@ yaml.representer.Representer.add_representer(ABCMeta, yaml.representer.Represent
 
 
 @export
-class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
+class OptimizationEngineImpl:
     """
     Base class for the stateful optimization engine implementation.
     """
+    __metaclass__ = ABCMeta
+
     def __init__(self, logger, result_state=None):
         self._logger = logger
         self._result_mapping = ResultMapping.from_state(result_state)
@@ -86,10 +85,11 @@ class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
         Returns the index (in the result mapping) of the optimal evaluation.
         """
 @export
-class OptimizationEngineWrapper(with_metaclass(ABCMeta, object)):
+class OptimizationEngineWrapper:
     """
     Base class for wrappers that supply the public interface for optimization engines.
     """
+    __metaclass__ = ABCMeta
     _IMPL_CLASS = NotImplementedError
 
     def __new__(cls, *args, **kwargs):

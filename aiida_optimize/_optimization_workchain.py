@@ -9,7 +9,6 @@ Defines the WorkChain which runs the optimization procedure.
 from collections import ChainMap
 from contextlib import contextmanager
 
-from aiida.common.links import LinkType
 from aiida.engine import WorkChain, while_
 from aiida.engine.launch import run_get_node
 from aiida.engine.utils import is_process_function
@@ -18,19 +17,7 @@ from aiida_tools import check_workchain_step
 from aiida_tools.process_inputs import PROCESS_INPUT_KWARGS, load_object
 from fsc.export import export
 
-
-def _get_outputs_dict(process):
-    """
-    Helper function to mimic the behaviour of the old AiiDA .get_outputs_dict() method.
-    """
-    if not process.is_finished_ok:
-        raise ValueError(
-            'Optimization failed due to sub-process {} not finishing ok.'.format(process.pk)
-        )
-    return {
-        link_triplet.link_label: link_triplet.node
-        for link_triplet in process.get_outgoing(link_type=(LinkType.RETURN, LinkType.CREATE))
-    }
+from ._utils import get_outputs_dict
 
 
 @export
@@ -61,6 +48,12 @@ class OptimizationWorkChain(WorkChain):
             required=False,
             help='Inputs that are passed to all evaluation processes.',
             dynamic=True
+        )
+
+        spec.exit_code(
+            201,
+            'ERROR_EVALUATE_PROCESS_FAILED',
+            message='Optimization failed because one of the evaluate processes did not finish ok.'
         )
 
         spec.outline(
@@ -136,7 +129,10 @@ class OptimizationWorkChain(WorkChain):
             idx = self.indices_to_retrieve.pop(0)
             key = self.eval_key(idx)
             self.report('Retrieving output for evaluation {}'.format(idx))
-            outputs[idx] = _get_outputs_dict(self.ctx[key])
+            eval_proc = self.ctx[key]
+            if not eval_proc.is_finished_ok:
+                return self.exit_codes.ERROR_EVALUATE_PROCESS_FAILED
+            outputs[idx] = get_outputs_dict(eval_proc)
 
         with self.optimizer() as opt:
             opt.update(outputs)

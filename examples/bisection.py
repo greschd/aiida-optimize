@@ -14,8 +14,8 @@ sys.path.append(dirname(abspath(__file__)))
 from sin_wc import Sin
 from sin_wf import sin
 
+from aiida_optimize import OptimizationWorkChain
 from aiida_optimize.engines import Bisection
-from aiida_optimize.workchain import OptimizationWorkChain
 
 result_wf = run(
     OptimizationWorkChain,

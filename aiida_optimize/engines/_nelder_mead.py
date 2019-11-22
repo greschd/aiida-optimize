@@ -17,8 +17,6 @@
 Defines a Nelder-Mead optimization engine.
 """
 
-from __future__ import division, print_function, unicode_literals
-
 import numpy as np
 import scipy.linalg as la
 from aiida.orm import List

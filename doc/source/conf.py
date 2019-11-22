@@ -8,8 +8,6 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
-import aiida_optimize  # isort:skip
-
 os.environ['DJANGO_SETTINGS_MODULE'] = 'rtd_settings'
 
 # on_rtd is whether we are on readthedocs.org, this line of code grabbed
@@ -52,6 +50,8 @@ else:
     # during post-install.
     import reentry
     reentry.manager.scan()
+
+import aiida_optimize
 
 # -- General configuration ------------------------------------------------
 

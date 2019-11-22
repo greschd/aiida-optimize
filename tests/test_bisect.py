@@ -6,8 +6,6 @@
 Tests for the OptimizationWorkChain.
 """
 
-from __future__ import print_function
-
 
 def test_bisect(check_optimization):
     """

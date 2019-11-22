@@ -7,27 +7,26 @@ Configuration file for pytest tests of aiida-optimize.
 """
 
 import os
+from collections import ChainMap
 
 import numpy as np
 import pytest
-from aiida_pytest import *  # pylint: disable=unused-wildcard-import,redefined-builtin
 
+pytest_plugins = ['aiida_pytest', 'aiida.manage.tests.pytest_fixtures']  # pylint: disable=invalid-name
+
+# This is needed so that the daemon can also load the local modules.
 os.environ['PYTHONPATH'] = (
     os.environ.get('PYTHONPATH', '') + ':' + os.path.dirname(os.path.abspath(__file__))
 )
-try:
-    from collections import ChainMap
-except ImportError:
-    from chainmap import ChainMap
 
 
 @pytest.fixture(params=['run', 'submit'])
-def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disable=unused-argument,redefined-outer-name
+def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disable=unused-argument
     """
     Checks an optimization engine with the given parameters.
     """
     def inner(engine, func_workchain, engine_kwargs, evaluate=None):  # pylint: disable=missing-docstring,useless-suppression
-        from aiida_optimize.workchain import OptimizationWorkChain
+        from aiida_optimize import OptimizationWorkChain
         from aiida.orm import load_node
         from aiida.orm import Dict
         from aiida.engine.launch import run_get_node, submit
@@ -53,7 +52,7 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
 
 @pytest.fixture
 def check_optimization(
-    configure,  # pylint: disable=unused-argument,redefined-outer-name
+    configure,  # pylint: disable=unused-argument
     run_optimization,  # pylint: disable=redefined-outer-name
 ):
     """
@@ -74,8 +73,8 @@ def check_optimization(
 
         from aiida.orm import load_node
 
-        import sample_workchains
-        func_workchain = getattr(sample_workchains, func_workchain_name)
+        import sample_processes
+        func_workchain = getattr(sample_processes, func_workchain_name)
 
         result_node = run_optimization(
             engine=engine,

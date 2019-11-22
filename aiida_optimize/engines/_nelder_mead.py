@@ -17,11 +17,14 @@
 Defines a Nelder-Mead optimization engine.
 """
 
+from typing import List, Optional, Dict
+
 import numpy as np
 import scipy.linalg as la
-from aiida.orm import List
 from decorator import decorator
 from fsc.export import export
+
+from aiida import orm
 
 from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
 
@@ -63,16 +66,16 @@ class _NelderMeadImpl(OptimizationEngineImpl):
     """
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        simplex,
-        fun_simplex,
-        xtol,
-        ftol,
-        max_iter,
-        input_key,
-        result_key,
+        simplex: List[float],
+        fun_simplex: Optional[List[float]],
+        xtol: float,
+        ftol: float,
+        max_iter: int,
+        input_key: str,
+        result_key: str,
         logger,
         num_iter=0,
-        extra_points=None,
+        extra_points: Optional[Dict[str, tuple]]=None,
         next_submit='submit_initialize',
         next_update=None,
         finished=False,
@@ -83,6 +86,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         self.simplex = np.array(simplex)
         assert len(self.simplex) == self.simplex.shape[1] + 1
 
+        self.fun_simplex: Optional[np.ndarray]
         if fun_simplex is None:
             self.fun_simplex = None
         else:
@@ -95,7 +99,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         self.num_iter = num_iter
 
         if extra_points is None:
-            self.extra_points = {}
+            self.extra_points: Dict[str, tuple] = {}
         else:
             self.extra_points = dict(extra_points)
 
@@ -122,7 +126,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         return [self._to_input_list(x) for x in self.simplex]
 
     def _to_input_list(self, x):
-        input_list = List()
+        input_list = orm.List()
         input_list.extend(x)
         return {self.input_key: input_list}
 

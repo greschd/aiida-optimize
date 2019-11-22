@@ -75,7 +75,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         result_key: str,
         logger,
         num_iter=0,
-        extra_points: Optional[Dict[str, tuple]]=None,
+        extra_points: Optional[Dict[str, tuple]] = None,
         next_submit='submit_initialize',
         next_update=None,
         finished=False,

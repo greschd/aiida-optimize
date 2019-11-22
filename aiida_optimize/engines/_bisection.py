@@ -19,12 +19,12 @@ class _BisectionImpl(OptimizationEngineImpl):
     def __init__(
         self,
         *,
-        lower,
-        upper,
-        tol,
-        input_key,
-        result_key,
-        target_value,
+        lower: float,
+        upper: float,
+        tol: float,
+        input_key: str,
+        result_key: str,
+        target_value: float,
         logger,
         result_state=None,
         initialized=False
@@ -131,13 +131,13 @@ class Bisection(OptimizationEngineWrapper):
 
     def __new__(
         cls,
-        lower,
-        upper,
+        lower: float,
+        upper: float,
         *,
-        tol=1e-6,
-        input_key='x',
-        result_key='result',
-        target_value=0.,
+        tol: float = 1e-6,
+        input_key: str = 'x',
+        result_key: str = 'result',
+        target_value: float = 0.,
         logger=None
     ):  # pylint: disable=arguments-differ
         return cls._IMPL_CLASS(

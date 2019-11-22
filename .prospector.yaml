@@ -9,7 +9,6 @@ pep8:
     - E501
     - E116
     - E402
-    - E252
 
 pyflakes:
   run: false

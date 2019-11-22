@@ -39,7 +39,8 @@
   "extras_require": {
     "docs": [
       "sphinx",
-      "sphinx-rtd-theme"
+      "sphinx-rtd-theme",
+      "sphinxcontrib-details-directive"
     ],
     "testing": [
       "pytest>=3.6",

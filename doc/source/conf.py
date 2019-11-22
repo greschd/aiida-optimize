@@ -3,7 +3,8 @@
 # © 2017-2019, ETH Zurich, Institut für Theoretische Physik
 # Author: Dominik Gresch <greschd@gmx.ch>
 
-import sys, os
+import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 

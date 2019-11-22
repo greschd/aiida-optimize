@@ -6,13 +6,10 @@
 Defines the optimization engine base class.
 """
 
-from __future__ import division, print_function, unicode_literals
-
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 import yaml
 from fsc.export import export
-from future.utils import with_metaclass
 
 from ._result_mapping import ResultMapping
 
@@ -20,10 +17,12 @@ yaml.representer.Representer.add_representer(ABCMeta, yaml.representer.Represent
 
 
 @export
-class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
+class OptimizationEngineImpl:
     """
     Base class for the stateful optimization engine implementation.
     """
+    __metaclass__ = ABCMeta
+
     def __init__(self, logger, result_state=None):
         self._logger = logger
         self._result_mapping = ResultMapping.from_state(result_state)
@@ -61,11 +60,11 @@ class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
     @abstractmethod
     def _create_inputs(self):
         """
-        Creates the inputs for calculations that need to be launched. This function needs to be implemented by child classes.
+        Creates the inputs for evaluations that need to be launched. This function needs to be implemented by child classes.
         """
     def update(self, outputs):
         """
-        Updates the result mapping and engine instance with the calculation outputs.
+        Updates the result mapping and engine instance with the evaluation outputs.
         """
         self._result_mapping.add_outputs(outputs)
         self._update(outputs)
@@ -73,23 +72,24 @@ class OptimizationEngineImpl(with_metaclass(ABCMeta, object)):
     @abstractmethod
     def _update(self, outputs):
         """
-        Updates the engine instance with the calculation outputs. This method needs to be implemented by child classes.
+        Updates the engine instance with the evaluation outputs. This method needs to be implemented by child classes.
         """
     @abstractproperty
     def result_value(self):
         """
-        Return the value of the optimal calculation.
+        Return the output value of the optimal evaluation.
         """
     @abstractproperty
     def result_index(self):
         """
-        Returns the index (in the result mapping) of the optimal calculation.
+        Returns the index (in the result mapping) of the optimal evaluation.
         """
 @export
-class OptimizationEngineWrapper(with_metaclass(ABCMeta, object)):
+class OptimizationEngineWrapper:
     """
     Base class for wrappers that supply the public interface for optimization engines.
     """
+    __metaclass__ = ABCMeta
     _IMPL_CLASS = NotImplementedError
 
     def __new__(cls, *args, **kwargs):

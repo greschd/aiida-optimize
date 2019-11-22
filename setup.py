@@ -6,15 +6,11 @@
 usage: pip install .[dev]
 """
 
-import re
-import os
 import json
-from setuptools import setup, find_packages
+import os
+import re
 
-# Get the version number
-with open('./aiida_optimize/__init__.py') as f:
-    MATCH_EXPR = "__version__[^'\"]+['\"]([^'\"]+)"
-    VERSION = re.search(MATCH_EXPR, f.read()).group(1).strip()
+from setuptools import find_packages, setup
 
 SETUP_JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'setup.json')
 with open(SETUP_JSON_PATH, 'r') as json_file:
@@ -26,7 +22,6 @@ EXTRAS_REQUIRE['dev'] = (
 
 if __name__ == '__main__':
     setup(
-        version=VERSION,
         packages=find_packages(),
         long_description=open(
             os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.md')

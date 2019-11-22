@@ -17,14 +17,11 @@
 Defines a Nelder-Mead optimization engine.
 """
 
-from __future__ import division, print_function, unicode_literals
-
 import numpy as np
 import scipy.linalg as la
-from fsc.export import export
-from decorator import decorator
-
 from aiida.orm import List
+from decorator import decorator
+from fsc.export import export
 
 from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
 
@@ -49,7 +46,7 @@ def update_method(next_submit=None):
 
 def submit_method(next_update=None):
     """
-    Decorator for methods which submit new calculations.
+    Decorator for methods which submit new evaluations.
     """
     @decorator
     def inner(func, self):
@@ -121,6 +118,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @submit_method(next_update='update_initialize')
     def submit_initialize(self):
+        self._logger.report('Submitting initialization step.')
         return [self._to_input_list(x) for x in self.simplex]
 
     def _to_input_list(self, x):
@@ -192,6 +190,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @submit_method(next_update='update_expansion')
     def submit_expansion(self):
+        self._logger.report('Submitting expansion step.')
         xe = (1 + RHO * CHI) * self.xbar - RHO * CHI * self.simplex[-1]
         return [self._to_input_list(xe)]
 
@@ -209,6 +208,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @submit_method(next_update='update_contraction')
     def submit_contraction(self):
+        self._logger.report('Submitting contraction step.')
         xc = (1 + PSI * RHO) * self.xbar - PSI * RHO * self.simplex[-1]
         return [self._to_input_list(xc)]
 
@@ -227,6 +227,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @submit_method(next_update='update_inside_contraction')
     def submit_inside_contraction(self):
+        self._logger.report('Submitting inside contraction step.')
         xcc = ((1 - PSI) * self.xbar + PSI * self.simplex[-1])
         return [self._to_input_list(xcc)]
 
@@ -243,7 +244,8 @@ class _NelderMeadImpl(OptimizationEngineImpl):
             self.next_submit = 'submit_shrink'
 
     @submit_method(next_update='update_shrink')
-    def submit_shrink(self):
+    def submit_shrink(self):  # pylint: disable=missing-docstring
+        self._logger.report('Submitting shrink step.')
         self.simplex[1:] = self.simplex[0] + SIGMA * (self.simplex[1:] - self.simplex[0])
         self.fun_simplex[1:] = np.nan
         return [self._to_input_list(x) for x in self.simplex[1:]]
@@ -279,7 +281,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     def _get_optimal_result(self):
         """
-        Return the index and optimization value of the best calculation workflow.
+        Return the index and optimization value of the best evaluation process.
         """
         cost_values = {k: v.output[self.result_key] for k, v in self._result_mapping.items()}
         return min(cost_values.items(), key=lambda item: item[1].value)
@@ -305,10 +307,10 @@ class NelderMead(OptimizationEngineWrapper):
     :param max_iter: Maximum number of iteration steps.
     :type max_iter: int
 
-    :param input_key: Name of the input argument in the calculation workchain.
+    :param input_key: Name of the input argument in the evaluation process.
     :type input_key: str
 
-    :param result_key: Name of the output argument in the calculation workchain.
+    :param result_key: Name of the output argument in the evaluation process.
     :type result_key: str
     """
     _IMPL_CLASS = _NelderMeadImpl

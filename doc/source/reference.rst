@@ -10,7 +10,7 @@ Optimization workchain
 ----------------------
 
 .. aiida-workchain:: OptimizationWorkChain
-    :module: aiida_optimize.workchain
+    :module: aiida_optimize
 
 .. _engine_reference:
 
@@ -19,6 +19,15 @@ Engines
 
 .. automodule:: aiida_optimize.engines
     :members:
+
+Wrapper workchains
+------------------
+
+.. aiida-workchain:: AddInputsWorkChain
+    :module: aiida_optimize.wrappers
+
+.. aiida-workchain:: CreateEvaluateWorkChain
+    :module: aiida_optimize.wrappers
 
 Internals
 ---------

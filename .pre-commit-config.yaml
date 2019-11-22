@@ -12,4 +12,14 @@ repos:
     types: [file, python]
     language: system
     exclude: '^(doc/)|(examples/)|(futures/)'
-
+  - id: version-number
+    name: Check version numbers
+    entry: python ./utils/validate_version_consistency.py
+    language: system
+    files: >-
+      (?x)^(
+        setup.json|
+        utils/validate_version_consistency.py|
+        aiida_optimize/__init__.py
+      )$
+    pass_filenames: false

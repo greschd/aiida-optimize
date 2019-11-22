@@ -7,7 +7,7 @@ SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = aiida-tbextraction
 SOURCEDIR     = source
 BUILDDIR      = build
-TARGETDIR     = /home/greschd/programming/Z2Pack_website/web/aiida-plugins/aiida-optimize
+TARGETDIR     = build/html
 
 .PHONY: all
 all: html

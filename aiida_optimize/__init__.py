@@ -3,11 +3,14 @@
 # © 2017-2019, ETH Zurich, Institut für Theoretische Physik
 # Author: Dominik Gresch <greschd@gmx.ch>
 """
-A plugin for AiiDA which defines a generic optimization WorkChain.
+A plugin for AiiDA which defines a generic optimization workchain, and
+engines and wrappers for .
 """
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 
-from . import workchain, engines
+from ._optimization_workchain import OptimizationWorkChain
+from . import engines
+from . import wrappers
 
-__all__ = ['workchain', 'engines']
+__all__ = ['OptimizationWorkChain', 'engines', 'wrappers']

@@ -1,7 +1,8 @@
 ignore-paths:
   - doc
-  - examples
-  - futures
+
+ignore-patterns:
+  - (^|/)__init__\.py(/|$)
 
 pep8:
   disable:

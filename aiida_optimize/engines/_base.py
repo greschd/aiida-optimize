@@ -6,6 +6,7 @@
 Defines the optimization engine base class.
 """
 
+from typing import Type
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 import yaml
@@ -90,7 +91,7 @@ class OptimizationEngineWrapper:
     Base class for wrappers that supply the public interface for optimization engines.
     """
     __metaclass__ = ABCMeta
-    _IMPL_CLASS = NotImplementedError
+    _IMPL_CLASS: Type[OptimizationEngineImpl]
 
     def __new__(cls, *args, **kwargs):
         return cls._IMPL_CLASS(*args, **kwargs)

@@ -68,8 +68,8 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         self,
         simplex: List[float],
         fun_simplex: Optional[List[float]],
-        xtol: float,
-        ftol: float,
+        xtol: Optional[float],
+        ftol: Optional[float],
         max_iter: int,
         input_key: str,
         result_key: str,
@@ -92,8 +92,8 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         else:
             self.fun_simplex = np.array(fun_simplex)
 
-        self.xtol = xtol
-        self.ftol = ftol
+        self.xtol: float = xtol if xtol is not None else np.inf
+        self.ftol: float = ftol if ftol is not None else np.inf
 
         self.max_iter = max_iter
         self.num_iter = num_iter
@@ -260,7 +260,15 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @property
     def _state(self):
-        return {k: v for k, v in self.__dict__.items() if k not in ['_result_mapping', '_logger']}
+        state_dict = {
+            k: v
+            for k, v in self.__dict__.items()
+            if k not in ['_result_mapping', '_logger', 'xtol', 'ftol']
+        }
+        # Hide inf values before passing on to AiiDA
+        state_dict['xtol'] = self.xtol if self.xtol < np.inf else None
+        state_dict['ftol'] = self.ftol if self.ftol < np.inf else None
+        return state_dict
 
     @property
     def is_finished(self):

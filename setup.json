@@ -5,15 +5,15 @@
   "description": "AiiDA Plugin for running optimization algorithms.",
   "author": "Dominik Gresch",
   "author_email": "greschd@gmx.ch",
-  "python_requires": ">=3.6",
+  "python_requires": ">=3.7",
   "license": "Apache 2.0",
   "classifiers": [
     "Development Status :: 4 - Beta",
     "Environment :: Plugins",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "Topic :: Scientific/Engineering :: Physics",
     "Framework :: AiiDA"
   ],

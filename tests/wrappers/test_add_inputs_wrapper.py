@@ -8,7 +8,7 @@ from aiida.engine import run_get_node
 
 from aiida_optimize.wrappers import AddInputsWorkChain
 
-from sample_processes import echo_process, EchoDictValue, EchoNestedValues  # pylint: disable=unused-import
+from sample_processes import echo_process, EchoDictValue, EchoNestedValues  # pylint: disable=unused-import,import-error
 
 
 def test_basic(

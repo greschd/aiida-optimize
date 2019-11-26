@@ -6,36 +6,40 @@
 Defines the datastructures used by optimization engines to keep track of results.
 """
 
+from __future__ import annotations
+
+import typing as ty
+
 from fsc.export import export
 
 
 @export
-class Result(object):
+class Result:
     """
     Data object for storing the input created by the optimization engine, and the output from the evaluation process corresponding to that input.
     """
-    def __init__(self, input_, output=None):
+    def __init__(self, input_: ty.Any, output: ty.Any = None) -> None:
         self.input = input_
         self.output = output
 
 
 @export
-class ResultMapping(object):
+class ResultMapping:
     """
     Maps the keys used to identify evaluations to their inputs / outputs.
     """
-    def __init__(self):
-        self._results = {}
+    def __init__(self) -> None:
+        self._results: ty.Dict[int, Result] = {}
 
     @property
-    def state(self):
+    def state(self) -> ty.Dict[int, Result]:
         """
         Uniquely defines the state of the object. This can be used to create an identical copy.
         """
         return self._results
 
     @classmethod
-    def from_state(cls, state):
+    def from_state(cls, state: ty.Optional[ty.Dict[int, Result]]) -> ResultMapping:
         """
         Create a :class:`ResultMapping` instance from a state.
         """
@@ -44,7 +48,7 @@ class ResultMapping(object):
             instance._results = state  # pylint: disable=protected-access
         return instance
 
-    def add_inputs(self, inputs_list):
+    def add_inputs(self, inputs_list: ty.List[ty.Any]) -> ty.Dict[int, Result]:
         """
         Adds a list of inputs to the mapping, generating new keys. Returns a dict mapping the keys to the inputs.
         """
@@ -56,21 +60,21 @@ class ResultMapping(object):
 
         return {k: self._results[k].input for k in keys}
 
-    def _get_new_key(self):
+    def _get_new_key(self) -> int:
         try:
             return max(self._results.keys()) + 1
         except ValueError:
             return 0
 
-    def add_outputs(self, outputs):
+    def add_outputs(self, outputs: ty.Dict[int, ty.Any]) -> None:
         for key, out in outputs.items():
             self._results[key].output = out
 
-    def __getattr__(self, key):
+    def __getattr__(self, key: str) -> ty.Any:
         return getattr(self._results, key)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int) -> Result:
         return self._results[key]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._results)

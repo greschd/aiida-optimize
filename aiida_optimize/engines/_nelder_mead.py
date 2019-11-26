@@ -17,7 +17,7 @@
 Defines a Nelder-Mead optimization engine.
 """
 
-from typing import List, Optional, Dict
+import typing as ty
 
 import numpy as np
 import scipy.linalg as la
@@ -66,16 +66,16 @@ class _NelderMeadImpl(OptimizationEngineImpl):
     """
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        simplex: List[float],
-        fun_simplex: Optional[List[float]],
-        xtol: Optional[float],
-        ftol: Optional[float],
+        simplex: ty.List[float],
+        fun_simplex: ty.Optional[ty.List[float]],
+        xtol: ty.Optional[float],
+        ftol: ty.Optional[float],
         max_iter: int,
         input_key: str,
         result_key: str,
         logger,
         num_iter=0,
-        extra_points: Optional[Dict[str, tuple]] = None,
+        extra_points: ty.Optional[ty.Dict[str, ty.Tuple[float]]] = None,
         next_submit='submit_initialize',
         next_update=None,
         finished=False,
@@ -86,7 +86,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         self.simplex = np.array(simplex)
         assert len(self.simplex) == self.simplex.shape[1] + 1
 
-        self.fun_simplex: Optional[np.ndarray]
+        self.fun_simplex: ty.Optional[np.ndarray]
         if fun_simplex is None:
             self.fun_simplex = None
         else:
@@ -99,7 +99,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         self.num_iter = num_iter
 
         if extra_points is None:
-            self.extra_points: Dict[str, tuple] = {}
+            self.extra_points: ty.Dict[str, ty.Tuple[float]] = {}
         else:
             self.extra_points = dict(extra_points)
 

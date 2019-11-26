@@ -11,7 +11,7 @@ repos:
     entry: prospector
     types: [file, python]
     language: system
-    exclude: '^(doc/)|(examples/)|(futures/)'
+    exclude: '^(doc/)|(examples/)'
   - id: version-number
     name: Check version numbers
     entry: python ./utils/validate_version_consistency.py

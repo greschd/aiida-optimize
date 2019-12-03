@@ -22,11 +22,12 @@ import typing as ty
 import numpy as np
 import scipy.linalg as la
 from decorator import decorator
-from fsc.export import export
 
 from aiida import orm
 
 from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
+
+__all__ = ['NelderMead']
 
 RHO = 1
 CHI = 2
@@ -299,7 +300,6 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         return min(cost_values.items(), key=lambda item: item[1].value)
 
 
-@export
 class NelderMead(OptimizationEngineWrapper):
     """
     Engine to perform the Nelder-Mead (downhill simplex) method.

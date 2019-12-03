@@ -8,11 +8,12 @@ Defines a 1D bisection optimization engine.
 
 import typing as ty
 
-from fsc.export import export
 from aiida import orm
 
 from ._result_mapping import Result
 from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
+
+__all__ = ['Bisection']
 
 
 class _BisectionImpl(OptimizationEngineImpl):
@@ -110,7 +111,6 @@ class _BisectionImpl(OptimizationEngineImpl):
         return self._get_optimal_result()[0]
 
 
-@export
 class Bisection(OptimizationEngineWrapper):
     """
     Optimization engine that performs a bisection.

@@ -15,12 +15,12 @@ from aiida.engine.utils import is_process_function
 from aiida.orm import Dict, Str
 from aiida_tools import check_workchain_step
 from aiida_tools.process_inputs import PROCESS_INPUT_KWARGS, load_object
-from fsc.export import export
 
 from ._utils import get_outputs_dict
 
+__all__ = ['OptimizationWorkChain']
 
-@export
+
 class OptimizationWorkChain(WorkChain):
     """
     Runs an optimization procedure, given an optimization engine that defines the optimization

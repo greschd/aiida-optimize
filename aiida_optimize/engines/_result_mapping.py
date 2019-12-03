@@ -10,10 +10,9 @@ from __future__ import annotations
 
 import typing as ty
 
-from fsc.export import export
+__all__ = ['Result', 'ResultMapping']
 
 
-@export
 class Result:
     """
     Data object for storing the input created by the optimization engine, and the output from the evaluation process corresponding to that input.
@@ -23,7 +22,6 @@ class Result:
         self.output = output
 
 
-@export
 class ResultMapping:
     """
     Maps the keys used to identify evaluations to their inputs / outputs.

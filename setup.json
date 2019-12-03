@@ -29,7 +29,6 @@
   "reentry_register": true,
   "install_requires": [
     "aiida-core>=1.0.0<2.0.0",
-    "fsc.export",
     "aiida-tools>=0.3.0",
     "numpy",
     "scipy",

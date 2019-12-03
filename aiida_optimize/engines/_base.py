@@ -12,14 +12,14 @@ import typing as ty
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 import yaml
-from fsc.export import export
 
 from ._result_mapping import ResultMapping, Result
 
 yaml.representer.Representer.add_representer(ABCMeta, yaml.representer.Representer.represent_name)
 
+__all__ = ['OptimizationEngineImpl', 'OptimizationEngineWrapper']
 
-@export
+
 class OptimizationEngineImpl:
     """
     Base class for the stateful optimization engine implementation.
@@ -89,7 +89,8 @@ class OptimizationEngineImpl:
         """
         Returns the index (in the result mapping) of the optimal evaluation.
         """
-@export
+
+
 class OptimizationEngineWrapper:
     """
     Base class for wrappers that supply the public interface for optimization engines.

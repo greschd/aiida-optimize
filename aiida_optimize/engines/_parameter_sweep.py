@@ -7,9 +7,10 @@ Defines a parameter sweep optimization engine.
 """
 
 from aiida.orm.nodes.data.base import to_aiida_type
-from fsc.export import export
 
 from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
+
+__all__ = ['ParameterSweep']
 
 
 class _ParameterSweepImpl(OptimizationEngineImpl):
@@ -56,7 +57,6 @@ class _ParameterSweepImpl(OptimizationEngineImpl):
         return min(cost_values.items(), key=lambda item: item[1].value)
 
 
-@export
 class ParameterSweep(OptimizationEngineWrapper):
     """
     Optimization engine that performs a parameter sweep.
@@ -70,4 +70,4 @@ class ParameterSweep(OptimizationEngineWrapper):
     _IMPL_CLASS = _ParameterSweepImpl
 
     def __new__(cls, parameters, result_key='result', logger=None):  # pylint: disable=arguments-differ
-        return cls._IMPL_CLASS(parameters=parameters, result_key=result_key, logger=logger)
+        return cls._IMPL_CLASS(parameters=parameters, result_key=result_key, logger=logger)  # pylint: disable=no-member

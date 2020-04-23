@@ -9,6 +9,10 @@ Tests for the OptimizationWorkChain.
 import numpy as np
 import pytest
 
+from aiida import orm
+
+from aiida_optimize.engines import ParameterSweep
+
 
 @pytest.fixture
 def sweep_parameters():
@@ -19,8 +23,6 @@ def test_parameter_sweep(check_optimization, sweep_parameters):  # pylint: disab
     """
     Simple test of the OptimizationWorkChain with the ParameterSweep engine.
     """
-
-    from aiida_optimize.engines import ParameterSweep
 
     check_optimization(
         engine=ParameterSweep,
@@ -38,9 +40,6 @@ def test_parameter_sweep_add(check_optimization, sweep_parameters):  # pylint: d
     Test the ParameterSweep Engine with the add workfunction, using 'evaluate'.
     """
 
-    from aiida.orm.nodes.data.float import Float
-    from aiida_optimize.engines import ParameterSweep
-
     check_optimization(
         engine=ParameterSweep,
         engine_kwargs=dict(parameters=sweep_parameters),
@@ -49,5 +48,5 @@ def test_parameter_sweep_add(check_optimization, sweep_parameters):  # pylint: d
         ftol=0,
         x_exact=-2.,
         f_exact=-1.,
-        evaluate={'y': Float(1.)}
+        evaluate={'y': orm.Float(1.)}
     )

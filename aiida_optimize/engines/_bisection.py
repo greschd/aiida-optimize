@@ -6,10 +6,14 @@
 Defines a 1D bisection optimization engine.
 """
 
-from fsc.export import export
-from aiida.orm import Float
+import typing as ty
 
+from aiida import orm
+
+from ._result_mapping import Result
 from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
+
+__all__ = ['Bisection']
 
 
 class _BisectionImpl(OptimizationEngineImpl):
@@ -25,9 +29,9 @@ class _BisectionImpl(OptimizationEngineImpl):
         input_key: str,
         result_key: str,
         target_value: float,
-        logger,
-        result_state=None,
-        initialized=False
+        logger: ty.Any,
+        result_state: ty.Optional[ty.Dict[int, Result]] = None,
+        initialized: bool = False
     ):
         super(_BisectionImpl, self).__init__(logger=logger, result_state=result_state)
         self.lower = lower
@@ -39,23 +43,27 @@ class _BisectionImpl(OptimizationEngineImpl):
         self.target_value = target_value
 
     @property
-    def _state(self):
+    def _state(self) -> ty.Dict[str, ty.Any]:
         return {k: v for k, v in self.__dict__.items() if k not in ['_result_mapping', '_logger']}
 
     @property
-    def is_finished(self):
+    def is_finished(self) -> bool:
         return abs(self.upper - self.lower) < self.tol
 
     @property
-    def average(self):
+    def average(self) -> float:
         return (self.upper + self.lower) / 2.
 
-    def _create_inputs(self):
+    def _create_inputs(self) -> ty.List[ty.Dict[str, orm.Float]]:
         if not self.initialized:
-            return [{self.input_key: Float(self.lower)}, {self.input_key: Float(self.upper)}]
-        return [{self.input_key: Float(self.average)}]
+            return [{
+                self.input_key: orm.Float(self.lower)
+            }, {
+                self.input_key: orm.Float(self.upper)
+            }]
+        return [{self.input_key: orm.Float(self.average)}]
 
-    def _update(self, outputs):
+    def _update(self, outputs: ty.Dict[int, ty.Any]) -> None:
         output_values = outputs.values()
         num_vals = len(output_values)
         if not self.initialized:
@@ -84,7 +92,7 @@ class _BisectionImpl(OptimizationEngineImpl):
             else:
                 self.lower = self.average
 
-    def _get_optimal_result(self):
+    def _get_optimal_result(self) -> ty.Tuple[int, Result]:
         """
         Return the index and optimization value of the best evaluation workflow.
         """
@@ -95,15 +103,14 @@ class _BisectionImpl(OptimizationEngineImpl):
         return min(output_values.items(), key=lambda item: abs(item[1].value - self.target_value))
 
     @property
-    def result_value(self):
+    def result_value(self) -> Result:
         return self._get_optimal_result()[1]
 
     @property
-    def result_index(self):
+    def result_index(self) -> int:
         return self._get_optimal_result()[0]
 
 
-@export
 class Bisection(OptimizationEngineWrapper):
     """
     Optimization engine that performs a bisection.
@@ -129,7 +136,7 @@ class Bisection(OptimizationEngineWrapper):
 
     _IMPL_CLASS = _BisectionImpl
 
-    def __new__(
+    def __new__(  # type: ignore  # pylint: disable=arguments-differ
         cls,
         lower: float,
         upper: float,
@@ -138,9 +145,9 @@ class Bisection(OptimizationEngineWrapper):
         input_key: str = 'x',
         result_key: str = 'result',
         target_value: float = 0.,
-        logger=None
-    ):  # pylint: disable=arguments-differ
-        return cls._IMPL_CLASS(
+        logger: ty.Optional[ty.Any] = None
+    ) -> _BisectionImpl:
+        return cls._IMPL_CLASS(  # pylint: disable=no-member
             lower=lower,
             upper=upper,
             tol=tol,

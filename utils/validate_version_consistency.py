@@ -16,7 +16,7 @@ ROOT_DIR = os.path.join(SCRIPT_DIR, os.path.pardir)
 # Get the __init__.py version number
 with open(os.path.join(ROOT_DIR, 'aiida_optimize/__init__.py')) as f:
     MATCH_EXPR = "__version__[^'\"]+(['\"])([^'\"]+)"
-    VERSION_INIT = re.search(MATCH_EXPR, f.read()).group(2).strip()
+    VERSION_INIT = re.search(MATCH_EXPR, f.read()).group(2).strip()  # type: ignore
 
 # Get the setup.json version number
 with open(os.path.join(ROOT_DIR, 'setup.json')) as f:

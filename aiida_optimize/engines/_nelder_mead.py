@@ -17,16 +17,17 @@
 Defines a Nelder-Mead optimization engine.
 """
 
-from typing import List, Optional, Dict
+import typing as ty
 
 import numpy as np
 import scipy.linalg as la
 from decorator import decorator
-from fsc.export import export
 
 from aiida import orm
 
 from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
+
+__all__ = ['NelderMead']
 
 RHO = 1
 CHI = 2
@@ -66,16 +67,16 @@ class _NelderMeadImpl(OptimizationEngineImpl):
     """
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        simplex: List[float],
-        fun_simplex: Optional[List[float]],
-        xtol: Optional[float],
-        ftol: Optional[float],
+        simplex: ty.List[float],
+        fun_simplex: ty.Optional[ty.List[float]],
+        xtol: ty.Optional[float],
+        ftol: ty.Optional[float],
         max_iter: int,
         input_key: str,
         result_key: str,
         logger,
         num_iter=0,
-        extra_points: Optional[Dict[str, tuple]] = None,
+        extra_points: ty.Optional[ty.Dict[str, ty.Tuple[float, float]]] = None,
         next_submit='submit_initialize',
         next_update=None,
         finished=False,
@@ -86,7 +87,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         self.simplex = np.array(simplex)
         assert len(self.simplex) == self.simplex.shape[1] + 1
 
-        self.fun_simplex: Optional[np.ndarray]
+        self.fun_simplex: ty.Optional[np.ndarray]
         if fun_simplex is None:
             self.fun_simplex = None
         else:
@@ -99,7 +100,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         self.num_iter = num_iter
 
         if extra_points is None:
-            self.extra_points: Dict[str, tuple] = {}
+            self.extra_points: ty.Dict[str, ty.Tuple[float, float]] = {}
         else:
             self.extra_points = dict(extra_points)
 
@@ -135,7 +136,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         self.fun_simplex = np.array(self._get_values(outputs))
 
     @submit_method()
-    def new_iter(self):  # pylint: disable=missing-docstring
+    def new_iter(self):  # pylint: disable=missing-function-docstring
         self.do_sort()
         self.check_finished()
         if self.finished:
@@ -248,7 +249,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
             self.next_submit = 'submit_shrink'
 
     @submit_method(next_update='update_shrink')
-    def submit_shrink(self):  # pylint: disable=missing-docstring
+    def submit_shrink(self):  # pylint: disable=missing-function-docstring
         self._logger.report('Submitting shrink step.')
         self.simplex[1:] = self.simplex[0] + SIGMA * (self.simplex[1:] - self.simplex[0])
         self.fun_simplex[1:] = np.nan
@@ -299,7 +300,6 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         return min(cost_values.items(), key=lambda item: item[1].value)
 
 
-@export
 class NelderMead(OptimizationEngineWrapper):
     """
     Engine to perform the Nelder-Mead (downhill simplex) method.
@@ -338,7 +338,7 @@ class NelderMead(OptimizationEngineWrapper):
         result_key='result',
         logger=None
     ):
-        return cls._IMPL_CLASS(
+        return cls._IMPL_CLASS(  # pylint: disable=no-member
             simplex=simplex,
             fun_simplex=fun_simplex,
             xtol=xtol,

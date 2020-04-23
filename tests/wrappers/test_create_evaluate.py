@@ -5,6 +5,7 @@ Tests for the CreateEvaluateWorkChain.
 
 from aiida import orm
 from aiida.plugins import WorkflowFactory
+from aiida.engine.launch import run_get_node
 
 from sample_processes import echo_process  # pylint: disable=unused-import,import-error
 
@@ -13,7 +14,6 @@ def test_create_evaluate_basic(configure_with_daemon, echo_process):  # pylint: 
     """
     Test the CreateEvaluateWorkChain by chaining two basic processes.
     """
-    from aiida.engine.launch import run_get_node
 
     CreateEvaluateWorkChain = WorkflowFactory('optimize.wrappers.create_evaluate')  # pylint: disable=invalid-name
 

@@ -9,6 +9,8 @@ Tests for the OptimizationWorkChain.
 import numpy as np
 import pytest
 
+from aiida_optimize.engines import NelderMead
+
 
 @pytest.mark.parametrize(
     [
@@ -39,7 +41,6 @@ def test_nelder_mead(
     """
     Simple test of the OptimizationWorkChain, with the Nelder-Mead engine.
     """
-    from aiida_optimize.engines import NelderMead
 
     check_optimization(
         engine=NelderMead,

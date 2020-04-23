@@ -6,13 +6,13 @@
 Tests for the OptimizationWorkChain.
 """
 
+from aiida_optimize.engines import Bisection
+
 
 def test_bisect(check_optimization):
     """
     Simple test of the OptimizationWorkChain, with the Bisection engine.
     """
-
-    from aiida_optimize.engines import Bisection
 
     tol = 1e-1
     check_optimization(
@@ -35,8 +35,6 @@ def test_bisect_switch_lower_upper(check_optimization):
     Test bisection with switched values for upper / lower.
     """
 
-    from aiida_optimize.engines import Bisection
-
     tol = 1e-1
     check_optimization(
         engine=Bisection,
@@ -58,8 +56,6 @@ def test_bisect_negative(check_optimization):
     Simple test of the OptimizationWorkChain, with the Bisection engine.
     """
 
-    from aiida_optimize.engines import Bisection
-
     tol = 1e-1
     check_optimization(
         engine=Bisection,
@@ -77,8 +73,6 @@ def test_target_value(check_optimization):
     Test of the Bisection engine with a non-zero target value.
     """
 
-    from aiida_optimize.engines import Bisection
-
     tol = 1e-1
     check_optimization(
         engine=Bisection,
@@ -95,8 +89,6 @@ def test_input_output_key(check_optimization):
     """
     Test of the Bisection engine with different input / output keys.
     """
-
-    from aiida_optimize.engines import Bisection
 
     tol = 1e-1
     check_optimization(
@@ -116,8 +108,6 @@ def test_exact_value(check_optimization):
     Check that the exact value is returned, even if it is not the
     last value evaluated.
     """
-
-    from aiida_optimize.engines import Bisection
 
     tol = 1e-1
     check_optimization(

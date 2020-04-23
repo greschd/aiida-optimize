@@ -8,7 +8,7 @@
   "python_requires": ">=3.7",
   "license": "Apache 2.0",
   "classifiers": [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Plugins",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
@@ -47,11 +47,11 @@
       "aiida-pytest"
     ],
     "dev_precommit": [
-      "yapf==0.28",
+      "yapf==0.29",
       "pre-commit",
-      "prospector==1.1.7",
-      "pylint==2.3.1",
-      "mypy==0.740"
+      "prospector==1.2.0",
+      "pylint==2.4.4",
+      "mypy==0.770"
     ]
   },
   "entry_points": {

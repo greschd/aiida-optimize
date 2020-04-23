@@ -51,11 +51,13 @@ class OptimizationEngineImpl:
         """
         The serialized state of the instance, without the result mapping. This function needs to be implemented by child classes.
         """
+
     @abstractproperty
     def is_finished(self) -> bool:
         """
         Returns true if the optimization is finished.
         """
+
     def create_inputs(self):
         """
         Creates the inputs and adds them to the result mapping.
@@ -67,6 +69,7 @@ class OptimizationEngineImpl:
         """
         Creates the inputs for evaluations that need to be launched. This function needs to be implemented by child classes.
         """
+
     def update(self, outputs) -> None:
         """
         Updates the result mapping and engine instance with the evaluation outputs.
@@ -79,11 +82,13 @@ class OptimizationEngineImpl:
         """
         Updates the engine instance with the evaluation outputs. This method needs to be implemented by child classes.
         """
+
     @abstractproperty
     def result_value(self) -> ty.Any:
         """
         Return the output value of the optimal evaluation.
         """
+
     @abstractproperty
     def result_index(self) -> int:
         """

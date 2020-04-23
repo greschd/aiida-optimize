@@ -12,12 +12,18 @@ from collections import ChainMap
 import numpy as np
 import pytest
 
-pytest_plugins = ['aiida_pytest', 'aiida.manage.tests.pytest_fixtures']  # pylint: disable=invalid-name
+from aiida import orm
+from aiida.engine.launch import run_get_node, submit
+
+from aiida_optimize import OptimizationWorkChain
 
 # This is needed so that the daemon can also load the local modules.
 os.environ['PYTHONPATH'] = (
     os.environ.get('PYTHONPATH', '') + ':' + os.path.dirname(os.path.abspath(__file__))
 )
+import sample_processes
+
+pytest_plugins = ['aiida_pytest', 'aiida.manage.tests.pytest_fixtures']  # pylint: disable=invalid-name
 
 
 @pytest.fixture(params=['run', 'submit'])
@@ -26,14 +32,9 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
     Checks an optimization engine with the given parameters.
     """
     def inner(engine, func_workchain, engine_kwargs, evaluate=None):  # pylint: disable=missing-docstring,useless-suppression
-        from aiida_optimize import OptimizationWorkChain
-        from aiida.orm import load_node
-        from aiida.orm import Dict
-        from aiida.engine.launch import run_get_node, submit
-
         inputs = dict(
             engine=engine,
-            engine_kwargs=Dict(dict=dict(engine_kwargs)),
+            engine_kwargs=orm.Dict(dict=dict(engine_kwargs)),
             evaluate_process=func_workchain,
             evaluate=evaluate if evaluate is not None else {},
         )
@@ -44,7 +45,7 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
             assert request.param == 'submit'
             pk = submit(OptimizationWorkChain, **inputs).pk
             wait_for(pk)
-            result_node = load_node(pk)
+            result_node = orm.load_node(pk)
         return result_node
 
     return inner
@@ -71,9 +72,6 @@ def check_optimization(
         input_key='x',
     ):
 
-        from aiida.orm import load_node
-
-        import sample_processes
         func_workchain = getattr(sample_processes, func_workchain_name)
 
         result_node = run_optimization(
@@ -85,7 +83,7 @@ def check_optimization(
 
         assert 'optimal_process_uuid' in result_node.outputs
         assert np.isclose(result_node.outputs.optimal_process_output.value, f_exact, atol=ftol)
-        calc = load_node(result_node.outputs.optimal_process_uuid.value)
+        calc = orm.load_node(result_node.outputs.optimal_process_uuid.value)
         assert np.allclose(type(x_exact)(getattr(calc.inputs, input_key)), x_exact, atol=xtol)
 
     return inner

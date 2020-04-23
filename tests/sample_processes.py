@@ -144,7 +144,7 @@ class Norm(WorkChain):
         spec.outline(cls.evaluate)
 
     @check_workchain_step
-    def evaluate(self):  # pylint: disable=missing-docstring
+    def evaluate(self):  # pylint: disable=missing-function-docstring
         self.report('Starting evaluate')
         res = orm.Float(la.norm(self.inputs.x.get_attribute('list')))
         res.store()

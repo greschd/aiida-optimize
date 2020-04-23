@@ -147,7 +147,7 @@ class Bisection(OptimizationEngineWrapper):
         target_value: float = 0.,
         logger: ty.Optional[ty.Any] = None
     ) -> _BisectionImpl:
-        return cls._IMPL_CLASS(
+        return cls._IMPL_CLASS(  # pylint: disable=no-member
             lower=lower,
             upper=upper,
             tol=tol,

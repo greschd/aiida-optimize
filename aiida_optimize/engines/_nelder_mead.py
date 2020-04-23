@@ -136,7 +136,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         self.fun_simplex = np.array(self._get_values(outputs))
 
     @submit_method()
-    def new_iter(self):  # pylint: disable=missing-docstring
+    def new_iter(self):  # pylint: disable=missing-function-docstring
         self.do_sort()
         self.check_finished()
         if self.finished:
@@ -249,7 +249,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
             self.next_submit = 'submit_shrink'
 
     @submit_method(next_update='update_shrink')
-    def submit_shrink(self):  # pylint: disable=missing-docstring
+    def submit_shrink(self):  # pylint: disable=missing-function-docstring
         self._logger.report('Submitting shrink step.')
         self.simplex[1:] = self.simplex[0] + SIGMA * (self.simplex[1:] - self.simplex[0])
         self.fun_simplex[1:] = np.nan
@@ -338,7 +338,7 @@ class NelderMead(OptimizationEngineWrapper):
         result_key='result',
         logger=None
     ):
-        return cls._IMPL_CLASS(
+        return cls._IMPL_CLASS(  # pylint: disable=no-member
             simplex=simplex,
             fun_simplex=fun_simplex,
             xtol=xtol,

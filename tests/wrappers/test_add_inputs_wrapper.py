@@ -3,18 +3,17 @@
 Tests for the AddInputsWorkChain.
 """
 
+# pylint: disable=unused-argument,redefined-outer-name
+
 from aiida import orm
 from aiida.engine import run_get_node
 
 from aiida_optimize.wrappers import AddInputsWorkChain
 
-from sample_processes import EchoDictValue, EchoNestedValues  # pylint: disable=import-error,useless-suppression
+from sample_processes import echo_process, EchoDictValue, EchoNestedValues  # pylint: disable=import-error,useless-suppression, unused-import
 
 
-def test_basic(
-    configure_with_daemon,  # pylint: disable=unused-argument
-    echo_process
-):
+def test_basic(configure_with_daemon, echo_process):
     """
     Basic test, adding a single input in a List.
     """
@@ -29,10 +28,7 @@ def test_basic(
     assert res['result'].value == 1
 
 
-def test_basic_as_single_input(
-    configure_with_daemon,  # pylint: disable=unused-argument
-    echo_process
-):
+def test_basic_as_single_input(configure_with_daemon, echo_process):
     """
     Basic test for a single input, as "bare" input.
     """
@@ -47,7 +43,7 @@ def test_basic_as_single_input(
     assert res['result'].value == 1
 
 
-def test_dict(configure_with_daemon):  # pylint: disable=unused-argument
+def test_dict(configure_with_daemon):
     """
     Test setting an attribute of a nested Dict.
     """
@@ -65,7 +61,7 @@ def test_dict(configure_with_daemon):  # pylint: disable=unused-argument
     assert res['c'].value == 2
 
 
-def test_dict_as_single_input(configure_with_daemon):  # pylint: disable=unused-argument
+def test_dict_as_single_input(configure_with_daemon):
     """
     Test setting an attribute of a nested Dict, as "bare" input.
     """
@@ -83,7 +79,7 @@ def test_dict_as_single_input(configure_with_daemon):  # pylint: disable=unused-
     assert res['c'].value == 2
 
 
-def test_both(configure_with_daemon):  # pylint: disable=unused-argument
+def test_both(configure_with_daemon):
     """
     Test setting both the attribute of a Dict and a plain input.
     """
@@ -100,7 +96,7 @@ def test_both(configure_with_daemon):  # pylint: disable=unused-argument
     assert res['c'].value == 2
 
 
-def test_nested(configure_with_daemon):  # pylint: disable=unused-argument
+def test_nested(configure_with_daemon):
     """
     Test setting more complicated nested inputs.
     """

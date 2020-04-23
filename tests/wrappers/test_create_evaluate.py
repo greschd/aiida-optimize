@@ -3,12 +3,16 @@
 Tests for the CreateEvaluateWorkChain.
 """
 
+# pylint: disable=unused-argument,redefined-outer-name
+
 from aiida import orm
 from aiida.plugins import WorkflowFactory
 from aiida.engine.launch import run_get_node
 
+from sample_processes import echo_process  # pylint: disable=import-error,useless-suppression, unused-import
 
-def test_create_evaluate_basic(configure_with_daemon, echo_process):  # pylint: disable=unused-argument
+
+def test_create_evaluate_basic(configure_with_daemon, echo_process):
     """
     Test the CreateEvaluateWorkChain by chaining two basic processes.
     """

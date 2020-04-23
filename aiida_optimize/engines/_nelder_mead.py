@@ -76,7 +76,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         result_key: str,
         logger,
         num_iter=0,
-        extra_points: ty.Optional[ty.Dict[str, ty.Tuple[float]]] = None,
+        extra_points: ty.Optional[ty.Dict[str, ty.Tuple[float, float]]] = None,
         next_submit='submit_initialize',
         next_update=None,
         finished=False,
@@ -100,7 +100,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         self.num_iter = num_iter
 
         if extra_points is None:
-            self.extra_points: ty.Dict[str, ty.Tuple[float]] = {}
+            self.extra_points: ty.Dict[str, ty.Tuple[float, float]] = {}
         else:
             self.extra_points = dict(extra_points)
 

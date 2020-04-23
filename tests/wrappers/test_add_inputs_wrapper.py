@@ -8,12 +8,12 @@ from aiida.engine import run_get_node
 
 from aiida_optimize.wrappers import AddInputsWorkChain
 
-from sample_processes import echo_process, EchoDictValue, EchoNestedValues  # pylint: disable=unused-import,import-error
+from sample_processes import EchoDictValue, EchoNestedValues  # pylint: disable=import-error,useless-suppression
 
 
 def test_basic(
     configure_with_daemon,  # pylint: disable=unused-argument
-    echo_process  # pylint: disable=redefined-outer-name
+    echo_process
 ):
     """
     Basic test, adding a single input in a List.
@@ -31,7 +31,7 @@ def test_basic(
 
 def test_basic_as_single_input(
     configure_with_daemon,  # pylint: disable=unused-argument
-    echo_process  # pylint: disable=redefined-outer-name
+    echo_process
 ):
     """
     Basic test for a single input, as "bare" input.

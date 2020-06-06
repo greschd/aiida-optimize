@@ -83,16 +83,26 @@ class OptimizationEngineImpl:
         Updates the engine instance with the evaluation outputs. This method needs to be implemented by child classes.
         """
 
-    @abstractproperty
+    @property
     def result_value(self) -> ty.Any:
         """
         Return the output value of the optimal evaluation.
         """
+        _, value = self._get_optimal_result()
+        return value
 
-    @abstractproperty
+    @property
     def result_index(self) -> int:
         """
         Returns the index (in the result mapping) of the optimal evaluation.
+        """
+        index, _ = self._get_optimal_result()
+        return index
+
+    @abstractmethod
+    def _get_optimal_result(self) -> ty.Tuple[int, ty.Any]:
+        """
+        Return the index and optimization value of the best evaluation process.
         """
 
 

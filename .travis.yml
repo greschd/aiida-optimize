@@ -11,7 +11,6 @@ jobs:
   - python: "3.8"
     env: TEST_TYPE="pre-commit" INSTALL_TYPE="dev_precommit"
 cache: pip
-sudo: true
 services:
   - rabbitmq
   - postgresql

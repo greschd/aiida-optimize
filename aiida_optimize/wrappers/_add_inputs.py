@@ -9,7 +9,7 @@ from aiida_tools.process_inputs import PROCESS_INPUT_KWARGS, load_object
 
 from aiida import orm
 from aiida.engine import ToContext
-from aiida.common.exceptions import InputValidationError
+from aiida.common.exceptions import InputValidationError, NotExistent
 from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.common.extendeddicts import AttributeDict
 
@@ -107,7 +107,13 @@ class AddInputsWorkChain(RunOrSubmitWorkChain):
                 "Lengths of 'added_input_values' and 'added_input_keys' do not match."
             )
 
-        inputs = AttributeDict(self.inputs.inputs)
+        # This can be replaced by `getattr(self.inputs, 'inputs', {})`
+        # once support for AiiDA < 1.3 is dropped.
+        # See aiida-core PR #3985 for the relevant feature.
+        try:
+            inputs = AttributeDict(self.inputs.inputs)
+        except (AttributeError, NotExistent):
+            inputs = AttributeDict()
 
         def _get_or_create_sub_dict(in_dict, name):
             try:

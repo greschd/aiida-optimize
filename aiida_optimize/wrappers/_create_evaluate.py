@@ -5,6 +5,7 @@ Defines a workchain that binds together two existing processes.
 
 from aiida import orm
 from aiida.engine import ToContext
+from aiida.common.exceptions import NotExistent
 
 from aiida_tools.process_inputs import PROCESS_INPUT_KWARGS, load_object
 
@@ -103,9 +104,16 @@ class CreateEvaluateWorkChain(RunOrSubmitWorkChain):
             in_key: create_process_outputs[out_key]
             for out_key, in_key in output_input_mapping.items() if out_key in create_process_outputs
         }
+        # This can be replaced by `getattr(self.inputs, 'evaluate', {})`
+        # once support for AiiDA < 1.3 is dropped.
+        # See aiida-core PR #3985 for the relevant feature.
+        try:
+            evaluate_inputs = self.inputs.evaluate
+        except (AttributeError, NotExistent):
+            evaluate_inputs = {}
         return ToContext(
             evaluate_process=self.
-            run_or_submit(evaluate_process_class, **self.inputs.evaluate, **created_inputs)
+            run_or_submit(evaluate_process_class, **evaluate_inputs, **created_inputs)
         )
 
     def finalize(self):  # pylint: disable=inconsistent-return-statements

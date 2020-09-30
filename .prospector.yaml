@@ -12,3 +12,6 @@ pep8:
 
 pyflakes:
   run: false
+
+mccabe:
+  run: false

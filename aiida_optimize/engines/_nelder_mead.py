@@ -283,14 +283,9 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @property
     def result_value(self):
-        _, value = self._get_optimal_result()
+        value = super().result_value
         assert value.value == self.fun_simplex[0]
         return value
-
-    @property
-    def result_index(self):
-        index, _ = self._get_optimal_result()
-        return index
 
     def _get_optimal_result(self):
         """

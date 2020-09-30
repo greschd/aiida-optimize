@@ -39,16 +39,6 @@ class _ParameterSweepImpl(OptimizationEngineImpl):
     def _update(self, outputs):
         pass
 
-    @property
-    def result_value(self):
-        _, value = self._get_optimal_result()
-        return value
-
-    @property
-    def result_index(self):
-        index, _ = self._get_optimal_result()
-        return index
-
     def _get_optimal_result(self):
         """
         Return the index and optimizatin value of the best evaluation process.

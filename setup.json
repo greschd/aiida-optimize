@@ -47,11 +47,10 @@
       "aiida-pytest"
     ],
     "dev_precommit": [
-      "yapf==0.29",
+      "yapf==0.30",
       "pre-commit",
-      "prospector==1.2.0",
-      "pylint==2.4.4",
-      "mypy==0.770"
+      "pylint==2.5.0",
+      "mypy==0.780"
     ]
   },
   "entry_points": {

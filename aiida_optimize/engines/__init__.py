@@ -7,7 +7,8 @@ This module defines optimization routines to be used with the main optimization 
 """
 
 from ._bisection import Bisection
+from ._convergence import Convergence
 from ._nelder_mead import NelderMead
 from ._parameter_sweep import ParameterSweep
 
-__all__ = ['Bisection', 'NelderMead', 'ParameterSweep']
+__all__ = ['Bisection', 'NelderMead', 'ParameterSweep', 'Convergence']

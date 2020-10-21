@@ -55,6 +55,11 @@ class OptimizationWorkChain(WorkChain):
             'ERROR_EVALUATE_PROCESS_FAILED',
             message='Optimization failed because one of the evaluate processes did not finish ok.'
         )
+        spec.exit_code(
+            202,
+            'ERROR_ENGINE_FAILED',
+            message='Optimization failed because the optimization engine did not finish ok.'
+        )
 
         spec.outline(
             cls.create_optimizer,
@@ -144,12 +149,15 @@ class OptimizationWorkChain(WorkChain):
         """
         self.report('Finalizing optimization procedure.')
         with self.optimizer() as opt:
-            optimal_process_output = opt.result_value
-            optimal_process_output.store()
-            self.out('optimal_process_output', optimal_process_output)
-            result_index = opt.result_index
-            optimal_process = self.ctx[self.eval_key(result_index)]
-            self.out('optimal_process_uuid', Str(optimal_process.uuid).store())
+            if opt.is_finished_ok:
+                optimal_process_output = opt.result_value
+                optimal_process_output.store()
+                self.out('optimal_process_output', optimal_process_output)
+                result_index = opt.result_index
+                optimal_process = self.ctx[self.eval_key(result_index)]
+                self.out('optimal_process_uuid', Str(optimal_process.uuid).store())
+            else:
+                return self.exit_codes.ERROR_ENGINE_FAILED
 
     def eval_key(self, index):
         """

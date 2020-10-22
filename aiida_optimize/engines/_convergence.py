@@ -97,18 +97,18 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         # Find location of the last calculation which creates out-of-tolerance
         # roughness, and do enough calculations so that it is no longer in the
         # next convergence window
-        num_new_iters = 1
+        num_new_iters = 0
         for i, row in enumerate(distance_triangle):
             row = np.array(row)
             if np.any(row > self.tol):
                 num_new_iters = i + 1
         # Check that we don't go past the end of the input_values when trying
         # to remove the calculation that is too rough from the window
-        # If we do, return 0 as an indication that convergence will not be
+        # If we do, return -1 as an indication that convergence will not be
         # possible
-        if self.current_index + num_new_iters >= len(self.input_values):
+        if self.current_index + num_new_iters > len(self.input_values):
             # num_new_iters = len(self.input_values) - self.current_index
-            num_new_iters = 0
+            num_new_iters = -1
         
         return num_new_iters
 
@@ -140,9 +140,9 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         if len(self.result_values) >= len(self.input_values):
             return True
 
-        # If _num_new_iters is 0, we know that we cannot converge with
+        # If _num_new_iters is -1, we know that we cannot converge with
         # the remaining inputs in input_values, so we're finished
-        if self._num_new_iters == 0:
+        if self._num_new_iters == -1:
             return True
 
         return self.is_converged
@@ -166,7 +166,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
             self.initialized = True
         else:
             num_new_iters = self._num_new_iters
-            
+
         self.current_index += num_new_iters
         inputs = [{
             self.input_key: orm.Float(self.input_values[i])
@@ -188,7 +188,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         distance within convergence window)
         """
         return (
-            self.current_index - self.convergence_window,
+            len(self.result_values) - self.convergence_window,
             self.result_values[-self.convergence_window]
         )
 

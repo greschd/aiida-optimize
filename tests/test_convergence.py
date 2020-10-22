@@ -47,7 +47,7 @@ def test_convergence_echo_wf(check_optimization, convergence_parameters):  # pyl
 
 def test_convergence_echo_wc(check_optimization, convergence_parameters):  # pylint: disable=redefined-outer-name
     """
-    Simple test of the OptimizationWorkChain with the Convergence engine.
+    Test the 202 is_finished_ok failure state of the OptimzationWorkChain with the Convergence engine.
     """
 
     check_optimization(
@@ -62,7 +62,7 @@ def test_convergence_echo_wc(check_optimization, convergence_parameters):  # pyl
 
 def test_convergence_echo_wc_202(check_optimization, convergence_parameters):  # pylint: disable=redefined-outer-name
     """
-    Simple test of the OptimizationWorkChain with the Convergence engine.
+    Test the 202 is_finished_ok failure state of the OptimzationWorkChain with the Convergence engine.
     """
 
     check_optimization(

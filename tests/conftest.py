@@ -23,7 +23,7 @@ os.environ['PYTHONPATH'] = (
 )
 import sample_processes
 
-pytest_plugins = ['aiida_pytest', 'aiida.manage.tests.pytest_fixtures']  # pylint: disable=invalid-name
+pytest_plugins = ['aiida_pytest', 'aiida.manage.tests.pytest_fixtures']
 
 
 @pytest.fixture(params=['run', 'submit'])

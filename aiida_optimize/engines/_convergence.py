@@ -26,9 +26,10 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         *,
         input_values: ty.Iterable[ty.Any],
         tol: float,
-        convergence_window: int,
         input_key: str,
         result_key: str,
+        convergence_window: int,
+        array_name: ty.Optional[str],
         current_index: int,
         result_values: ty.List[ty.Any],
         initialized: bool,
@@ -40,6 +41,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         self.tol = tol
         self.input_key = input_key
         self.result_key = result_key
+        self.array_name = array_name
         self.convergence_window = convergence_window
         self.current_index = current_index
         self.result_values = result_values
@@ -57,7 +59,61 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         return {k: v for k, v in self.__dict__.items() if k not in ['_result_mapping', '_logger']}
 
     @property
-    def is_finished(self) -> bool:
+    def _result_window(self) -> ty.List[ty.Any]:
+        """
+        Create a list of results corresponding to the current convergence window
+        and convert those results to python / numpy objects from AiiDA objects
+        """
+        result_window = self.result_values[-self.convergence_window:]
+        for i, result in enumerate(result_window):
+            if isinstance(result, orm.ArrayData):
+                result_window[i] = result.get_array(self.array_name)
+            elif isinstance(result, (orm.Float, orm.Int)):
+                result_window[i] = result.value
+        
+        return result_window
+
+    @property
+    def _distance_triangle(self) -> ty.List[ty.Any]:
+        """
+        Calculate the pair-wise distance between entries of a list
+        into a triangle-like jagged list.
+        """
+        # |x_i - x_j| for i [0, N-1], j (i, N]
+        distance_triangle = [[
+            np.linalg.norm(self._result_window[i] - self._result_window[j])
+            for j in range(i + 1, self.convergence_window)
+        ] for i in range(self.convergence_window - 1)]
+
+        return distance_triangle
+
+    @property
+    def _num_new_iters(self) -> int:
+        """
+        Determine the minimum number of additional outputs to have a hope
+        of converging in the next step.
+        """
+        distance_triangle = self._distance_triangle
+        # Find location of the last calculation which creates out-of-tolerance
+        # roughness, and do enough calculations so that it is no longer in the
+        # next convergence window
+        num_new_iters = 1
+        for i, row in enumerate(distance_triangle):
+            row = np.array(row)
+            if np.any(row > self.tol):
+                num_new_iters = i + 1
+        # Check that we don't go past the end of the input_values when trying
+        # to remove the calculation that is too rough from the window
+        # If we do, return 0 as an indication that convergence will not be
+        # possible
+        if self.current_index + num_new_iters >= len(self.input_values):
+            # num_new_iters = len(self.input_values) - self.current_index
+            num_new_iters = 0
+        
+        return num_new_iters
+
+    @property
+    def is_converged(self) -> bool:
         """
         Check if convergence has been reached by calculating the Frobenius
         or 2-norm of the difference between all the result values / arrays
@@ -67,26 +123,33 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         if not self.initialized:
             return False
 
-        if self.current_index + 1 >= len(self.input_values):
-            return True
-
-        result_window = self.result_values[-self.convergence_window:]
-        
-        # |x_i - x_j| for i [0, N-1], j (i, N]
-        distance_triangle = [[
-            np.linalg.norm(result_window[i].value - result_window[j].value)
-            for j in range(i + 1, self.convergence_window)
-        ] for i in range(self.convergence_window - 1)]
-        
+        # calculate pair distances between results
+        distance_triangle = self._distance_triangle
         # flatten all the distances into a 1D list
         distances = list(itertools.chain(*distance_triangle))
-        
+
         # check if the maximum distance is less than the tolerance
         return np.max(distances) < self.tol
 
     @property
+    def is_finished(self) -> bool:
+        if not self.initialized:
+            return False
+
+        # If we've used all the input values, we're finished
+        if len(self.result_values) >= len(self.input_values):
+            return True
+
+        # If _num_new_iters is 0, we know that we cannot converge with
+        # the remaining inputs in input_values, so we're finished
+        if self._num_new_iters == 0:
+            return True
+
+        return self.is_converged
+
+    @property
     def is_finished_ok(self) -> bool:
-        if self.is_finished and self.current_index + 1 >= len(self.input_values):
+        if self.is_finished and self.is_converged:
             return True
         return False
 
@@ -97,20 +160,18 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         inputs to fill the convergence window are generated.
         Otherwise, one more input will be generated
         """
-        # TODO: should we be smart about this and run the minimum number of calculations
-        # which would be necessary for the possiblity of convergence to occur?
-        # i.e. if we _know_ that one more calculation will _not_ lead to convergence,
-        # we should run more than one calculation (up to convergence_window - 1)
         if not self.initialized:
-            inputs = [{
-                self.input_key: orm.Float(self.input_values[i])
-            } for i in range(self.convergence_window)]
-            self.current_index = self.convergence_window - 1
+            # Do enough calculations to fill the initial convergence window
+            num_new_iters = self.convergence_window
             self.initialized = True
         else:
-            # Will throw an IndexError if the index is out-of-range (i.e. we've reached the end of the inputs)
-            inputs = [{self.input_key: orm.Float(self.input_values[self.current_index + 1])}]
-            self.current_index += 1
+            num_new_iters = self._num_new_iters
+            
+        self.current_index += num_new_iters
+        inputs = [{
+            self.input_key: orm.Float(self.input_values[i])
+        } for i in range(self.current_index - num_new_iters, self.current_index)]
+
         return inputs
 
     def _update(self, outputs: ty.Dict[int, ty.Any]) -> None:
@@ -127,7 +188,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         distance within convergence window)
         """
         return (
-            self.current_index - self.convergence_window + 1,
+            self.current_index - self.convergence_window,
             self.result_values[-self.convergence_window]
         )
 
@@ -154,17 +215,19 @@ class Convergence(OptimizationEngineWrapper):
         input_key: str,
         result_key: str,
         convergence_window: int = 2,
+        array_name: ty.Optional[str] = None,
         current_index: int = 0,
         result_values: ty.List[ty.Any] = [],
         initialized: bool = False,
         logger: ty.Optional[ty.Any] = None
     ) -> _ConvergenceImpl:
-        return cls._IMPL_CLASS(
+        return cls._IMPL_CLASS(  # pylint: disable=no-member
             input_values=input_values,
             tol=tol,
             input_key=input_key,
             result_key=result_key,
             convergence_window=convergence_window,
+            array_name=array_name,
             current_index=current_index,
             result_values=result_values,
             initialized=initialized,

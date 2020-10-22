@@ -143,21 +143,21 @@ class OptimizationWorkChain(WorkChain):
             opt.update(outputs)
 
     @check_workchain_step
-    def finalize(self):
+    def finalize(self): # pylint: disable=inconsistent-return-statements
         """
         Return the output after the optimization procedure has finished.
         """
         self.report('Finalizing optimization procedure.')
         with self.optimizer() as opt:
-            if opt.is_finished_ok:
-                optimal_process_output = opt.result_value
-                optimal_process_output.store()
-                self.out('optimal_process_output', optimal_process_output)
-                result_index = opt.result_index
-                optimal_process = self.ctx[self.eval_key(result_index)]
-                self.out('optimal_process_uuid', Str(optimal_process.uuid).store())
-            else:
+            self.report('Checking if optimizer is finished ok.')
+            if not opt.is_finished_ok:
                 return self.exit_codes.ERROR_ENGINE_FAILED
+            optimal_process_output = opt.result_value
+            optimal_process_output.store()
+            self.out('optimal_process_output', optimal_process_output)
+            result_index = opt.result_index
+            optimal_process = self.ctx[self.eval_key(result_index)]
+            self.out('optimal_process_uuid', Str(optimal_process.uuid).store())
 
     def eval_key(self, index):
         """

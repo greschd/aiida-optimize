@@ -2,42 +2,25 @@
 
 # Author: Austin Zadoks <austin.zadoks@epfl.ch>
 """
-Tests for the OptimizationWorkChain.
+Tests for the Convergence engine.
 """
-
-import pytest
-
 from aiida_optimize.engines import Convergence
 
 
-@pytest.fixture
-def convergence_parameters():
-    return {
-        'input_values': [0, 1, 2, 3, 4.001, 4.002, 5, 4.003, 4.004, 4.005],
-        'tol': 1e-1,
-        'input_key': 'x',
-        'result_key': 'result',
-        'convergence_window': 3
-    }
-
-@pytest.fixture
-def convergence_parameters_202():
-    return {
-        'input_values': [0, 1, 2, 3, 4.001, 4.002, 5, 4.003, 4.004, 4.005],
-        'tol': 1e-1,
-        'input_key': 'x',
-        'result_key': 'result',
-        'convergence_window': 5
-    }
-
-def test_convergence_echo_wf(check_optimization, convergence_parameters):  # pylint: disable=redefined-outer-name
+def test_convergence_echo_wf(check_optimization):
     """
     Simple test of the OptimizationWorkChain with the Convergence engine.
     """
 
     check_optimization(
         engine=Convergence,
-        engine_kwargs=convergence_parameters,
+        engine_kwargs={
+            'input_values': [0, 1, 2, 3, 4.001, 4.002, 5, 4.003, 4.004, 4.005],
+            'tol': 1e-1,
+            'input_key': 'x',
+            'result_key': 'result',
+            'convergence_window': 3
+        },
         func_workchain_name='echo_workfunction',
         xtol=0,
         ftol=0,
@@ -45,14 +28,20 @@ def test_convergence_echo_wf(check_optimization, convergence_parameters):  # pyl
         f_exact=4.003
     )
 
-def test_convergence_echo_wf_202(check_error, convergence_parameters_202):  # pylint: disable=redefined-outer-name
+def test_convergence_echo_wf_202(check_error):
     """
     Test the 202 is_finished_ok failure state of the OptimzationWorkChain with the Convergence engine.
     """
 
     check_error(
         engine=Convergence,
-        engine_kwargs=convergence_parameters_202,
+        engine_kwargs={
+            'input_values': [0, 1, 2, 3, 4.001, 4.002, 5, 4.003, 4.004, 4.005],
+            'tol': 1e-1,
+            'input_key': 'x',
+            'result_key': 'result',
+            'convergence_window': 5
+        },
         func_workchain_name='echo_workfunction',
         exit_status=202
     )

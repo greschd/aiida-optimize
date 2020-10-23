@@ -10,6 +10,7 @@ import typing as ty
 
 import numpy as np
 from aiida import orm
+from aiida.orm.nodes.data.base import to_aiida_type
 from aiida_optimize.engines._base import (OptimizationEngineImpl, OptimizationEngineWrapper)
 from aiida_optimize.engines._result_mapping import Result
 
@@ -73,7 +74,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         return result_window
 
     @property
-    def _distance_triangle(self) -> ty.List[ty.Any]:
+    def _distance_triangle(self) -> ty.List[ty.List[ty.Any]]:
         """
         Calculate the pair-wise distance between entries of a list
         into a triangle-like jagged list.
@@ -98,8 +99,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         # next convergence window
         num_new_iters = 0
         for i, row in enumerate(distance_triangle):
-            row = np.array(row)
-            if np.any(row > self.tol):
+            if np.any(np.array(row) > self.tol):
                 num_new_iters = i + 1
         # Check that we don't go past the end of the input_values when trying
         # to remove the calculation that is too rough from the window
@@ -168,7 +168,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
 
         self.current_index += num_new_iters
         inputs = [{
-            self.input_key: orm.Float(self.input_values[i])
+            self.input_key: to_aiida_type(self.input_values[i])
         } for i in range(self.current_index - num_new_iters, self.current_index)]
 
         return inputs
@@ -178,7 +178,8 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         Update the state of the engine by saving all the output values and
         storing them in the result_values property
         """
-        output_values = outputs.values()  # Don't need keys (AiiDA UUIDs)
+        output_keys = sorted(outputs.keys())  # Sort keys to preserve evaluation order
+        output_values = [outputs[key] for key in output_keys]
         self.result_values += [
             val[self.result_key] for val in output_values
         ]  # Values are AiiDA types
@@ -193,23 +194,31 @@ class _ConvergenceImpl(OptimizationEngineImpl):
             self.result_values[-self.convergence_window]
         )
 
-    @property
-    def result_value(self) -> Result:
-        return self._get_optimal_result()[1]
-
-    @property
-    def result_index(self) -> int:
-        return self._get_optimal_result()[0]
-
 
 class Convergence(OptimizationEngineWrapper):
     """
     Wrapper class for convergence engine
+
+    Parameters
+    ----------
+    input_values : iterable object
+        List or other iterable of inputs within the desired range to check convergence
+    tol : float
+        Roughness tolerance for checking convergence
+    input_key : str
+        Name of the input key which should be varied to find convergence
+    result_key : str
+        Name of the output / result key which is the value to converge
+    convergence_window : int
+        Number of results to consider when checking convergence
+    array_name : str or None
+        Name of array within output / result ArrayData (only necessary if the output is
+        given in an ArrayData)
     """
 
     _IMPL_CLASS = _ConvergenceImpl
 
-    def __new__(  # pylint: disable=too-many-arguments,dangerous-default-value,arguments-differ
+    def __new__(  # pylint: disable=too-many-arguments,arguments-differ
         cls,
         input_values: ty.Iterable[ty.Any],
         tol: float,
@@ -217,10 +226,7 @@ class Convergence(OptimizationEngineWrapper):
         result_key: str,
         convergence_window: int = 2,
         array_name: ty.Optional[str] = None,
-        current_index: int = 0,
-        result_values: ty.List[ty.Any] = [],
-        initialized: bool = False,
-        logger: ty.Optional[ty.Any] = None
+        logger: ty.Optional[ty.Any] = None,
     ) -> _ConvergenceImpl:
         return cls._IMPL_CLASS(  # pylint: disable=no-member
             input_values=input_values,
@@ -229,8 +235,8 @@ class Convergence(OptimizationEngineWrapper):
             result_key=result_key,
             convergence_window=convergence_window,
             array_name=array_name,
-            current_index=current_index,
-            result_values=result_values,
-            initialized=initialized,
+            current_index=0,
+            result_values=[],
+            initialized=False,
             logger=logger
         )

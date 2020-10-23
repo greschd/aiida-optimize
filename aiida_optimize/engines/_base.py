@@ -63,7 +63,7 @@ class OptimizationEngineImpl:
         """
         Returns true if the optimization is finished without error.
         """
-        True
+        return self.is_finished
 
     def create_inputs(self):
         """

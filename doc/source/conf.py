@@ -38,7 +38,7 @@ import aiida_optimize
 # ones.
 extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.mathjax', 'sphinx.ext.viewcode',
-    'aiida.sphinxext'
+    'aiida.sphinxext', 'sphinx.ext.napoleon'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

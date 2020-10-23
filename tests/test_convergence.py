@@ -28,6 +28,7 @@ def test_convergence_echo_wf(check_optimization):
         f_exact=4.003
     )
 
+
 def test_convergence_echo_wf_202(check_error):
     """
     Test the 202 is_finished_ok failure state of the OptimzationWorkChain with the Convergence engine.

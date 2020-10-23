@@ -88,6 +88,7 @@ def check_optimization(
 
     return inner
 
+
 @pytest.fixture
 def check_error(
     configure,  # pylint: disable=unused-argument

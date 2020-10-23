@@ -143,7 +143,7 @@ class OptimizationWorkChain(WorkChain):
             opt.update(outputs)
 
     @check_workchain_step
-    def finalize(self): # pylint: disable=inconsistent-return-statements
+    def finalize(self):  # pylint: disable=inconsistent-return-statements
         """
         Return the output after the optimization procedure has finished.
         """

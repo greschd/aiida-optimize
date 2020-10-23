@@ -10,8 +10,7 @@ import typing as ty
 
 import numpy as np
 from aiida import orm
-from aiida_optimize.engines._base import (OptimizationEngineImpl,
-                                          OptimizationEngineWrapper)
+from aiida_optimize.engines._base import (OptimizationEngineImpl, OptimizationEngineWrapper)
 from aiida_optimize.engines._result_mapping import Result
 
 __all__ = ['Convergence']
@@ -70,7 +69,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
                 result_window[i] = result.get_array(self.array_name)
             elif isinstance(result, (orm.Float, orm.Int)):
                 result_window[i] = result.value
-        
+
         return result_window
 
     @property
@@ -109,7 +108,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         if self.current_index + num_new_iters > len(self.input_values):
             # num_new_iters = len(self.input_values) - self.current_index
             num_new_iters = -1
-        
+
         return num_new_iters
 
     @property
@@ -180,7 +179,9 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         storing them in the result_values property
         """
         output_values = outputs.values()  # Don't need keys (AiiDA UUIDs)
-        self.result_values += [val[self.result_key] for val in output_values]  # Values are AiiDA types
+        self.result_values += [
+            val[self.result_key] for val in output_values
+        ]  # Values are AiiDA types
 
     def _get_optimal_result(self) -> ty.Tuple[int, Result]:
         """

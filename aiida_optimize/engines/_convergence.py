@@ -24,7 +24,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
     def __init__(
         self,
         *,
-        input_values: ty.Iterable[ty.Any],
+        input_values: ty.List[ty.Any],
         tol: float,
         input_key: str,
         result_key: str,
@@ -128,7 +128,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         distances = list(itertools.chain(*distance_triangle))
 
         # check if the maximum distance is less than the tolerance
-        return np.max(distances) < self.tol
+        return bool(np.max(distances) < self.tol)
 
     @property
     def is_finished(self) -> bool:
@@ -218,9 +218,9 @@ class Convergence(OptimizationEngineWrapper):
 
     _IMPL_CLASS = _ConvergenceImpl
 
-    def __new__(  # pylint: disable=too-many-arguments,arguments-differ
+    def __new__(  #type: ignore  # pylint: disable=too-many-arguments,arguments-differ
         cls,
-        input_values: ty.Iterable[ty.Any],
+        input_values: ty.List[ty.Any],
         tol: float,
         input_key: str,
         result_key: str,

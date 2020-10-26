@@ -52,6 +52,9 @@ class ResultMapping:
         """
         keys = []
         for input_value in inputs_list:
+            for value in input_value.values():
+                if not value.is_stored:
+                    value.store()
             key = self._get_new_key()
             keys.append(key)
             self._results[key] = Result(input_=input_value)

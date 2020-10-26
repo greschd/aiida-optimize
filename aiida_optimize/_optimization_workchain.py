@@ -55,6 +55,11 @@ class OptimizationWorkChain(WorkChain):
             'ERROR_EVALUATE_PROCESS_FAILED',
             message='Optimization failed because one of the evaluate processes did not finish ok.'
         )
+        spec.exit_code(
+            202,
+            'ERROR_ENGINE_FAILED',
+            message='Optimization failed because the optimization engine did not finish ok.'
+        )
 
         spec.outline(
             cls.create_optimizer,
@@ -138,12 +143,15 @@ class OptimizationWorkChain(WorkChain):
             opt.update(outputs)
 
     @check_workchain_step
-    def finalize(self):
+    def finalize(self):  # pylint: disable=inconsistent-return-statements
         """
         Return the output after the optimization procedure has finished.
         """
         self.report('Finalizing optimization procedure.')
         with self.optimizer() as opt:
+            self.report('Checking if optimizer is finished ok.')
+            if not opt.is_finished_ok:
+                return self.exit_codes.ERROR_ENGINE_FAILED
             optimal_process_output = opt.result_value
             optimal_process_output.store()
             self.out('optimal_process_output', optimal_process_output)

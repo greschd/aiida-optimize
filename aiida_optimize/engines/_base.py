@@ -58,6 +58,13 @@ class OptimizationEngineImpl:
         Returns true if the optimization is finished.
         """
 
+    @property
+    def is_finished_ok(self) -> bool:
+        """
+        Returns true if the optimization is finished without error.
+        """
+        return self.is_finished
+
     def create_inputs(self):
         """
         Creates the inputs and adds them to the result mapping.

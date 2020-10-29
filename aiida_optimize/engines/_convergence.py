@@ -11,7 +11,7 @@ import typing as ty
 import numpy as np
 from aiida import orm
 from aiida.orm.nodes.data.base import to_aiida_type
-from ._base import (OptimizationEngineImpl, OptimizationEngineWrapper)
+from .base import (OptimizationEngineImpl, OptimizationEngineWrapper)
 from ._result_mapping import Result
 from ..helpers import get_nested_result
 

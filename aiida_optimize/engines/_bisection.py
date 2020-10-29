@@ -11,7 +11,7 @@ import typing as ty
 from aiida import orm
 
 from ._result_mapping import Result
-from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
+from .base import OptimizationEngineImpl, OptimizationEngineWrapper
 
 __all__ = ['Bisection']
 

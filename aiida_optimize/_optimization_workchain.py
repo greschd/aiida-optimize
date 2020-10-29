@@ -16,8 +16,7 @@ from aiida.engine.utils import is_process_function
 from aiida_tools import check_workchain_step
 from aiida_tools.process_inputs import PROCESS_INPUT_KWARGS, load_object
 
-from ._utils import get_outputs_dict
-from ._merge_nested_keys import _merge_nested_keys
+from ._utils import _get_outputs_dict, _merge_nested_keys
 
 __all__ = ['OptimizationWorkChain']
 
@@ -138,7 +137,7 @@ class OptimizationWorkChain(WorkChain):
             eval_proc = self.ctx[key]
             if not eval_proc.is_finished_ok:
                 return self.exit_codes.ERROR_EVALUATE_PROCESS_FAILED
-            outputs[idx] = get_outputs_dict(eval_proc)
+            outputs[idx] = _get_outputs_dict(eval_proc)
 
         with self.optimizer() as opt:
             opt.update(outputs)

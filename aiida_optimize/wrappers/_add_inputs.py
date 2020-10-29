@@ -9,8 +9,7 @@ from aiida import orm
 from aiida.engine import ToContext
 from aiida.common.exceptions import InputValidationError
 
-from .._utils import get_outputs_dict
-from .._merge_nested_keys import _merge_nested_keys
+from .._utils import _get_outputs_dict, _merge_nested_keys
 from ._run_or_submit import RunOrSubmitWorkChain
 
 
@@ -119,6 +118,6 @@ class AddInputsWorkChain(RunOrSubmitWorkChain):
         """
         self.report("Retrieving outputs of the sub-process.")
         sub_process = self.ctx.sub_process
-        self.out_many(get_outputs_dict(sub_process))
+        self.out_many(_get_outputs_dict(sub_process))
         if not sub_process.is_finished_ok:
             return self.exit_codes.ERROR_SUB_PROCESS_FAILED

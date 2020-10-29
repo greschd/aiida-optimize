@@ -8,7 +8,7 @@ Defines a parameter sweep optimization engine.
 
 from aiida.orm.nodes.data.base import to_aiida_type
 
-from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
+from .base import OptimizationEngineImpl, OptimizationEngineWrapper
 
 __all__ = ['ParameterSweep']
 

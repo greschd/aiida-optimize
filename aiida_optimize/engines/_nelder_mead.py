@@ -25,7 +25,7 @@ from decorator import decorator
 
 from aiida import orm
 
-from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
+from .base import OptimizationEngineImpl, OptimizationEngineWrapper
 
 __all__ = ['NelderMead']
 

@@ -29,6 +29,12 @@ Wrapper workchains
 .. aiida-workchain:: CreateEvaluateWorkChain
     :module: aiida_optimize.wrappers
 
+Helper functions
+----------------
+
+.. automodule:: aiida_optimize.helpers
+    :members:
+
 Internals
 ---------
 
@@ -39,6 +45,7 @@ Engine base classes
 
 .. automodule:: aiida_optimize.engines._base
     :members:
+
 
 Result mapping
 ''''''''''''''

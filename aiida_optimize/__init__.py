@@ -10,7 +10,8 @@ engines and wrappers for .
 __version__ = '0.3.2'
 
 from ._optimization_workchain import OptimizationWorkChain
+from . import helpers
 from . import engines
 from . import wrappers
 
-__all__ = ['OptimizationWorkChain', 'engines', 'wrappers']
+__all__ = ['OptimizationWorkChain', 'helpers', 'engines', 'wrappers']

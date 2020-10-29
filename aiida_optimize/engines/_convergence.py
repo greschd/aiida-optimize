@@ -11,9 +11,9 @@ import typing as ty
 import numpy as np
 from aiida import orm
 from aiida.orm.nodes.data.base import to_aiida_type
-from aiida_optimize.engines._base import (OptimizationEngineImpl, OptimizationEngineWrapper)
-from aiida_optimize.engines._result_mapping import Result
-from aiida_optimize._utils import get_nested_result
+from ._base import (OptimizationEngineImpl, OptimizationEngineWrapper)
+from ._result_mapping import Result
+from ..helpers import get_nested_result
 
 __all__ = ['Convergence']
 

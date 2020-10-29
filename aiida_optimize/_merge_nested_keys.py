@@ -2,8 +2,6 @@
 """Defines a helper function to merge inputs with the nested key syntax.
 """
 
-from functools import reduce
-
 from plumpy.utils import AttributesFrozendict
 
 from aiida import orm

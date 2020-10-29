@@ -7,6 +7,7 @@ Configuration file for pytest tests of aiida-optimize.
 """
 
 import os
+import operator
 from collections import ChainMap
 
 import numpy as np
@@ -69,7 +70,7 @@ def check_optimization(
         x_exact,
         f_exact,
         evaluate=None,
-        input_key='x',
+        input_getter=operator.attrgetter('x'),
     ):
 
         func_workchain = getattr(sample_processes, func_workchain_name)
@@ -84,7 +85,7 @@ def check_optimization(
         assert 'optimal_process_uuid' in result_node.outputs
         assert np.isclose(result_node.outputs.optimal_process_output.value, f_exact, atol=ftol)
         calc = orm.load_node(result_node.outputs.optimal_process_uuid.value)
-        assert np.allclose(type(x_exact)(getattr(calc.inputs, input_key)), x_exact, atol=xtol)
+        assert np.allclose(type(x_exact)(input_getter(calc.inputs)), x_exact, atol=xtol)
 
     return inner
 

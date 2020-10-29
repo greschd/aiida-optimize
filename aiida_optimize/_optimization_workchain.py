@@ -7,79 +7,19 @@ Defines the WorkChain which runs the optimization procedure.
 """
 
 from contextlib import contextmanager
-from functools import reduce
 
 from aiida import orm
-from aiida.common.extendeddicts import AttributeDict
 from aiida.engine import WorkChain, while_
 from aiida.engine.launch import run_get_node
 from aiida.engine.utils import is_process_function
+
 from aiida_tools import check_workchain_step
 from aiida_tools.process_inputs import PROCESS_INPUT_KWARGS, load_object
-from aiida_optimize._utils import from_aiida_type
 
 from ._utils import get_outputs_dict
+from ._merge_nested_keys import _merge_nested_keys
 
 __all__ = ['OptimizationWorkChain']
-
-
-def _almost_deep_copy(value):
-    """
-    Do a sort of deep-ish copy for Python dictionaries, avoiding AiiDA nodes
-    """
-    if isinstance(value, orm.Node):
-        return value
-    if isinstance(value, dict):
-        return AttributeDict({k: _almost_deep_copy(v) for k, v in value.items()})
-    return value
-
-
-def _merge_nested_keys(nested_key_inputs, target_inputs):
-    """
-    Maps nested_key_inputs onto target_inputs with support for nested keys:
-        x:a.b -> x['a']['b']
-    Note: keys will be python str; values will be AiiDA data types
-    """
-    def _get_or_create_sub_dict(in_dict, name):
-        try:
-            return in_dict[name]
-        except KeyError:
-            res = {}
-            in_dict[name] = res
-            return res
-
-    def _get_or_create_port(in_attr_dict, name):
-        try:
-            return getattr(in_attr_dict, name)
-        except AttributeError:
-            res = AttributeDict()
-            setattr(in_attr_dict, name, res)
-            return res
-
-    destination = _almost_deep_copy(target_inputs)
-
-    for key, value in nested_key_inputs.items():
-        full_port_path, *full_attr_path = key.split(':')
-        *port_path, port_name = full_port_path.split('.')
-        namespace = reduce(_get_or_create_port, port_path, destination)
-
-        if not full_attr_path:
-            res_value = value
-        else:
-            assert len(full_attr_path) == 1
-            # Get or create the top-level dictionary.
-            try:
-                res_dict = getattr(namespace, port_name).get_dict()
-            except AttributeError:
-                res_dict = {}
-
-            *sub_dict_path, attr_name = full_attr_path[0].split('.')
-            sub_dict = reduce(_get_or_create_sub_dict, sub_dict_path, res_dict)
-            sub_dict[attr_name] = from_aiida_type(value)
-            res_value = orm.Dict(dict=res_dict).store()
-
-        setattr(namespace, port_name, res_value)
-    return destination
 
 
 class OptimizationWorkChain(WorkChain):
@@ -175,9 +115,7 @@ class OptimizationWorkChain(WorkChain):
             evaluate_process = load_object(self.inputs.evaluate_process.value)
             for idx, inputs in opt.create_inputs().items():
                 self.report('Launching evaluation {}'.format(idx))
-                inputs_merged = _merge_nested_keys(
-                    inputs, AttributeDict(self.inputs.get('evaluate', {}))
-                )
+                inputs_merged = _merge_nested_keys(inputs, self.inputs.get('evaluate', {}))
                 if is_process_function(evaluate_process):
                     _, node = run_get_node(evaluate_process, **inputs_merged)
                 else:

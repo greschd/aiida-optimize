@@ -6,6 +6,8 @@
 Tests for the OptimizationWorkChain.
 """
 
+import operator
+
 from aiida_optimize.engines import Bisection
 
 
@@ -99,7 +101,7 @@ def test_input_output_key(check_optimization):
         ftol=tol,
         x_exact=0.,
         f_exact=0.,
-        input_key='y',
+        input_getter=operator.attrgetter('y'),
     )
 
 

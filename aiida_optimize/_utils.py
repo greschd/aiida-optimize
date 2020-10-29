@@ -9,19 +9,6 @@ from aiida.common.links import LinkType
 from aiida.orm.nodes.data.base import to_aiida_type
 
 
-def from_aiida_type(value):
-    """
-    Convert an AiiDA data object to the equivalent Python object
-    """
-    if isinstance(value, (orm.BaseType)):
-        return value.value
-    if isinstance(value, orm.Dict):
-        return value.get_dict()
-    if isinstance(value, orm.List):
-        return value.get_list()
-    raise TypeError(f'value of type {type(value)} is not supported')
-
-
 def get_outputs_dict(process: orm.ProcessNode) -> ty.Dict[str, orm.Node]:
     """
     Helper function to mimic the behaviour of the old AiiDA .get_outputs_dict() method.
@@ -32,9 +19,31 @@ def get_outputs_dict(process: orm.ProcessNode) -> ty.Dict[str, orm.Node]:
     }
 
 
-def get_nested_result(output: ty.Dict[str, orm.Node], key: str) -> ty.Any:
-    """
-    Helper function to retrieve nested outputs as Python data types
+def get_nested_result(output: ty.Dict[str, orm.Node], key: str) -> orm.Node:
+    """Helper function to retrieve nested outputs from AiiDA processes.
+
+    This function supports the nested key syntax:
+    - Namespaces are separated by a period
+    - A colon `:` indicates accessing inside an AiiDA `Dict`
+    - Nested access inside the `Dict` is again separated by a period
+
+    Examples:
+    - `'x.y'`: retrieve output `y` in the `x` namespace
+    - `'x.y:a.b`: `x.y` is a `Dict`, and we retrieve its content
+      at `['a']['b']`.
+
+    Parameters
+    ----------
+    output :
+        The outputs of a process, given as a dictionary mapping output
+        labels to values.
+    key :
+        The key for which the output should be retrieved.
+
+    Returns
+    -------
+    orm.Node :
+        The desired result, as an AiiDA node.
     """
     nesting_kind = None
 
@@ -54,6 +63,7 @@ def get_nested_result(output: ty.Dict[str, orm.Node], key: str) -> ty.Any:
         result = node
         for key_part in keys:
             result = result[key_part]
+        # TODO: do we need to `.store()` here?
         result = to_aiida_type(result)
     else:
         result = node

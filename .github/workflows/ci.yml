@@ -88,7 +88,7 @@ jobs:
           INSTALL_TYPE: ${{ matrix.install-type }}
         run: .ci/install_script.sh
       - name: Set up test configuration
-        run: cp .ci/tes_config.yml tests/config.yml
+        run: cp .ci/test_config.yml tests/config.yml
       - name: Run pytest
         run: pytest --quiet-wipe --print-status
         working-directory: tests

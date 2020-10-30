@@ -5,9 +5,7 @@
 # Be verbose, and stop with error as soon there's one
 set -ev
 
-pip install -U 'pip<19' wheel setuptools
-
-cd ${TRAVIS_BUILD_DIR}
+pip install -U pip wheel setuptools
 
 case "$INSTALL_TYPE" in
     testing)
@@ -19,6 +17,9 @@ case "$INSTALL_TYPE" in
         ;;
     dev_precommit)
         pip install .[dev_precommit]
+        ;;
+    docs)
+        pip install .[docs]
         ;;
 esac
 

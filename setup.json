@@ -46,7 +46,7 @@
       "pytest-cov",
       "aiida-pytest"
     ],
-    "dev_precommit": [
+    "dev": [
       "yapf==0.30",
       "pre-commit",
       "pylint==2.5.0",

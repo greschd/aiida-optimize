@@ -25,6 +25,7 @@ from decorator import decorator
 
 from aiida import orm
 
+from ..helpers import get_nested_result
 from .base import OptimizationEngineImpl, OptimizationEngineWrapper
 
 __all__ = ['NelderMead']
@@ -113,12 +114,12 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         self.finished = finished
 
     def _get_values(self, outputs):
-        return [res[self.result_key].value for _, res in sorted(outputs.items())]
+        return [get_nested_result(res, self.result_key).value for _, res in sorted(outputs.items())]
 
     def _get_single_result(self, outputs):
         (idx, ) = outputs.keys()
         x = np.array(self._result_mapping[idx].input[self.input_key].get_attribute('list'))
-        f = outputs[idx][self.result_key].value
+        f = get_nested_result(outputs[idx], self.result_key).value
         return x, f
 
     @submit_method(next_update='update_initialize')
@@ -291,7 +292,10 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         """
         Return the index and optimization value of the best evaluation process.
         """
-        cost_values = {k: v.output[self.result_key] for k, v in self._result_mapping.items()}
+        cost_values = {
+            k: get_nested_result(v.output, self.result_key)
+            for k, v in self._result_mapping.items()
+        }
         return min(cost_values.items(), key=lambda item: item[1].value)
 
 

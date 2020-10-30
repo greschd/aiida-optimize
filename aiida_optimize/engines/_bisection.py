@@ -10,6 +10,7 @@ import typing as ty
 
 from aiida import orm
 
+from ..helpers import get_nested_result
 from ._result_mapping import Result
 from .base import OptimizationEngineImpl, OptimizationEngineWrapper
 
@@ -70,7 +71,7 @@ class _BisectionImpl(OptimizationEngineImpl):
             self.initialized = True
             assert num_vals == 2
             # initial step: change upper such that the _result_ of upper is higher
-            results = [val[self.result_key] for val in output_values]
+            results = [get_nested_result(val, self.result_key) for val in output_values]
             lower_val, upper_val = results
             if lower_val > upper_val:
                 self.lower, self.upper = self.upper, self.lower
@@ -86,7 +87,7 @@ class _BisectionImpl(OptimizationEngineImpl):
                 )
         else:
             assert num_vals == 1
-            res = next(iter(output_values))[self.result_key]
+            res = get_nested_result(next(iter(output_values)), self.result_key)
             if (res - self.target_value) > 0:
                 self.upper = self.average
             else:
@@ -97,7 +98,7 @@ class _BisectionImpl(OptimizationEngineImpl):
         Return the index and optimization value of the best evaluation workflow.
         """
         output_values = {
-            key: value.output[self.result_key]
+            key: get_nested_result(value.output, self.result_key)
             for key, value in self._result_mapping.items()
         }
         return min(output_values.items(), key=lambda item: abs(item[1].value - self.target_value))

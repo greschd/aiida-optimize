@@ -8,6 +8,8 @@ Tests for the OptimizationWorkChain.
 
 import operator
 
+import pytest
+
 from aiida_optimize.engines import Bisection
 
 
@@ -102,6 +104,30 @@ def test_input_output_key(check_optimization):
         x_exact=0.,
         f_exact=0.,
         input_getter=operator.attrgetter('y'),
+    )
+
+
+@pytest.mark.parametrize(['input_key', 'result_key', 'input_getter'],
+                         [('x', 'x', operator.attrgetter('x')),
+                          ('a:b.c', 'c', lambda inp_: inp_.a['b']['c']),
+                          ('f.g', 'd.e:f.g', operator.attrgetter('f__g'))])
+def test_nested_input_output_keys(check_optimization, input_key, result_key, input_getter):
+    """
+    Test of the Bisection engine with different input / output keys.
+    """
+
+    tol = 1e-1
+    check_optimization(
+        engine=Bisection,
+        engine_kwargs=dict(
+            lower=-1.1, upper=1., tol=tol, input_key=input_key, result_key=result_key
+        ),
+        func_workchain_name='EchoDictValue',
+        xtol=tol,
+        ftol=tol,
+        x_exact=0.,
+        f_exact=0.,
+        input_getter=input_getter,
     )
 
 

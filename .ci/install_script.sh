@@ -16,7 +16,7 @@ case "$INSTALL_TYPE" in
         ls -1 dist/ | xargs -I % pip install dist/%[testing]
         ;;
     dev_precommit)
-        pip install .[dev_precommit]
+        pip install .[dev]
         ;;
     docs)
         pip install .[docs]

@@ -20,6 +20,13 @@ Engines
 .. automodule:: aiida_optimize.engines
     :members:
 
+Engine base classes
+'''''''''''''''''''
+
+.. automodule:: aiida_optimize.engines.base
+    :members:
+    :private-members:
+
 Wrapper workchains
 ------------------
 
@@ -29,19 +36,27 @@ Wrapper workchains
 .. aiida-workchain:: CreateEvaluateWorkChain
     :module: aiida_optimize.wrappers
 
+Helper functions
+----------------
+
+.. automodule:: aiida_optimize.helpers
+    :members:
+
 Internals
 ---------
 
-This section describes internal classes. They are useful for developing custom optimization engines.
+This section describes internal modules. Their interface may change without warning.
 
-Engine base classes
-'''''''''''''''''''
-
-.. automodule:: aiida_optimize.engines._base
-    :members:
 
 Result mapping
 ''''''''''''''
 
 .. automodule:: aiida_optimize.engines._result_mapping
+    :members:
+
+
+Internal utilities
+''''''''''''''''''
+
+.. automodule:: aiida_optimize._utils
     :members:

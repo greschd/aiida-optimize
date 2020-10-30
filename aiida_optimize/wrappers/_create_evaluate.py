@@ -9,7 +9,7 @@ from aiida.common.exceptions import NotExistent
 
 from aiida_tools.process_inputs import PROCESS_INPUT_KWARGS, load_object
 
-from .._utils import get_outputs_dict
+from .._utils import _get_outputs_dict
 from ._run_or_submit import RunOrSubmitWorkChain
 
 
@@ -91,7 +91,7 @@ class CreateEvaluateWorkChain(RunOrSubmitWorkChain):
         Retrieve outputs of the "create" sub-process, and launch the
         "evaluate" sub-process.
         """
-        create_process_outputs = get_outputs_dict(self.ctx.create_process)
+        create_process_outputs = _get_outputs_dict(self.ctx.create_process)
         self.out('create', create_process_outputs)
         if not self.ctx.create_process.is_finished_ok:
             return self.exit_codes.ERROR_CREATE_PROCESS_FAILED
@@ -122,6 +122,6 @@ class CreateEvaluateWorkChain(RunOrSubmitWorkChain):
         """
         self.report("Retrieving evaluation outputs.")
 
-        self.out('evaluate', get_outputs_dict(self.ctx.evaluate_process))
+        self.out('evaluate', _get_outputs_dict(self.ctx.evaluate_process))
         if not self.ctx.evaluate_process.is_finished_ok:
             return self.exit_codes.ERROR_EVALUATE_PROCESS_FAILED

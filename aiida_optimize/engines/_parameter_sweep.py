@@ -8,7 +8,8 @@ Defines a parameter sweep optimization engine.
 
 from aiida.orm.nodes.data.base import to_aiida_type
 
-from ._base import OptimizationEngineImpl, OptimizationEngineWrapper
+from ..helpers import get_nested_result
+from .base import OptimizationEngineImpl, OptimizationEngineWrapper
 
 __all__ = ['ParameterSweep']
 
@@ -43,7 +44,10 @@ class _ParameterSweepImpl(OptimizationEngineImpl):
         """
         Return the index and optimizatin value of the best evaluation process.
         """
-        cost_values = {k: v.output[self._result_key] for k, v in self._result_mapping.items()}
+        cost_values = {
+            k: get_nested_result(v.output, self._result_key)
+            for k, v in self._result_mapping.items()
+        }
         return min(cost_values.items(), key=lambda item: item[1].value)
 
 

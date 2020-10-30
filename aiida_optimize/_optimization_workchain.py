@@ -6,17 +6,17 @@
 Defines the WorkChain which runs the optimization procedure.
 """
 
-from collections import ChainMap
 from contextlib import contextmanager
 
+from aiida import orm
 from aiida.engine import WorkChain, while_
 from aiida.engine.launch import run_get_node
 from aiida.engine.utils import is_process_function
-from aiida.orm import Dict, Str
+
 from aiida_tools import check_workchain_step
 from aiida_tools.process_inputs import PROCESS_INPUT_KWARGS, load_object
 
-from ._utils import get_outputs_dict
+from ._utils import _get_outputs_dict, _merge_nested_keys
 
 __all__ = ['OptimizationWorkChain']
 
@@ -35,7 +35,7 @@ class OptimizationWorkChain(WorkChain):
         spec.input('engine', help='Engine that runs the optimization.', **PROCESS_INPUT_KWARGS)
         spec.input(
             'engine_kwargs',
-            valid_type=Dict,
+            valid_type=orm.Dict,
             help='Keyword arguments passed to the optimization engine.'
         )
         spec.input(
@@ -58,7 +58,7 @@ class OptimizationWorkChain(WorkChain):
         spec.exit_code(
             202,
             'ERROR_ENGINE_FAILED',
-            message='Optimization failed because the optimization engine did not finish ok.'
+            message='Optimization failed because the engine did not finish ok.'
         )
 
         spec.outline(
@@ -114,7 +114,7 @@ class OptimizationWorkChain(WorkChain):
             evaluate_process = load_object(self.inputs.evaluate_process.value)
             for idx, inputs in opt.create_inputs().items():
                 self.report('Launching evaluation {}'.format(idx))
-                inputs_merged = ChainMap(inputs, self.inputs.get('evaluate', {}))
+                inputs_merged = _merge_nested_keys(inputs, self.inputs.get('evaluate', {}))
                 if is_process_function(evaluate_process):
                     _, node = run_get_node(evaluate_process, **inputs_merged)
                 else:
@@ -137,7 +137,7 @@ class OptimizationWorkChain(WorkChain):
             eval_proc = self.ctx[key]
             if not eval_proc.is_finished_ok:
                 return self.exit_codes.ERROR_EVALUATE_PROCESS_FAILED
-            outputs[idx] = get_outputs_dict(eval_proc)
+            outputs[idx] = _get_outputs_dict(eval_proc)
 
         with self.optimizer() as opt:
             opt.update(outputs)
@@ -149,7 +149,6 @@ class OptimizationWorkChain(WorkChain):
         """
         self.report('Finalizing optimization procedure.')
         with self.optimizer() as opt:
-            self.report('Checking if optimizer is finished ok.')
             if not opt.is_finished_ok:
                 return self.exit_codes.ERROR_ENGINE_FAILED
             optimal_process_output = opt.result_value
@@ -157,7 +156,7 @@ class OptimizationWorkChain(WorkChain):
             self.out('optimal_process_output', optimal_process_output)
             result_index = opt.result_index
             optimal_process = self.ctx[self.eval_key(result_index)]
-            self.out('optimal_process_uuid', Str(optimal_process.uuid).store())
+            self.out('optimal_process_uuid', orm.Str(optimal_process.uuid).store())
 
     def eval_key(self, index):
         """

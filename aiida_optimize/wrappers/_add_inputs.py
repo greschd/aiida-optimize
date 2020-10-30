@@ -3,17 +3,13 @@
 Defines a workchain for changing the input interface of a process.
 """
 
-from functools import reduce
-
 from aiida_tools.process_inputs import PROCESS_INPUT_KWARGS, load_object
 
 from aiida import orm
 from aiida.engine import ToContext
-from aiida.common.exceptions import InputValidationError, NotExistent
-from aiida.orm.nodes.data.base import to_aiida_type
-from aiida.common.extendeddicts import AttributeDict
+from aiida.common.exceptions import InputValidationError
 
-from .._utils import get_outputs_dict
+from .._utils import _get_outputs_dict, _merge_nested_keys
 from ._run_or_submit import RunOrSubmitWorkChain
 
 
@@ -107,50 +103,9 @@ class AddInputsWorkChain(RunOrSubmitWorkChain):
                 "Lengths of 'added_input_values' and 'added_input_keys' do not match."
             )
 
-        # This can be replaced by `getattr(self.inputs, 'inputs', {})`
-        # once support for AiiDA < 1.3 is dropped.
-        # See aiida-core PR #3985 for the relevant feature.
-        try:
-            inputs = AttributeDict(self.inputs.inputs)
-        except (AttributeError, NotExistent):
-            inputs = AttributeDict()
-
-        def _get_or_create_sub_dict(in_dict, name):
-            try:
-                return in_dict[name]
-            except KeyError:
-                res = {}
-                in_dict[name] = res
-                return res
-
-        def _get_or_create_port(in_attr_dict, name):
-            try:
-                return getattr(in_attr_dict, name)
-            except AttributeError:
-                res = AttributeDict()
-                setattr(in_attr_dict, name, res)
-                return res
-
-        for key, value in zip(added_input_keys, added_input_values):
-            full_port_path, *full_attr_path = key.split(':')
-            *port_path, port_name = full_port_path.split('.')
-            namespace = reduce(_get_or_create_port, port_path, inputs)
-            if not full_attr_path:
-                res_value = to_aiida_type(value)
-            else:
-                assert len(full_attr_path) == 1
-                # Get or create the top-level dictionary.
-                try:
-                    res_dict = getattr(namespace, port_name).get_dict()
-                except AttributeError:
-                    res_dict = {}
-
-                *sub_dict_path, attr_name = full_attr_path[0].split('.')
-                sub_dict = reduce(_get_or_create_sub_dict, sub_dict_path, res_dict)
-                sub_dict[attr_name] = value
-                res_value = orm.Dict(dict=res_dict).store()
-
-            setattr(namespace, port_name, res_value)
+        inputs = _merge_nested_keys(
+            dict(zip(added_input_keys, added_input_values)), getattr(self.inputs, 'inputs', {})
+        )
 
         self.report("Launching the sub-process.")
         return ToContext(
@@ -163,6 +118,6 @@ class AddInputsWorkChain(RunOrSubmitWorkChain):
         """
         self.report("Retrieving outputs of the sub-process.")
         sub_process = self.ctx.sub_process
-        self.out_many(get_outputs_dict(sub_process))
+        self.out_many(_get_outputs_dict(sub_process))
         if not sub_process.is_finished_ok:
             return self.exit_codes.ERROR_SUB_PROCESS_FAILED

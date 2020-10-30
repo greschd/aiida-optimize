@@ -3,7 +3,7 @@
 # © 2017-2019, ETH Zurich, Institut für Theoretische Physik
 # Author: Dominik Gresch <greschd@gmx.ch>
 """
-Defines the optimization engine base class.
+Defines the base classes needed to implement an optimization engine.
 """
 
 from __future__ import annotations

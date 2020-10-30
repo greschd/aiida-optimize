@@ -60,17 +60,23 @@ class EchoDictValue(WorkChain):
     def define(cls, spec):
         super().define(spec)
 
-        spec.input('x', valid_type=orm.Float)
-        spec.input('a', valid_type=orm.Dict)
+        spec.input('x', valid_type=orm.Float, required=False)
+        spec.input('a', valid_type=orm.Dict, required=False)
+        spec.input('f.g', valid_type=orm.Float, required=False)
 
-        spec.output('x', valid_type=orm.Float)
-        spec.output('c', valid_type=orm.Float)
+        spec.output('x', valid_type=orm.Float, required=False)
+        spec.output('c', valid_type=orm.Float, required=False)
+        spec.output('d.e', valid_type=orm.Dict, required=False)
 
         spec.outline(cls.do_echo)
 
-    def do_echo(self):
-        self.out('x', self.inputs.x)
-        self.out('c', orm.Float(self.inputs.a.get_dict()['b']['c']).store())
+    def do_echo(self):  # pylint: disable=missing-function-docstring
+        if 'x' in self.inputs:
+            self.out('x', self.inputs.x)
+        if 'a' in self.inputs:
+            self.out('c', orm.Float(self.inputs.a.get_dict()['b']['c']).store())
+        if 'f' in self.inputs and 'g' in self.inputs.f:
+            self.out('d.e', orm.Dict(dict={'f': {'g': self.inputs.f.g.value}}).store())
 
 
 class EchoNestedValues(WorkChain):

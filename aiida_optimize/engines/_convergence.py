@@ -11,8 +11,9 @@ import typing as ty
 import numpy as np
 from aiida import orm
 from aiida.orm.nodes.data.base import to_aiida_type
-from aiida_optimize.engines._base import (OptimizationEngineImpl, OptimizationEngineWrapper)
-from aiida_optimize.engines._result_mapping import Result
+from .base import (OptimizationEngineImpl, OptimizationEngineWrapper)
+from ._result_mapping import Result
+from ..helpers import get_nested_result
 
 __all__ = ['Convergence']
 
@@ -181,7 +182,9 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         output_keys = sorted(outputs.keys())  # Sort keys to preserve evaluation order
         output_values = [outputs[key] for key in output_keys]
         self.result_values += [
-            val[self.result_key] for val in output_values
+            get_nested_result(val, self.result_key)
+            # val[self.result_key]
+            for val in output_values
         ]  # Values are AiiDA types
 
     def _get_optimal_result(self) -> ty.Tuple[int, Result]:

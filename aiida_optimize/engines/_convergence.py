@@ -182,20 +182,19 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         output_keys = sorted(outputs.keys())  # Sort keys to preserve evaluation order
         output_values = [outputs[key] for key in output_keys]
         self.result_values += [
-            get_nested_result(val, self.result_key)
-            # val[self.result_key]
-            for val in output_values
+            get_nested_result(val, self.result_key) for val in output_values
         ]  # Values are AiiDA types
 
-    def _get_optimal_result(self) -> ty.Tuple[int, Result]:
+    def _get_optimal_result(self) -> ty.Tuple[int, orm.Node, orm.Node]:
         """
         Retrieve the converged index and result value (output value, _not_ max
         distance within convergence window)
         """
-        return (
-            len(self.result_values) - self.convergence_window,
-            self.result_values[-self.convergence_window]
-        )
+        opt_index = len(self.result_values) - self.convergence_window
+        opt_input = self._result_mapping[opt_index].input[self.input_key]
+        opt_output = get_nested_result(self._result_mapping[opt_index].output, self.result_key)
+
+        return (opt_index, opt_input, opt_output)
 
 
 class Convergence(OptimizationEngineWrapper):

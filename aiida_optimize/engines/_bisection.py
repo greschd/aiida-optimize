@@ -93,7 +93,7 @@ class _BisectionImpl(OptimizationEngineImpl):
             else:
                 self.lower = self.average
 
-    def _get_optimal_result(self) -> ty.Tuple[int, Result]:
+    def _get_optimal_result(self) -> ty.Tuple[int, ty.Any, Result]:
         """
         Return the index and optimization value of the best evaluation workflow.
         """
@@ -101,15 +101,11 @@ class _BisectionImpl(OptimizationEngineImpl):
             key: get_nested_result(value.output, self.result_key)
             for key, value in self._result_mapping.items()
         }
-        return min(output_values.items(), key=lambda item: abs(item[1].value - self.target_value))
-
-    @property
-    def result_value(self) -> Result:
-        return self._get_optimal_result()[1]
-
-    @property
-    def result_index(self) -> int:
-        return self._get_optimal_result()[0]
+        opt_index, opt_output = min(
+            output_values.items(), key=lambda item: abs(item[1].value - self.target_value)
+        )
+        opt_input = self._result_mapping[opt_index].input[self.input_key]
+        return (opt_index, opt_input, opt_output)
 
 
 class Bisection(OptimizationEngineWrapper):

@@ -24,7 +24,6 @@ import scipy.linalg as la
 from decorator import decorator
 
 from aiida import orm
-# from aiida.orm.nodes.data.base import to_aiida_type
 
 from ..helpers import get_nested_result
 from .base import OptimizationEngineImpl, OptimizationEngineWrapper
@@ -299,9 +298,6 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         }
         opt_index, opt_output = min(cost_values.items(), key=lambda item: item[1].value)
         opt_input = self._result_mapping[opt_index].input[self.input_key]
-
-        import pdb
-        pdb.set_trace()
 
         return (opt_index, opt_input, opt_output)
 

@@ -193,10 +193,6 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         distance within convergence window)
         """
         opt_index = len(self.result_values) - self.convergence_window
-
-        import pdb
-        pdb.set_trace()
-
         opt_input = self._result_mapping[opt_index].input[self.input_key]
         opt_output = get_nested_result(self._result_mapping[opt_index].output, self.result_key)
 

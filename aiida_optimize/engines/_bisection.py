@@ -9,7 +9,6 @@ Defines a 1D bisection optimization engine.
 import typing as ty
 
 from aiida import orm
-# from aiida.orm.nodes.data.base import to_aiida_type
 
 from ..helpers import get_nested_result
 from ._result_mapping import Result

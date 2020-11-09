@@ -107,14 +107,6 @@ class _BisectionImpl(OptimizationEngineImpl):
         opt_input = self._result_mapping[opt_index].input[self.input_key]
         return (opt_index, opt_input, opt_output)
 
-    @property
-    def result_value(self) -> Result:
-        return self._get_optimal_result()[2]
-
-    @property
-    def result_index(self) -> int:
-        return self._get_optimal_result()[0]
-
 
 class Bisection(OptimizationEngineWrapper):
     """

@@ -12,7 +12,6 @@ from aiida import orm
 from aiida.engine import WorkChain, while_
 from aiida.engine.launch import run_get_node
 from aiida.engine.utils import is_process_function
-
 from aiida_tools import check_workchain_step
 from aiida_tools.process_inputs import PROCESS_INPUT_KWARGS, load_object
 
@@ -65,7 +64,11 @@ class OptimizationWorkChain(WorkChain):
             cls.create_optimizer,
             while_(cls.not_finished)(cls.launch_evaluations, cls.get_results), cls.finalize
         )
-        spec.output('optimal_process_input', help='Input value of the optimal evaluation process.')
+        spec.output(
+            'optimal_process_input',
+            help='Input value of the optimal evaluation process.',
+            required=False
+        )
         spec.output(
             'optimal_process_output', help='Output value of the optimal evaluation process.'
         )
@@ -153,7 +156,7 @@ class OptimizationWorkChain(WorkChain):
             if not opt.is_finished_ok:
                 return self.exit_codes.ERROR_ENGINE_FAILED
             optimal_process_input = opt.result_input_value
-            optimal_process_input.store()
+            assert optimal_process_input.is_stored
             self.out('optimal_process_input', optimal_process_input)
             optimal_process_output = opt.result_output_value
             optimal_process_output.store()

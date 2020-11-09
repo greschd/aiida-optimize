@@ -65,6 +65,7 @@ class OptimizationWorkChain(WorkChain):
             cls.create_optimizer,
             while_(cls.not_finished)(cls.launch_evaluations, cls.get_results), cls.finalize
         )
+        spec.output('optimal_process_input', help='Input value of the optimal evaluation process.')
         spec.output(
             'optimal_process_output', help='Output value of the optimal evaluation process.'
         )
@@ -151,7 +152,10 @@ class OptimizationWorkChain(WorkChain):
         with self.optimizer() as opt:
             if not opt.is_finished_ok:
                 return self.exit_codes.ERROR_ENGINE_FAILED
-            optimal_process_output = opt.result_value
+            optimal_process_input = opt.result_input_value
+            optimal_process_input.store()
+            self.out('optimal_process_input', optimal_process_input)
+            optimal_process_output = opt.result_output_value
             optimal_process_output.store()
             self.out('optimal_process_output', optimal_process_output)
             result_index = opt.result_index

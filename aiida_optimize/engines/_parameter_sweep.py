@@ -48,7 +48,10 @@ class _ParameterSweepImpl(OptimizationEngineImpl):
             k: get_nested_result(v.output, self._result_key)
             for k, v in self._result_mapping.items()
         }
-        return min(cost_values.items(), key=lambda item: item[1].value)
+        opt_index, opt_output = min(cost_values.items(), key=lambda item: item[1].value)
+        input_keys = list(self._parameters[opt_index].keys())
+        opt_input = self._result_mapping[opt_index].input[input_keys[0]]
+        return (opt_index, opt_input, opt_output)
 
 
 class ParameterSweep(OptimizationEngineWrapper):

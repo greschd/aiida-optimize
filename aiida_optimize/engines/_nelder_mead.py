@@ -24,6 +24,7 @@ import scipy.linalg as la
 from decorator import decorator
 
 from aiida import orm
+# from aiida.orm.nodes.data.base import to_aiida_type
 
 from ..helpers import get_nested_result
 from .base import OptimizationEngineImpl, OptimizationEngineWrapper
@@ -284,7 +285,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
     @property
     def result_value(self):
-        value = super().result_value
+        value = super().result_value  # pylint: disable=no-member
         assert value.value == self.fun_simplex[0]
         return value
 
@@ -296,7 +297,13 @@ class _NelderMeadImpl(OptimizationEngineImpl):
             k: get_nested_result(v.output, self.result_key)
             for k, v in self._result_mapping.items()
         }
-        return min(cost_values.items(), key=lambda item: item[1].value)
+        opt_index, opt_output = min(cost_values.items(), key=lambda item: item[1].value)
+        opt_input = self._result_mapping[opt_index].input[self.input_key]
+
+        import pdb
+        pdb.set_trace()
+
+        return (opt_index, opt_input, opt_output)
 
 
 class NelderMead(OptimizationEngineWrapper):

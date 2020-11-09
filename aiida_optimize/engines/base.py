@@ -91,25 +91,33 @@ class OptimizationEngineImpl:
         """
 
     @property
-    def result_value(self) -> ty.Any:
-        """
-        Return the output value of the optimal evaluation.
-        """
-        _, value = self._get_optimal_result()
-        return value
-
-    @property
     def result_index(self) -> int:
         """
         Returns the index (in the result mapping) of the optimal evaluation.
         """
-        index, _ = self._get_optimal_result()
+        index, _, _ = self._get_optimal_result()
         return index
 
-    @abstractmethod
-    def _get_optimal_result(self) -> ty.Tuple[int, ty.Any]:
+    @property
+    def result_input_value(self) -> ty.Any:
         """
-        Return the index and optimization value of the best evaluation process.
+        Return the input value of the optimal evaluation.
+        """
+        _, value, _ = self._get_optimal_result()
+        return value
+
+    @property
+    def result_output_value(self) -> ty.Any:
+        """
+        Return the output value of the optimal evaluation.
+        """
+        _, _, value = self._get_optimal_result()
+        return value
+
+    @abstractmethod
+    def _get_optimal_result(self) -> ty.Tuple[int, ty.Any, ty.Any]:
+        """
+        Return the index, input value, and output value of the best evaluation process.
         """
 
 

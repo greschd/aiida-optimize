@@ -6,16 +6,15 @@
 Configuration file for pytest tests of aiida-optimize.
 """
 
-import os
 import operator
+import os
 from collections import ChainMap
 
 import numpy as np
 import pytest
-
 from aiida import orm
+from aiida.common import exceptions
 from aiida.engine.launch import run_get_node, submit
-
 from aiida_optimize import OptimizationWorkChain
 
 # This is needed so that the daemon can also load the local modules.
@@ -82,25 +81,31 @@ def check_optimization(
             evaluate=evaluate
         )
 
-        if isinstance(result_node.outputs.optimal_process_input, orm.BaseType):
-            optimal_process_input = result_node.outputs.optimal_process_input.value
-        elif isinstance(result_node.outputs.optimal_process_input, orm.List):
-            optimal_process_input = result_node.outputs.optimal_process_input.get_list()
-        else:
-            raise ValueError(
-                f'`optimal_process_input` {result_node.outputs.optimal_process_input} is not of a supported AiiDA type for testing'
-            )
-
         assert 'optimal_process_uuid' in result_node.outputs
         assert np.isclose(result_node.outputs.optimal_process_output.value, f_exact, atol=ftol)
-        assert np.allclose(type(x_exact)(optimal_process_input), x_exact, atol=xtol)
 
         calc = orm.load_node(result_node.outputs.optimal_process_uuid.value)
         assert np.allclose(type(x_exact)(input_getter(calc.inputs)), x_exact, atol=xtol)
+
+        try:
+            optimal_process_input_node = result_node.outputs.optimal_process_input
+        except exceptions.NotExistentAttributeError:
+            return
+
+        if isinstance(optimal_process_input_node, orm.BaseType):
+            optimal_process_input = optimal_process_input_node.value
+        elif isinstance(optimal_process_input_node, orm.List):
+            optimal_process_input = optimal_process_input_node.get_list()
+        else:
+            optimal_process_input = optimal_process_input_node
+
+        getter_input = input_getter(calc.inputs)
+        if isinstance(getter_input, orm.Node):
+            assert getter_input.uuid == optimal_process_input_node.uuid
+
+        assert np.allclose(type(x_exact)(optimal_process_input), x_exact, atol=xtol)
         assert np.allclose(
-            type(x_exact)(input_getter(calc.inputs)),
-            type(x_exact)(optimal_process_input),
-            atol=xtol
+            type(x_exact)(getter_input), type(x_exact)(optimal_process_input), atol=xtol
         )
 
     return inner

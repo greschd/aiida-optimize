@@ -156,8 +156,9 @@ class OptimizationWorkChain(WorkChain):
             if not opt.is_finished_ok:
                 return self.exit_codes.ERROR_ENGINE_FAILED
             optimal_process_input = opt.result_input_value
-            assert optimal_process_input.is_stored
-            self.out('optimal_process_input', optimal_process_input)
+            if optimal_process_input is not None:
+                assert optimal_process_input.is_stored
+                self.out('optimal_process_input', optimal_process_input)
             optimal_process_output = opt.result_output_value
             optimal_process_output.store()
             self.out('optimal_process_output', optimal_process_output)

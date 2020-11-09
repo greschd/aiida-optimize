@@ -82,10 +82,26 @@ def check_optimization(
             evaluate=evaluate
         )
 
+        if isinstance(result_node.outputs.optimal_process_input, orm.BaseType):
+            optimal_process_input = result_node.outputs.optimal_process_input.value
+        elif isinstance(result_node.outputs.optimal_process_input, orm.List):
+            optimal_process_input = result_node.outputs.optimal_process_input.get_list()
+        else:
+            raise ValueError(
+                f'`optimal_process_input` {result_node.outputs.optimal_process_input} is not of a supported AiiDA type for testing'
+            )
+
         assert 'optimal_process_uuid' in result_node.outputs
         assert np.isclose(result_node.outputs.optimal_process_output.value, f_exact, atol=ftol)
+        assert np.allclose(type(x_exact)(optimal_process_input), x_exact, atol=xtol)
+
         calc = orm.load_node(result_node.outputs.optimal_process_uuid.value)
         assert np.allclose(type(x_exact)(input_getter(calc.inputs)), x_exact, atol=xtol)
+        assert np.allclose(
+            type(x_exact)(input_getter(calc.inputs)),
+            type(x_exact)(optimal_process_input),
+            atol=xtol
+        )
 
     return inner
 

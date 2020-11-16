@@ -14,4 +14,6 @@ from . import helpers
 from . import engines
 from . import wrappers
 
+from . import _utils
+
 __all__ = ['OptimizationWorkChain', 'helpers', 'engines', 'wrappers']

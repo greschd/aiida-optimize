@@ -1,6 +1,6 @@
 {
   "name": "aiida-optimize",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "url": "https://aiida-optimize.readthedocs.io/",
   "description": "AiiDA Plugin for running optimization algorithms.",
   "author": "Dominik Gresch",

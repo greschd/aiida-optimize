@@ -7,7 +7,7 @@ A plugin for AiiDA which defines a generic optimization workchain, and
 engines and wrappers for .
 """
 
-__version__ = '0.3.2'
+__version__ = '0.4.0'
 
 from ._optimization_workchain import OptimizationWorkChain
 from . import helpers

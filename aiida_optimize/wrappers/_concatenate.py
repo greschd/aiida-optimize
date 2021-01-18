@@ -94,6 +94,7 @@ class ConcatenateWorkChain(RunOrSubmitWorkChain):
 
     def _run_sub_process(self):
         label, sub_process_class = self._get_current_process()
+        self.report(f"Starting sub-process with label '{label}'.")
         inputs = dict(self.inputs.process_inputs.get(label, {}))
 
         if self.ctx.process_idx > 0:
@@ -110,6 +111,7 @@ class ConcatenateWorkChain(RunOrSubmitWorkChain):
 
     def _retrieve_sub_process(self):  # pylint: disable=inconsistent-return-statements
         label, _ = self._get_current_process()
+        self.report(f"Retrieving outputs for sub-process with label '{label}'.")
 
         sub_process = self.ctx.get(f'process_{label}')
         self.out(f'process_outputs.{label}', _get_outputs_dict(sub_process))

@@ -114,7 +114,7 @@ class ConcatenateWorkChain(RunOrSubmitWorkChain):
         self.report(f"Retrieving outputs for sub-process with label '{label}'.")
 
         sub_process = self.ctx.get(f'process_{label}')
-        self.out(f'process_outputs.{label}', _get_outputs_dict(sub_process))
+        self.out(f'process_outputs.{label}', _get_outputs_dict(sub_process, wrap_nested=True))
         if not sub_process.is_finished_ok:
             return self.exit_codes.ERROR_SUB_PROCESS_FAILED
 

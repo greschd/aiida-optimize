@@ -36,6 +36,9 @@ Wrapper workchains
 .. aiida-workchain:: CreateEvaluateWorkChain
     :module: aiida_optimize.wrappers
 
+.. aiida-workchain:: ConcatenateWorkChain
+    :module: aiida_optimize.wrappers
+
 Helper functions
 ----------------
 

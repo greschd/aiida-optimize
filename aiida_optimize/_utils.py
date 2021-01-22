@@ -3,6 +3,7 @@
 Defines common helper functions.
 """
 import typing as ty
+from collections import defaultdict
 
 from plumpy.utils import AttributesFrozendict
 
@@ -11,14 +12,44 @@ from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.common.links import LinkType
 
 
-def _get_outputs_dict(process: orm.ProcessNode) -> ty.Dict[str, orm.Node]:
+def _get_outputs_dict(process: orm.ProcessNode, wrap_nested=False) -> ty.Dict[str, orm.Node]:
     """
     Helper function to mimic the behaviour of the old AiiDA .get_outputs_dict() method.
     """
-    return {
+    res = {
         link_triplet.link_label: link_triplet.node
         for link_triplet in process.get_outgoing(link_type=(LinkType.RETURN, LinkType.CREATE))
     }
+    if wrap_nested:
+        return _wrap_nested_links(res)  # type: ignore
+    return res
+
+
+def _wrap_nested_links(output_dict):
+    """Wrap links containing `__` into nested dicts.
+    """
+    if not isinstance(output_dict, dict):
+        return output_dict
+    res = {}
+    direct_links = set(link for link in output_dict if '__' not in link)
+    nested_links = set(link for link in output_dict if '__' in link)
+    nested_links_by_head = defaultdict(list)
+    for link in nested_links:
+        head, tail = link.split('__', 1)
+        nested_links_by_head[head].append((tail, link))
+
+    invalid_links = direct_links.intersection(nested_links_by_head.keys())
+    if invalid_links:
+        raise ValueError(
+            f"Links cannot be both direct and nested, offending links are '{invalid_links}'."
+        )
+
+    for link in direct_links:
+        res[link] = output_dict[link]
+
+    for link_head, link_list in nested_links_by_head.items():
+        res[link_head] = {tail: _wrap_nested_links(output_dict[link]) for tail, link in link_list}
+    return res
 
 
 def _merge_nested_keys(nested_key_inputs, target_inputs):

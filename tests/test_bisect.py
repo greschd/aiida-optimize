@@ -151,3 +151,19 @@ def test_exact_value(check_optimization):
         x_exact=0.,
         f_exact=0.,
     )
+
+
+def test_multiple_input_keys(check_optimization):
+    """
+    Pass the same input twice by passing a list as `input_key`.
+    """
+    tol = 1e-1
+    check_optimization(
+        engine=Bisection,
+        engine_kwargs=dict(lower=-1., upper=1., tol=tol, input_key=['x', 'y']),
+        func_workchain_name='add',
+        xtol=0.,
+        ftol=0.,
+        x_exact=0.,
+        f_exact=0.,
+    )

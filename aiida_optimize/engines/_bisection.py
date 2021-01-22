@@ -27,7 +27,7 @@ class _BisectionImpl(OptimizationEngineImpl):
         lower: float,
         upper: float,
         tol: float,
-        input_key: str,
+        input_key: ty.Union[str, ty.Iterable[str]],
         result_key: str,
         target_value: float,
         logger: ty.Any,
@@ -39,7 +39,10 @@ class _BisectionImpl(OptimizationEngineImpl):
         self.upper = upper
         self.initialized = initialized
         self.tol = tol
-        self.input_key = input_key
+        if isinstance(input_key, str):
+            self.input_key = [input_key]
+        else:
+            self.input_key = list(input_key)
         self.result_key = result_key
         self.target_value = target_value
 
@@ -57,12 +60,11 @@ class _BisectionImpl(OptimizationEngineImpl):
 
     def _create_inputs(self) -> ty.List[ty.Dict[str, orm.Float]]:
         if not self.initialized:
-            return [{
-                self.input_key: orm.Float(self.lower)
-            }, {
-                self.input_key: orm.Float(self.upper)
-            }]
-        return [{self.input_key: orm.Float(self.average)}]
+            return [{in_key: orm.Float(self.lower)
+                     for in_key in self.input_key},
+                    {in_key: orm.Float(self.upper)
+                     for in_key in self.input_key}]
+        return [{in_key: orm.Float(self.average) for in_key in self.input_key}]
 
     def _update(self, outputs: ty.Dict[int, ty.Any]) -> None:
         output_values = outputs.values()
@@ -104,7 +106,7 @@ class _BisectionImpl(OptimizationEngineImpl):
         opt_index, opt_output = min(
             output_values.items(), key=lambda item: abs(item[1].value - self.target_value)
         )
-        opt_input = self._result_mapping[opt_index].input[self.input_key]
+        opt_input = self._result_mapping[opt_index].input[self.input_key[0]]
         return (opt_index, opt_input, opt_output)
 
 

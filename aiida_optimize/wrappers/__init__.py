@@ -6,5 +6,6 @@ a format compatible with the optimization procedure.
 
 from ._create_evaluate import CreateEvaluateWorkChain
 from ._add_inputs import AddInputsWorkChain
+from ._concatenate import ConcatenateWorkChain
 
-__all__ = ['CreateEvaluateWorkChain', 'AddInputsWorkChain']
+__all__ = ['CreateEvaluateWorkChain', 'AddInputsWorkChain', "ConcatenateWorkChain"]

@@ -28,7 +28,7 @@ class ConcatenateWorkChain(RunOrSubmitWorkChain):
         spec.input(
             'process_labels',
             valid_type=orm.List,
-            help="A list of pairs (label, process_name). The labels can be any"
+            help="A list of pairs (label, process_name). The labels can be any "
             "string, the process_name needs to be loadable by "
             "`aiida_tools.process_inputs.load_object`, and defines which "
             "process is being run.",

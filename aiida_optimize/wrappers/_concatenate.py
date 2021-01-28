@@ -44,10 +44,11 @@ class ConcatenateWorkChain(RunOrSubmitWorkChain):
         spec.input(
             'output_input_mappings',
             valid_type=orm.List,
-            help="A list of dictionaries. The i-th dictionary defines"
-            "which outputs of the i-th process are passed to the i+1th. "
-            "Keys of the dictionaries are output names, and values input names. "
-            "The length of this input must be one shorter than 'process_labels'."
+            help="Defines how inputs are passed between sub-processes. "
+            "Each list entry entry has the form `((process_label_a, process_label_b), mapping)`, "
+            "and defines outputs of process A to be passed to process B. The `mapping` values are "
+            "dictionaries `{'output_name': 'input_name'}` giving the output name (in process A) "
+            "and input name (in process B) for each value to pass."
         )
 
         spec.inputs.validator = cls._validate_inputs
@@ -71,19 +72,31 @@ class ConcatenateWorkChain(RunOrSubmitWorkChain):
         Validate that the 'process_labels', 'output_input_mappings' and 'process_inputs'
         are consistent.
         """
-        num_labels = len(inputs['process_labels'])
-        num_output_input_mappings = len(inputs['output_input_mappings'])
-        if num_output_input_mappings != num_labels - 1:
-            return "The 'process_labels' and 'output_input_mappings' inputs have inconsistent length."
+        process_labels = [label for label, _ in inputs['process_labels'].get_list()]
 
-        labels = [label for label, _ in inputs['process_labels'].get_list()]
+        if len(set(process_labels)) < len(process_labels):
+            return "The 'process_labels' contains duplicate entries."
+
         for key in inputs['process_inputs']:
-            if key not in labels:
+            if key not in process_labels:
                 return f"The 'process_inputs' namespace contains a sub-namespace '{key}' that does not match any of the 'process_labels'."
+
+        output_input_mappings = inputs['output_input_mappings'].get_list()
+
+        labels_in_mapping = set()
+        for labels, _ in output_input_mappings:
+            labels_in_mapping.update(labels)
+        invalid_labels = labels_in_mapping - set(process_labels)
+        if invalid_labels:
+            return f"The process labels '{invalid_labels}' used in 'output_input_mappings' do not exist."
+
+        process_label_idx = {label: idx for idx, label in enumerate(process_labels)}
+        for (label_a, label_b), _ in output_input_mappings:
+            if process_label_idx[label_a] >= process_label_idx[label_b]:
+                return f"Cannot pass outputs of '{label_a}' to '{label_b}' as defined in 'output_input_mappings', because '{label_b}' is executed first."
 
     def _initialize(self):
         self.ctx.process_idx = 0
-        self.ctx.last_label = None
 
     def _not_finished(self):
         return self.ctx.process_idx < len(self.inputs.process_labels)
@@ -97,15 +110,15 @@ class ConcatenateWorkChain(RunOrSubmitWorkChain):
         self.report(f"Starting sub-process with label '{label}'.")
         inputs = dict(self.inputs.process_inputs.get(label, {}))
 
-        if self.ctx.process_idx > 0:
-            output_input_mapping = self.inputs.output_input_mappings.get_list()[self.ctx.process_idx
-                                                                                - 1]
-            last_outputs = self.ctx.get(f'process_{self.ctx.last_label}').outputs
+        for (prev_label,
+             curr_label), output_input_mapping in self.inputs.output_input_mappings.get_list():
+            if curr_label == label:
+                prev_outputs = self.ctx.get(f'process_{prev_label}').outputs
 
-            inputs = _merge_nested_keys({
-                input_name: get_nested_result(last_outputs, output_name)
-                for output_name, input_name in output_input_mapping.items()
-            }, inputs)
+                inputs = _merge_nested_keys({
+                    input_name: get_nested_result(prev_outputs, output_name)
+                    for output_name, input_name in output_input_mapping.items()
+                }, inputs)
 
         return ToContext({f'process_{label}': self.run_or_submit(sub_process_class, **inputs)})
 
@@ -118,5 +131,4 @@ class ConcatenateWorkChain(RunOrSubmitWorkChain):
         if not sub_process.is_finished_ok:
             return self.exit_codes.ERROR_SUB_PROCESS_FAILED
 
-        self.ctx.last_label = label
         self.ctx.process_idx += 1

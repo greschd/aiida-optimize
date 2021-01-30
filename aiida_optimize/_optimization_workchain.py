@@ -73,6 +73,7 @@ class OptimizationWorkChain(WorkChain):
             'optimal_process_output', help='Output value of the optimal evaluation process.'
         )
         spec.output('optimal_process_uuid', help='UUID of the optimal evaluation process.')
+        spec.output_namespace('engine_outputs', required=False, dynamic=True)
 
     @contextmanager
     def optimizer(self):
@@ -165,6 +166,9 @@ class OptimizationWorkChain(WorkChain):
             result_index = opt.result_index
             optimal_process = self.ctx[self.eval_key(result_index)]
             self.out('optimal_process_uuid', orm.Str(optimal_process.uuid).store())
+
+            if hasattr(opt, 'get_engine_outputs'):
+                self.out('engine_outputs', opt.get_engine_outputs())
 
     def eval_key(self, index):
         """

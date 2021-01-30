@@ -17,7 +17,11 @@ from ._result_mapping import ResultMapping, Result
 
 yaml.representer.Representer.add_representer(ABCMeta, yaml.representer.Representer.represent_name)
 
-__all__ = ['OptimizationEngineImpl', 'OptimizationEngineWrapper']
+__all__ = (
+    'OptimizationEngineImpl',
+    'OptimizationEngineImplWithOutputs',
+    'OptimizationEngineWrapper',
+)
 
 
 class OptimizationEngineImpl:
@@ -118,6 +122,24 @@ class OptimizationEngineImpl:
     def _get_optimal_result(self) -> ty.Tuple[int, ty.Any, ty.Any]:
         """
         Return the index, input value, and output value of the best evaluation process.
+        """
+
+
+class OptimizationEngineImplWithOutputs:
+    """
+    Base class for the optimization engine implementation emitting custom outputs.
+    """
+    @abstractmethod
+    def get_engine_outputs(self) -> ty.Dict[str, ty.Any]:
+        """
+        Return the custom outputs created by the engine, at the end of
+        the run.
+
+        The result must be compatible with `WorkChain.out`, i.e. its
+        keys are labels, and the values are either AiiDA nodes, or
+        nested dictionaries.
+
+        All AiiDA nodes returned *must* already be stored.
         """
 
 

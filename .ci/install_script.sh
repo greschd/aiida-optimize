@@ -6,7 +6,7 @@
 set -ev
 
 pip install -U pip wheel setuptools
-pip install 'aiida-core<1.6'
+pip install 'aiida-core<1.6' 'sqlalchemy<1.4'
 
 case "$INSTALL_TYPE" in
     testing)

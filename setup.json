@@ -42,7 +42,7 @@
       "sphinxcontrib-details-directive"
     ],
     "testing": [
-      "pytest>=3.6",
+      "pytest~=6.0",
       "pytest-cov",
       "aiida-pytest>=0.1.0a8"
     ],

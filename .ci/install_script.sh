@@ -6,6 +6,7 @@
 set -ev
 
 pip install -U pip wheel setuptools
+pip install 'aiida-core<1.6'
 
 case "$INSTALL_TYPE" in
     testing)

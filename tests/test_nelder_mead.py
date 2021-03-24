@@ -55,3 +55,22 @@ def test_nelder_mead(
         x_exact=x_exact,
         f_exact=f_exact,
     )
+
+
+def test_nelder_mead_max_iter(check_error):
+    """
+    Test the OptimizationWorkChain with the Nelder-Mead engine in the case
+    when the set `max_iter` is reached. This triggers the 202 exut status.
+    """
+
+    check_error(
+        engine=NelderMead,
+        engine_kwargs=dict(
+            simplex=[[1.2, 0.9], [1., 2.], [2., 1.]],
+            xtol=1e-1,
+            ftol=1e-1,
+            max_iter=10,
+        ),
+        func_workchain_name='rosenbrock',
+        exit_status=202
+    )

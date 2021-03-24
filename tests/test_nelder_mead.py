@@ -72,5 +72,8 @@ def test_nelder_mead_max_iter(check_error):
             max_iter=10,
         ),
         func_workchain_name='rosenbrock',
-        exit_status=202
+        exit_status=202,
+        output_port_names=[
+            'engine_outputs__last_simplex',
+        ]
     )

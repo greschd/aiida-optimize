@@ -318,6 +318,9 @@ class _NelderMeadImpl(OptimizationEngineImpl):
 
         return (opt_index, opt_input, opt_output)
 
+    def get_engine_outputs(self):
+        return {'last_simplex': orm.List(list=self.simplex.tolist()).store()}
+
 
 class NelderMead(OptimizationEngineWrapper):
     """

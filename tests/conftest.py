@@ -126,6 +126,7 @@ def check_error(
         engine_kwargs,
         exit_status,
         evaluate=None,
+        output_port_names=None
     ):
 
         func_workchain = getattr(sample_processes, func_workchain_name)
@@ -138,5 +139,8 @@ def check_error(
         )
 
         assert result_node.exit_status == exit_status
+        if output_port_names is not None:
+            for name in output_port_names:
+                assert name in result_node.outputs
 
     return inner

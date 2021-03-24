@@ -81,6 +81,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         next_submit='submit_initialize',
         next_update=None,
         finished=False,
+        exceeded_max_iters=False,
         result_state=None,
     ):
         super(_NelderMeadImpl, self).__init__(logger=logger, result_state=result_state)
@@ -112,6 +113,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         self.next_update = next_update
 
         self.finished = finished
+        self.exceeded_max_iters = exceeded_max_iters
 
     def _get_values(self, outputs):
         return [get_nested_result(res, self.result_key).value for _, res in sorted(outputs.items())]
@@ -144,6 +146,9 @@ class _NelderMeadImpl(OptimizationEngineImpl):
             self.next_update = 'finalize'
             return []
         self.num_iter += 1
+        self._logger.report(
+            f'Start of Nelder-Mead iteration {self.num_iter}, max number of iterations: {self.max_iter}.'
+        )
         xr = (1 + RHO) * self.xbar - RHO * self.simplex[-1]
         self.next_update = 'choose_step'
         return [self._to_input_list(xr)]
@@ -170,6 +175,14 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         f_diff_max = np.max(np.abs(self.fun_simplex[1:] - self.fun_simplex[0]))
         self._logger.report('Maximum function difference: {}'.format(f_diff_max))
         self.finished = (x_dist_max < self.xtol) and (f_diff_max < self.ftol)
+        self._logger.report(
+            f'End of Nelder-Mead iteration {self.num_iter}, max number of iterations: {self.max_iter}.'
+        )
+        if not self.finished:
+            if self.num_iter >= self.max_iter:
+                self._logger.report('Number of iterations exceeded the maximum. Stop.')
+                self.exceeded_max_iters = True
+                self.finished = True
 
     @update_method()
     def choose_step(self, outputs):
@@ -275,6 +288,10 @@ class _NelderMeadImpl(OptimizationEngineImpl):
     @property
     def is_finished(self):
         return self.finished
+
+    @property
+    def is_finished_ok(self):
+        return self.is_finished and not self.exceeded_max_iters
 
     def _create_inputs(self):
         return getattr(self, self.next_submit)()

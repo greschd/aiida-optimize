@@ -70,6 +70,7 @@ def check_optimization(
         f_exact,
         evaluate=None,
         input_getter=operator.attrgetter('x'),
+        output_port_names=None
     ):
 
         func_workchain = getattr(sample_processes, func_workchain_name)
@@ -108,6 +109,10 @@ def check_optimization(
             type(x_exact)(getter_input), type(x_exact)(optimal_process_input), atol=xtol
         )
 
+        if output_port_names is not None:
+            for name in output_port_names:
+                assert name in result_node.outputs
+
     return inner
 
 
@@ -139,6 +144,7 @@ def check_error(
         )
 
         assert result_node.exit_status == exit_status
+
         if output_port_names is not None:
             for name in output_port_names:
                 assert name in result_node.outputs

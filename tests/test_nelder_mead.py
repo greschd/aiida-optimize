@@ -54,6 +54,9 @@ def test_nelder_mead(
         ftol=ftol,
         x_exact=x_exact,
         f_exact=f_exact,
+        output_port_names=[
+            'engine_outputs__last_simplex',
+        ]
     )
 
 

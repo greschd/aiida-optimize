@@ -12,4 +12,4 @@ from ._convergence import Convergence
 from ._nelder_mead import NelderMead
 from ._parameter_sweep import ParameterSweep
 
-__all__ = ['base', 'Bisection', 'NelderMead', 'ParameterSweep', 'Convergence']
+__all__ = ['base', 'Bisection', 'NelderMead', 'ParameterSweep', 'Convergence','ParticleSwarm']

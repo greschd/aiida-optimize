@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: "3.9"
       - name: Install python dependencies
         env:
           INSTALL_TYPE: docs
@@ -45,7 +45,9 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          # Using the oldest supported Python version here, to ensure
+          # compatible type stubs will be installed.
+          python-version: "3.7"
       - name: Install python dependencies
         env:
           INSTALL_TYPE: dev_precommit
@@ -58,10 +60,10 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        python-version: [3.7, 3.8]
+        python-version: ["3.7", "3.8", "3.9"]
         install-type: [testing]
         include:
-          - python-version: 3.8
+          - python-version: "3.9"
             install-type: testing_sdist
     services:
       postgres:

@@ -14,6 +14,7 @@
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Topic :: Scientific/Engineering :: Physics",
     "Framework :: AiiDA"
   ],
@@ -39,7 +40,8 @@
     "docs": [
       "sphinx",
       "sphinx-rtd-theme",
-      "sphinxcontrib-details-directive"
+      "sphinxcontrib-details-directive",
+      "markupsafe==2.0.1"
     ],
     "testing": [
       "pytest~=6.0",

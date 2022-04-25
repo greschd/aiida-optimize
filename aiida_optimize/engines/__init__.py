@@ -11,5 +11,6 @@ from ._bisection import Bisection
 from ._convergence import Convergence
 from ._nelder_mead import NelderMead
 from ._parameter_sweep import ParameterSweep
+from ._particle_swarm import ParticleSwarm
 
-__all__ = ['base', 'Bisection', 'NelderMead', 'ParameterSweep', 'Convergence','ParticleSwarm']
+__all__ = ['base', 'Bisection', 'NelderMead', 'ParameterSweep', 'Convergence', 'ParticleSwarm']

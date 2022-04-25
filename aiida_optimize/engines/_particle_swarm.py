@@ -11,8 +11,7 @@
 # file.
 # pylint: disable=invalid-name
 
-# © 2017-2019, ETH Zurich, Institut für Theoretische Physik
-# Author: Dominik Gresch <greschd@gmx.ch>
+# Author: Emanuele Bosoni <bosoe4@gmail.com>
 """
 Defines a Particle-Swarm optimization engine.
 """
@@ -29,6 +28,7 @@ from .base import OptimizationEngineImpl, OptimizationEngineWrapper
 
 __all__ = ['ParticleSwarm']
 
+#Parameters choosen acording to http://dx.doi.org/10.1109/CEC.2003.1299391
 C1 = 1.49445
 C2 = 1.49445
 OMEGA = 0.5
@@ -67,8 +67,8 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
     def __init__(  # pylint: disable=too-many-arguments
         self,
         particles: ty.List[float], #ty.Optional[ty.List[float]],
-        xtol: ty.Optional[float],
-        ftol: ty.Optional[float],
+        #xtol: ty.Optional[float],
+        #ftol: ty.Optional[float],
         max_iter: int,
         input_key: str,
         result_key: str,
@@ -97,8 +97,8 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         self.local_best = local_best
         self.fun_local_best = fun_local_best
 
-        self.xtol: float = xtol if xtol is not None else np.inf
-        self.ftol: float = ftol if ftol is not None else np.inf
+        #self.xtol: float = xtol if xtol is not None else np.inf
+        #self.ftol: float = ftol if ftol is not None else np.inf
 
         self.max_iter = max_iter
         self.num_iter = num_iter
@@ -131,7 +131,7 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
     @update_method(next_submit='new_iter')
     def update_general(self, outputs):
         fun_particles = np.array(self._get_values(outputs))
-        print(fun_particles)
+        #print(fun_particles)
         for index, val in enumerate(fun_particles):
             if val < self.fun_local_best[index]:
                 self.fun_local_best[index] = val
@@ -140,11 +140,10 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
             if val < self.fun_global_best:
                 self.fun_global_best = val
                 self.global_best = self.local_best[index]
-        print(self.fun_global_best)
-        print(self.global_best)
-        print()
-        print(self.local_best)
-        #new_particle = self.create_particle()
+        #print(self.fun_global_best)
+        #print(self.global_best)
+        #print()
+        #print(self.local_best)
 
     def _get_values(self, outputs):
         return [get_nested_result(res, self.result_key).value for _, res in sorted(outputs.items())]
@@ -203,6 +202,8 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         self._logger.report(
             f'End of Particle-Swarm iteration {self.num_iter}, max number of iterations: {self.max_iter}.'
         )
+        self._logger.report(f'Function value at global best {self.fun_global_best}')
+        self._logger.report(f'Variables at global best {self.global_best}')
         if not self.finished:
             if self.num_iter >= self.max_iter:
                 self._logger.report('Number of iterations exceeded the maximum. Stop.')
@@ -217,8 +218,8 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
             if k not in ['_result_mapping', '_logger', 'xtol', 'ftol']
         }
         # Hide inf values before passing on to AiiDA
-        state_dict['xtol'] = self.xtol if self.xtol < np.inf else None
-        state_dict['ftol'] = self.ftol if self.ftol < np.inf else None
+        #state_dict['xtol'] = self.xtol if self.xtol < np.inf else None
+        #state_dict['ftol'] = self.ftol if self.ftol < np.inf else None
         return state_dict
 
     @property
@@ -260,19 +261,11 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
 
 class ParticleSwarm(OptimizationEngineWrapper):
     """
-    Engine to perform the Nelder-Mead (downhill simplex) method.
+    Engine to perform the Particle-Swarm optimization (http://dx.doi.org/10.1109/CEC.2003.1299391).
 
-    :param simplex: The current / initial simplex. Must be of shape (N + 1, N), where N is the dimension of the problem.
-    :type simplex: array
-
-    :param fun_simplex: Function values at the simplex positions.
-    :type fun_simplex: array
-
-    :param xtol: Tolerance for the input x.
-    :type xtol: float
-
-    :param ftol: Tolerance for the function value.
-    :type ftol: float
+    :param particles: The current / initial set of particles. Must be a list of shape (M, N), where N is the dimension 
+                      of the problem and M is free to choose, it will be the number of particles!
+    :type particles: array
 
     :param max_iter: Maximum number of iteration steps.
     :type max_iter: int
@@ -288,8 +281,8 @@ class ParticleSwarm(OptimizationEngineWrapper):
     def __new__(  # pylint: disable=arguments-differ,too-many-arguments
         cls,
         particles,
-        xtol=1e-4,
-        ftol=1e-4,
+        #xtol=1e-4,
+        #ftol=1e-4,
         max_iter=20,
         input_key='x',
         result_key='result',
@@ -297,8 +290,8 @@ class ParticleSwarm(OptimizationEngineWrapper):
     ):
         return cls._IMPL_CLASS(  # pylint: disable=no-member
             particles=particles,
-            xtol=xtol,
-            ftol=ftol,
+            #xtol=xtol,
+            #ftol=ftol,
             max_iter=max_iter,
             input_key=input_key,
             result_key=result_key,

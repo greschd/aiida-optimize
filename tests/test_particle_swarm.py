@@ -28,9 +28,9 @@ def test_particle_swarm(
 
     check_optimization(
         engine=ParticleSwarm,
-        engine_kwargs=dict(particles=particles, max_iter=15),
+        engine_kwargs=dict(particles=particles, max_iter=25),
         func_workchain_name=func_workchain_name,
-        ftol=0.001,
+        ftol=0.01,
         x_exact=x_exact,
         f_exact=f_exact,
         output_port_names=[

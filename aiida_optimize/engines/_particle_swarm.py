@@ -1,16 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# ******NOTICE***************
-# optimize.py module by Travis E. Oliphant
-#
-# You may copy and use this module as you see fit with no
-# guarantee implied provided you keep this notice in all copies.
-# *****END NOTICE************
-#
 # The additional license terms given in ADDITIONAL_TERMS.txt apply to this
 # file.
 # pylint: disable=invalid-name
-
 # Author: Emanuele Bosoni <bosoe4@gmail.com>
 """
 Defines a Particle-Swarm optimization engine.
@@ -28,7 +20,7 @@ from .base import OptimizationEngineImpl, OptimizationEngineWrapper
 
 __all__ = ['ParticleSwarm']
 
-#Parameters choosen acording to http://dx.doi.org/10.1109/CEC.2003.1299391
+#Parameters choosen according to http://dx.doi.org/10.1109/CEC.2003.1299391
 C1 = 1.49445
 C2 = 1.49445
 OMEGA = 0.5
@@ -67,8 +59,6 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
     def __init__(  # pylint: disable=too-many-arguments
         self,
         particles: ty.List[float], #ty.Optional[ty.List[float]],
-        #xtol: ty.Optional[float],
-        #ftol: ty.Optional[float],
         max_iter: int,
         input_key: str,
         result_key: str,
@@ -96,9 +86,6 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         self.fun_global_best = fun_global_best
         self.local_best = local_best
         self.fun_local_best = fun_local_best
-
-        #self.xtol: float = xtol if xtol is not None else np.inf
-        #self.ftol: float = ftol if ftol is not None else np.inf
 
         self.max_iter = max_iter
         self.num_iter = num_iter
@@ -129,9 +116,8 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         return {self.input_key: input_list}
 
     @update_method(next_submit='new_iter')
-    def update_general(self, outputs):
+    def update_general(self, outputs):  # pylint: disable=missing-function-docstring
         fun_particles = np.array(self._get_values(outputs))
-        #print(fun_particles)
         for index, val in enumerate(fun_particles):
             if val < self.fun_local_best[index]:
                 self.fun_local_best[index] = val
@@ -140,15 +126,11 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
             if val < self.fun_global_best:
                 self.fun_global_best = val
                 self.global_best = self.local_best[index]
-        #print(self.fun_global_best)
-        #print(self.global_best)
-        #print()
-        #print(self.local_best)
 
     def _get_values(self, outputs):
         return [get_nested_result(res, self.result_key).value for _, res in sorted(outputs.items())]
 
-    def create_particle(self):
+    def create_particle(self):  # pylint: disable=missing-function-docstring
         n_var = len(self.particles[0])
         new_vel = deepcopy(self.velocities)
         for idx, val in enumerate(self.particles):
@@ -163,12 +145,10 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         for fd in range(len(self.particles)):
             new_parts[fd] = np.array(new_vel[fd]) + self.particles[fd]
 
-        #print(self.particles)
-        #print(new_parts)
-
         return np.array(new_parts), np.array(new_vel)
 
-    def update_vel(self, omega, v, c1, c2, x, pi, pg):
+    @staticmethod
+    def update_vel(omega, v, c1, c2, x, pi, pg):  # pylint: disable=too-many-arguments
         return omega * v + c1 * uniform(0, 1) * (pi - x) + c2 * uniform(0, 1) * (pg - x)
 
     @submit_method()
@@ -194,11 +174,6 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         """
         Updates the 'finished' attribute.
         """
-        #x_dist_max = np.max(la.norm(self.simplex[1:] - self.simplex[0], axis=-1))
-        #self._logger.report('Maximum distance value for the simplex: {}'.format(x_dist_max))
-        #f_diff_max = np.max(np.abs(self.fun_simplex[1:] - self.fun_simplex[0]))
-        #self._logger.report('Maximum function difference: {}'.format(f_diff_max))
-        #self.finished = (x_dist_max < self.xtol) and (f_diff_max < self.ftol)
         self._logger.report(
             f'End of Particle-Swarm iteration {self.num_iter}, max number of iterations: {self.max_iter}.'
         )
@@ -217,9 +192,6 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
             for k, v in self.__dict__.items()
             if k not in ['_result_mapping', '_logger', 'xtol', 'ftol']
         }
-        # Hide inf values before passing on to AiiDA
-        #state_dict['xtol'] = self.xtol if self.xtol < np.inf else None
-        #state_dict['ftol'] = self.ftol if self.ftol < np.inf else None
         return state_dict
 
     @property
@@ -228,7 +200,9 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
 
     @property
     def is_finished_ok(self):
-        return self.is_finished and not self.exceeded_max_iters
+        #If reeintroduce the tollerance values, also need to modify this!!!
+        #return self.is_finished and not self.exceeded_max_iters
+        return self.is_finished
 
     def _create_inputs(self):
         return getattr(self, self.next_submit)()
@@ -239,7 +213,6 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
     @property
     def result_value(self):
         value = super().result_value  # pylint: disable=no-member
-        #assert value.value == self.fun_simplex[0]
         return value
 
     def _get_optimal_result(self):
@@ -263,8 +236,8 @@ class ParticleSwarm(OptimizationEngineWrapper):
     """
     Engine to perform the Particle-Swarm optimization (http://dx.doi.org/10.1109/CEC.2003.1299391).
 
-    :param particles: The current / initial set of particles. Must be a list of shape (M, N), where N is the dimension 
-                      of the problem and M is free to choose, it will be the number of particles!
+    :param particles: The current / initial set of particles. Must be a list of shape (M, N), where N is the dimension
+    of the problem and M is free to choose, it will be the number of particles!
     :type particles: array
 
     :param max_iter: Maximum number of iteration steps.
@@ -281,8 +254,6 @@ class ParticleSwarm(OptimizationEngineWrapper):
     def __new__(  # pylint: disable=arguments-differ,too-many-arguments
         cls,
         particles,
-        #xtol=1e-4,
-        #ftol=1e-4,
         max_iter=20,
         input_key='x',
         result_key='result',
@@ -290,8 +261,6 @@ class ParticleSwarm(OptimizationEngineWrapper):
     ):
         return cls._IMPL_CLASS(  # pylint: disable=no-member
             particles=particles,
-            #xtol=xtol,
-            #ftol=ftol,
             max_iter=max_iter,
             input_key=input_key,
             result_key=result_key,

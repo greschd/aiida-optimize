@@ -171,3 +171,24 @@ def rosenbrock(x):
 @workfunction
 def add(x, y):
     return orm.Float(x + y).store()
+
+
+class X2Y2(WorkChain):
+    """
+    A simple workchain which represents the function to be optimized.
+    """
+    @classmethod
+    def define(cls, spec):
+        super(X2Y2, cls).define(spec)
+
+        spec.input('x', valid_type=orm.List)
+        spec.output('result', valid_type=orm.Float)
+
+        spec.outline(cls.evaluate)
+
+    def evaluate(self):
+        # This is a bit improper: The new value should be created in a calculation.
+        self.out(
+            'result',
+            orm.Float(self.inputs.x.get_list()[0]**2 + self.inputs.x.get_list()[1]**2).store()
+        )

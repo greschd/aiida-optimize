@@ -16,9 +16,9 @@ from aiida import orm
 from ..helpers import get_nested_result
 from .base import OptimizationEngineImpl, OptimizationEngineWrapper
 
-__all__ = ['ParticleSwarm']
+__all__ = ["ParticleSwarm"]
 
-#Parameters choosen according to http://dx.doi.org/10.1109/CEC.2003.1299391
+# Parameters choosen according to http://dx.doi.org/10.1109/CEC.2003.1299391
 C1 = 1.49445
 C2 = 1.49445
 OMEGA = 0.5
@@ -54,15 +54,16 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
     """
     Implementation class for the Particle-Swarm optimization engine.
     """
+
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        particles: ty.List[float], #ty.Optional[ty.List[float]],
+        particles: ty.List[float],  # ty.Optional[ty.List[float]],
         max_iter: int,
         input_key: str,
         result_key: str,
         logger,
         num_iter=0,
-        next_submit='submit_initialize',
+        next_submit="submit_initialize",
         next_update=None,
         finished=False,
         exceeded_max_iters=False,
@@ -72,7 +73,7 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         local_best=None,
         fun_local_best=None,
         velocities=None,
-        rand_state=None
+        rand_state=None,
     ):
         super(_ParticleSwarmImpl, self).__init__(logger=logger, result_state=result_state)
 
@@ -100,20 +101,20 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
 
         self.rand_state = rand_state
 
-    @submit_method(next_update='update_general')
+    @submit_method(next_update="update_general")
     def submit_initialize(self):
         n_parts = len(self.particles)
         n_vars = len(self.particles[0])
         self.local_best = self.particles
         self.fun_local_best = np.full(n_parts, np.inf)
         self.fun_global_best = np.inf
-        #Initialize the velocities to random number in [-1,1]
+        # Initialize the velocities to random number in [-1,1]
         self.velocities = np.zeros((n_parts, n_vars))
         for line in range(len(self.velocities)):
             for col in range(len(self.velocities[line])):
                 self.velocities[line][col] = uniform(-1, 1)
         self.rand_state = get_state()
-        self._logger.report('Submitting first step.')
+        self._logger.report("Submitting first step.")
         return [self._to_input_list(x) for x in self.particles]
 
     def _to_input_list(self, x):
@@ -121,7 +122,7 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         input_list.extend(x)
         return {self.input_key: input_list}
 
-    @update_method(next_submit='new_iter')
+    @update_method(next_submit="new_iter")
     def update_general(self, outputs):  # pylint: disable=missing-function-docstring
         fun_particles = np.array(self._get_values(outputs))
         for index, val in enumerate(fun_particles):
@@ -142,8 +143,13 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         for idx, val in enumerate(self.particles):
             new_vel[idx] = [
                 self.update_vel(
-                    OMEGA, self.velocities[idx][i], C1, C2, val[i], self.local_best[idx][i],
-                    self.global_best[i]
+                    OMEGA,
+                    self.velocities[idx][i],
+                    C1,
+                    C2,
+                    val[i],
+                    self.local_best[idx][i],
+                    self.global_best[i],
                 ) for i in range(n_var)
             ]
 
@@ -161,13 +167,13 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
     def new_iter(self):  # pylint: disable=missing-function-docstring
         self.check_finished()
         if self.finished:
-            self.next_update = 'finalize'
+            self.next_update = "finalize"
             return []
         self.num_iter += 1
         self._logger.report(
-            f'Start of Particle-Swarm iteration {self.num_iter}, max number of iterations: {self.max_iter}.'
+            f"Start of Particle-Swarm iteration {self.num_iter}, max number of iterations: {self.max_iter}."
         )
-        self.next_update = 'update_general'
+        self.next_update = "update_general"
         set_state(self.rand_state)
         self.particles, self.velocities = self.create_particle()
         self.rand_state = get_state()
@@ -183,13 +189,13 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         Updates the 'finished' attribute.
         """
         self._logger.report(
-            f'End of Particle-Swarm iteration {self.num_iter}, max number of iterations: {self.max_iter}.'
+            f"End of Particle-Swarm iteration {self.num_iter}, max number of iterations: {self.max_iter}."
         )
-        self._logger.report(f'Function value at global best {self.fun_global_best}')
-        self._logger.report(f'Variables at global best {self.global_best}')
+        self._logger.report(f"Function value at global best {self.fun_global_best}")
+        self._logger.report(f"Variables at global best {self.global_best}")
         if not self.finished:
             if self.num_iter >= self.max_iter:
-                self._logger.report('Number of iterations exceeded the maximum. Stop.')
+                self._logger.report("Number of iterations exceeded the maximum. Stop.")
                 self.exceeded_max_iters = True
                 self.finished = True
 
@@ -198,7 +204,7 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         state_dict = {
             k: v
             for k, v in self.__dict__.items()
-            if k not in ['_result_mapping', '_logger', 'xtol', 'ftol']
+            if k not in ["_result_mapping", "_logger", "xtol", "ftol"]
         }
         return state_dict
 
@@ -208,8 +214,8 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
 
     @property
     def is_finished_ok(self):
-        #If reeintroduce the tollerance values, also need to modify this!!!
-        #return self.is_finished and not self.exceeded_max_iters
+        # If reeintroduce the tollerance values, also need to modify this!!!
+        # return self.is_finished and not self.exceeded_max_iters
         return self.is_finished
 
     def _create_inputs(self):
@@ -237,7 +243,7 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         return (opt_index, opt_input, opt_output)
 
     def get_engine_outputs(self):
-        return {'last_particles': orm.List(list=self.local_best.tolist()).store()}
+        return {"last_particles": orm.List(list=self.local_best.tolist()).store()}
 
 
 class ParticleSwarm(OptimizationEngineWrapper):
@@ -245,7 +251,7 @@ class ParticleSwarm(OptimizationEngineWrapper):
     Engine to perform the Particle-Swarm optimization (http://dx.doi.org/10.1109/CEC.2003.1299391).
 
     :param particles: The current / initial set of particles. Must be a list of shape (M, N), where N is the dimension
-    of the problem and M is free to choose, it will be the number of particles!
+        of the problem and M is free to choose, it will be the number of particles!
     :type particles: array
 
     :param max_iter: Maximum number of iteration steps.
@@ -257,14 +263,15 @@ class ParticleSwarm(OptimizationEngineWrapper):
     :param result_key: Name of the output argument in the evaluation process.
     :type result_key: str
     """
+
     _IMPL_CLASS = _ParticleSwarmImpl
 
     def __new__(  # pylint: disable=arguments-differ,too-many-arguments
         cls,
         particles,
         max_iter=20,
-        input_key='x',
-        result_key='result',
+        input_key="x",
+        result_key="result",
         logger=None,
     ):
         return cls._IMPL_CLASS(  # pylint: disable=no-member
@@ -272,5 +279,5 @@ class ParticleSwarm(OptimizationEngineWrapper):
             max_iter=max_iter,
             input_key=input_key,
             result_key=result_key,
-            logger=logger
+            logger=logger,
         )

@@ -28,8 +28,12 @@ def test_particle_swarm(
 
     check_optimization(
         engine=ParticleSwarm,
-        engine_kwargs=dict(particles=particles, max_iter=25),
+        engine_kwargs=dict(
+            particles=particles,
+            max_iter=25
+        ),
         func_workchain_name=func_workchain_name,
+        xtol=[0.1,0.1],
         ftol=0.01,
         x_exact=x_exact,
         f_exact=f_exact,

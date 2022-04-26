@@ -64,10 +64,10 @@ def check_optimization(
         engine,
         func_workchain_name,
         engine_kwargs,
-        xtol=None,
-        ftol=None,
-        x_exact=None,
-        f_exact=None,
+        xtol,
+        ftol,
+        x_exact,
+        f_exact,
         evaluate=None,
         input_getter=operator.attrgetter('x'),
         output_port_names=None
@@ -83,12 +83,10 @@ def check_optimization(
         )
 
         assert 'optimal_process_uuid' in result_node.outputs
-        if f_exact is not None and ftol is not None:
-            assert np.isclose(result_node.outputs.optimal_process_output.value, f_exact, atol=ftol)
+        assert np.isclose(result_node.outputs.optimal_process_output.value, f_exact, atol=ftol)
 
         calc = orm.load_node(result_node.outputs.optimal_process_uuid.value)
-        if xtol is not None and x_exact is not None:
-            assert np.allclose(type(x_exact)(input_getter(calc.inputs)), x_exact, atol=xtol)
+        assert np.allclose(type(x_exact)(input_getter(calc.inputs)), x_exact, atol=xtol)
 
         try:
             optimal_process_input_node = result_node.outputs.optimal_process_input
@@ -106,11 +104,10 @@ def check_optimization(
         if isinstance(getter_input, orm.Node):
             assert getter_input.uuid == optimal_process_input_node.uuid
 
-        if xtol is not None and x_exact is not None:
-            assert np.allclose(type(x_exact)(optimal_process_input), x_exact, atol=xtol)
-            assert np.allclose(
-                type(x_exact)(getter_input), type(x_exact)(optimal_process_input), atol=xtol
-            )
+        assert np.allclose(type(x_exact)(optimal_process_input), x_exact, atol=xtol)
+        assert np.allclose(
+            type(x_exact)(getter_input), type(x_exact)(optimal_process_input), atol=xtol
+        )
 
         if output_port_names is not None:
             for name in output_port_names:

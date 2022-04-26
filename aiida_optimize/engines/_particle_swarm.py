@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# The additional license terms given in ADDITIONAL_TERMS.txt apply to this
-# file.
 # pylint: disable=invalid-name
 # Author: Emanuele Bosoni <bosoe4@gmail.com>
 """
@@ -9,7 +7,7 @@ Defines a Particle-Swarm optimization engine.
 """
 
 import typing as ty
-from random import uniform
+from numpy.random import uniform, get_state, set_state
 import numpy as np
 from decorator import decorator
 from copy import deepcopy
@@ -73,7 +71,8 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         fun_global_best=None,
         local_best=None,
         fun_local_best=None,
-        velocities=None
+        velocities=None,
+        rand_state=None
     ):
         super(_ParticleSwarmImpl, self).__init__(logger=logger, result_state=result_state)
 
@@ -99,6 +98,8 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         self.finished = finished
         self.exceeded_max_iters = exceeded_max_iters
 
+        self.rand_state = rand_state
+
     @submit_method(next_update='update_general')
     def submit_initialize(self):
         n_parts = len(self.particles)
@@ -106,7 +107,12 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         self.local_best = self.particles
         self.fun_local_best = np.full(n_parts, np.inf)
         self.fun_global_best = np.inf
+        #Initialize the velocities to random number in [-1,1]
         self.velocities = np.zeros((n_parts, n_vars))
+        for line in range(len(self.velocities)):
+            for col in range(len(self.velocities[line])):
+                self.velocities[line][col] = uniform(-1, 1)
+        self.rand_state = get_state()
         self._logger.report('Submitting first step.')
         return [self._to_input_list(x) for x in self.particles]
 
@@ -162,7 +168,9 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
             f'Start of Particle-Swarm iteration {self.num_iter}, max number of iterations: {self.max_iter}.'
         )
         self.next_update = 'update_general'
+        set_state(self.rand_state)
         self.particles, self.velocities = self.create_particle()
+        self.rand_state = get_state()
 
         return [self._to_input_list(x) for x in self.particles]
 

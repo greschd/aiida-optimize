@@ -9,6 +9,7 @@ Configuration file for pytest tests of aiida-optimize.
 import operator
 import os
 from collections import ChainMap
+import time
 
 import numpy as np
 import pytest
@@ -23,11 +24,19 @@ os.environ['PYTHONPATH'] = (
 )
 import sample_processes
 
-pytest_plugins = ['aiida_pytest', 'aiida.manage.tests.pytest_fixtures']
+pytest_plugins = ['aiida.manage.tests.pytest_fixtures']
 
+@pytest.fixture
+def wait_for():
+    def inner(pid, timeout=1):
+        from aiida.orm import load_node
+        calc = load_node(pid)
+        while not calc.is_finished:
+            time.sleep(timeout)
+    return inner
 
 @pytest.fixture(params=['run', 'submit'])
-def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disable=unused-argument
+def run_optimization(request, wait_for):  # pylint: disable=unused-argument
     """
     Checks an optimization engine with the given parameters.
     """
@@ -53,7 +62,6 @@ def run_optimization(request, configure_with_daemon, wait_for):  # pylint: disab
 
 @pytest.fixture
 def check_optimization(
-    configure,  # pylint: disable=unused-argument
     run_optimization,  # pylint: disable=redefined-outer-name
 ):
     """
@@ -118,7 +126,6 @@ def check_optimization(
 
 @pytest.fixture
 def check_error(
-    configure,  # pylint: disable=unused-argument
     run_optimization,  # pylint: disable=redefined-outer-name
 ):
     """

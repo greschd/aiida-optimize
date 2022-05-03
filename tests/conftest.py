@@ -69,7 +69,7 @@ def with_daemon():
 @pytest.mark.usefixtures('aiida_profile_clean')
 @pytest.fixture(params=[
     'run', 
-    # 'submit',
+    # 'submit', # FIXME: i shall pass
 ])
 def run_optimization(request, with_daemon, wait_for):  # pylint: disable=unused-argument
     """

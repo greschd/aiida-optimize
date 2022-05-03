@@ -5,16 +5,16 @@
   "description": "AiiDA Plugin for running optimization algorithms.",
   "author": "Dominik Gresch",
   "author_email": "greschd@gmx.ch",
-  "python_requires": ">=3.7",
+  "python_requires": ">=3.8",
   "license": "Apache 2.0",
   "classifiers": [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Plugins",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Topic :: Scientific/Engineering :: Physics",
     "Framework :: AiiDA"
   ],
@@ -29,7 +29,7 @@
   ],
   "reentry_register": true,
   "install_requires": [
-    "aiida-core>=1.3.0<2.0.0",
+    "aiida-core>=2.0.0",
     "aiida-tools>=0.3.0",
     "numpy",
     "scipy",
@@ -45,8 +45,7 @@
     ],
     "testing": [
       "pytest~=6.0",
-      "pytest-cov",
-      "aiida-pytest>=0.1.0a8"
+      "pytest-cov"
     ],
     "dev": [
       "yapf==0.30",

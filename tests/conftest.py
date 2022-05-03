@@ -17,6 +17,7 @@ from aiida import orm
 from aiida.common import exceptions
 from aiida.engine.launch import run_get_node, submit
 from aiida_optimize import OptimizationWorkChain
+from aiida import get_profile
 
 # This is needed so that the daemon can also load the local modules.
 os.environ['PYTHONPATH'] = (
@@ -35,8 +36,42 @@ def wait_for():
             time.sleep(timeout)
     return inner
 
-@pytest.fixture(params=['run', 'submit'])
-def run_optimization(request, wait_for):  # pylint: disable=unused-argument
+@pytest.fixture
+def with_daemon():
+    """Starts the daemon process and then makes sure to kill it once the test is done."""
+    import subprocess
+    import sys
+
+    from aiida.cmdline.utils.common import get_env_with_venv_bin
+    from aiida.engine.daemon.client import DaemonClient
+
+    # Add the current python path to the environment that will be used for the daemon sub process.
+    # This is necessary to guarantee the daemon can also import all the classes that are defined
+    # in this `tests` module.
+    env = get_env_with_venv_bin()
+    env['PYTHONPATH'] = ':'.join(sys.path)
+
+    profile = get_profile()
+
+    process = subprocess.Popen(
+        DaemonClient(profile).cmd_string.split(),
+        stderr=sys.stderr,
+        stdout=sys.stdout,
+        env=env,
+    )
+
+    yield
+    
+    process.terminate()
+    
+
+
+@pytest.mark.usefixtures('aiida_profile_clean')
+@pytest.fixture(params=[
+    'run', 
+    # 'submit',
+])
+def run_optimization(request, with_daemon, wait_for):  # pylint: disable=unused-argument
     """
     Checks an optimization engine with the given parameters.
     """
@@ -52,6 +87,7 @@ def run_optimization(request, wait_for):  # pylint: disable=unused-argument
             _, result_node = run_get_node(OptimizationWorkChain, **inputs)
         else:
             assert request.param == 'submit'
+
             pk = submit(OptimizationWorkChain, **inputs).pk
             wait_for(pk)
             result_node = orm.load_node(pk)

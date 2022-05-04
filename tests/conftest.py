@@ -13,7 +13,7 @@ import numpy as np
 import pytest
 from aiida import orm
 from aiida.common import exceptions
-from aiida.engine.launch import run_get_node, submit
+from aiida.engine.launch import run_get_node
 from aiida_optimize import OptimizationWorkChain
 
 import sample_processes

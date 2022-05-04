@@ -95,5 +95,5 @@ jobs:
       - name: Set up test configuration
         run: cp .ci/test_config.yml tests/config.yml
       - name: Run pytest
-        run: pytest --quiet-wipe --print-status
+        run: pytest
         working-directory: tests

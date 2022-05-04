@@ -5,32 +5,33 @@
 """
 Tests that the entrypoints are loadable through their respective factory.
 """
-import pytest 
+import pytest
 from importlib_metadata import entry_points
+
+from aiida.plugins.factories import WorkflowFactory, CalculationFactory, DataFactory, ParserFactory, TransportFactory
+
 
 @pytest.fixture
 @pytest.mark.usefixtures('aiida_profile_clean')
-def check_entrypoints():  # pylint: disable=unused-argument
+def check_entrypoints():
     """
     Fixture to check that loading of all the workflow, calculation and parser
     entrypoints through the corresponding factory works for the given (base)
     module name.
     """
     def inner(module_name):  # pylint: disable=missing-docstring
-        from aiida.plugins.factories import WorkflowFactory, CalculationFactory, DataFactory, ParserFactory, TransportFactory
-        for group, factory in [
-            ('aiida.workflows', WorkflowFactory),
-            ('aiida.calculations', CalculationFactory),
-            ('aiida.parsers', ParserFactory), ('aiida.data', DataFactory),
-            ('aiida.transports', TransportFactory)
-        ]:
+        for group, factory in [('aiida.workflows', WorkflowFactory),
+                               ('aiida.calculations', CalculationFactory),
+                               ('aiida.parsers', ParserFactory), ('aiida.data', DataFactory),
+                               ('aiida.transports', TransportFactory)]:
             for entry_point in entry_points().select(group=group):
                 if entry_point.value.split('.')[0] == module_name:
                     factory(entry_point.name)
 
     return inner
 
-def test_entrypoints(check_entrypoints):
+
+def test_entrypoints(check_entrypoints):  # pylint: disable=redefined-outer-name
     """
     Check that the entrypoints are valid.
     """

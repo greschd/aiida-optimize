@@ -17,16 +17,28 @@ from aiida.engine.launch import run_get_node
 from aiida_optimize import OptimizationWorkChain
 
 import sample_processes
+from sample_processes import (
+    Echo,
+    echo_calcfunction,
+    echo_workfunction,
+)
 
 pytest_plugins = ['aiida.manage.tests.pytest_fixtures']
 
+
+@pytest.fixture(params=[Echo, echo_workfunction, echo_calcfunction])
+def echo_process(request):
+    return request.param
+
+
 @pytest.mark.usefixtures('aiida_profile_clean')
+@pytest.fixture
 def run_optimization():  # pylint: disable=unused-argument
     """
     Checks an optimization engine with the given parameters.
     """
     def inner(engine, func_workchain, engine_kwargs, evaluate=None):  # pylint: disable=missing-docstring,useless-suppression
-        
+
         inputs = dict(
             engine=engine,
             engine_kwargs=orm.Dict(dict=dict(engine_kwargs)),
@@ -37,7 +49,7 @@ def run_optimization():  # pylint: disable=unused-argument
         _, result_node = run_get_node(OptimizationWorkChain, **inputs)
 
         return result_node
-        
+
     return inner
 
 

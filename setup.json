@@ -39,15 +39,16 @@
       "sphinxcontrib-details-directive",
       "markupsafe==2.0.1"
     ],
-    "testing": [
+    "tests": [
       "pytest~=6.0",
-      "pytest-cov"
+      "pytest-cov",
+      "pgtest>=1.3.1"
     ],
     "dev": [
-      "yapf==0.30",
-      "pre-commit",
-      "pylint==2.5.0",
-      "mypy==0.780"
+      "yapf==0.30.0",
+      "pre-commit==2.2",
+      "pylint==2.11.1",
+      "mypy==0.930"
     ]
   },
   "entry_points": {

@@ -8,7 +8,7 @@ sed -i "s|PLACEHOLDER_WORK_DIR|${GITHUB_WORKSPACE}|" "${CONFIG}/localhost.yml"
 verdi setup --non-interactive --config "${CONFIG}/profile.yml"
 
 # set up localhost computer
-verdi computer setup --non-interactive --config "${CONFIG}/localhost.yaml"
+verdi computer setup --non-interactive --config "${CONFIG}/localhost.yml"
 verdi computer configure core.local localhost --config "${CONFIG}/localhost-config.yml"
 verdi computer test localhost
 

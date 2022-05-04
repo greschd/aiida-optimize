@@ -59,4 +59,4 @@ jobs:
             run: .github/system_tests/setup.sh
 
         -   name: Run tests
-            run: .github/system_tests/tests_daemon.sh
+            run: .github/system_tests/test_daemon.sh

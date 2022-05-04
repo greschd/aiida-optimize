@@ -20,7 +20,7 @@ jobs:
       - name: Install python dependencies
         env:
           INSTALL_TYPE: docs
-        run: .ci/install_script.sh
+        run: pip install -e .[docs]
       - name: Build documentation
         env:
           READTHEDOCS: "True"
@@ -47,11 +47,11 @@ jobs:
         with:
           # Using the oldest supported Python version here, to ensure
           # compatible type stubs will be installed.
-          python-version: "3.7"
+          python-version: "3.9"
       - name: Install python dependencies
         env:
           INSTALL_TYPE: dev_precommit
-        run: .ci/install_script.sh
+        run: pip install -e .[dev]
       - name: Run pre-commit
         run: pre-commit run --all-files || ( git status --short ; git diff ; exit 1 )
 
@@ -64,7 +64,6 @@ jobs:
         install-type: [testing]
         include:
           - python-version: "3.9"
-            install-type: testing_sdist
     services:
       postgres:
         image: postgres:10
@@ -91,9 +90,8 @@ jobs:
       - name: Install python dependencies
         env:
           INSTALL_TYPE: ${{ matrix.install-type }}
-        run: .ci/install_script.sh
-      - name: Set up test configuration
-        run: cp .ci/test_config.yml tests/config.yml
+        run: |
+          pip install -e .[tests]
       - name: Run pytest
         run: pytest
         working-directory: tests

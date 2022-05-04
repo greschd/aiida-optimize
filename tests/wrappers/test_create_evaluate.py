@@ -10,8 +10,6 @@ from aiida import orm
 from aiida.plugins import WorkflowFactory
 from aiida.engine.launch import run_get_node
 
-from sample_processes import echo_process  # pylint: disable=import-error,useless-suppression, unused-import
-
 
 @pytest.mark.usefixtures('aiida_profile_clean')
 def test_create_evaluate_basic(echo_process):

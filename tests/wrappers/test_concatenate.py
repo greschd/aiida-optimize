@@ -12,7 +12,7 @@ from aiida.engine.launch import run_get_node
 
 from aiida_tools.process_inputs import get_fullname
 
-from sample_processes import echo_process, Echo, EchoDictValue, EchoNestedValues  # pylint: disable=import-error,useless-suppression, unused-import
+from sample_processes import Echo, EchoDictValue, EchoNestedValues  # pylint: disable=import-error,useless-suppression, unused-import
 
 
 @pytest.mark.usefixtures('aiida_profile_clean')
@@ -59,7 +59,7 @@ def test_concatenate_basic(echo_process):
 
 
 @pytest.mark.usefixtures('aiida_profile_clean')
-def test_concatenate_wrong_label_order():
+def test_concatenate_wrong_label_order(echo_process):
     """
     The 'output_input_mapping' has labels in the wrong order.
     """
@@ -91,7 +91,7 @@ def test_concatenate_wrong_label_order():
 
 
 @pytest.mark.usefixtures('aiida_profile_clean')
-def test_concatenate_duplicate_label():
+def test_concatenate_duplicate_label(echo_process):
     """
     The 'process_labels' has a duplicate entry.
     """

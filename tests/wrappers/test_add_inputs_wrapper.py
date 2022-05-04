@@ -3,14 +3,14 @@
 Tests for the AddInputsWorkChain.
 """
 # pylint: disable=unused-argument,redefined-outer-name
-import pytest 
+import pytest
 
 from aiida import orm
 from aiida.engine import run_get_node
 
 from aiida_optimize.wrappers import AddInputsWorkChain
 
-from sample_processes import echo_process, EchoDictValue, EchoNestedValues  # pylint: disable=import-error,useless-suppression, unused-import
+from sample_processes import EchoDictValue, EchoNestedValues  # pylint: disable=import-error,useless-suppression, unused-import
 
 
 @pytest.mark.usefixtures('aiida_profile_clean')

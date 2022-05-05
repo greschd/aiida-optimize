@@ -84,7 +84,7 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         exceeded_max_iters=False,
         result_state=None,
     ):
-        super(_NelderMeadImpl, self).__init__(logger=logger, result_state=result_state)
+        super().__init__(logger=logger, result_state=result_state)
 
         self.simplex = np.array(simplex)
         assert len(self.simplex) == self.simplex.shape[1] + 1
@@ -171,9 +171,9 @@ class _NelderMeadImpl(OptimizationEngineImpl):
         Updates the 'finished' attribute.
         """
         x_dist_max = np.max(la.norm(self.simplex[1:] - self.simplex[0], axis=-1))
-        self._logger.report('Maximum distance value for the simplex: {}'.format(x_dist_max))
+        self._logger.report(f'Maximum distance value for the simplex: {x_dist_max}')
         f_diff_max = np.max(np.abs(self.fun_simplex[1:] - self.fun_simplex[0]))
-        self._logger.report('Maximum function difference: {}'.format(f_diff_max))
+        self._logger.report(f'Maximum function difference: {f_diff_max}')
         self.finished = (x_dist_max < self.xtol) and (f_diff_max < self.ftol)
         self._logger.report(
             f'End of Nelder-Mead iteration {self.num_iter}, max number of iterations: {self.max_iter}.'

@@ -126,7 +126,7 @@ class Negative(WorkChain):
 
     @check_workchain_step
     def run_negative(self):
-        self.report('Starting negative, input {}'.format(self.inputs.x.value))
+        self.report(f'Starting negative, input {self.inputs.x.value}')
         self.out('result', orm.Float(-self.inputs.x.value).store())
 
 

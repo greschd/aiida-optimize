@@ -14,14 +14,14 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.join(SCRIPT_DIR, os.path.pardir)
 
 # Get the __init__.py version number
-with open(os.path.join(ROOT_DIR, 'aiida_optimize/__init__.py')) as f:
+with open(os.path.join(ROOT_DIR, 'aiida_optimize/__init__.py'), 'r') as f:  # pylint: disable=unspecified-encoding
     MATCH_EXPR = "__version__[^'\"]+(['\"])([^'\"]+)"
     VERSION_INIT = re.search(MATCH_EXPR, f.read()).group(2).strip()  # type: ignore
 
 # Get the setup.json version number
-with open(os.path.join(ROOT_DIR, 'setup.json')) as f:
+with open(os.path.join(ROOT_DIR, 'setup.json'), 'r') as f:  # pylint: disable=unspecified-encoding
     VERSION_JSON = json.load(f)["version"]
 
 if VERSION_INIT != VERSION_JSON:
-    print("Version numbers don't match: init:'{}', json:'{}' ".format(VERSION_INIT, VERSION_JSON))
+    print(f"Version numbers don't match: init:'{VERSION_INIT}', json:'{VERSION_JSON}' ")
     sys.exit(1)

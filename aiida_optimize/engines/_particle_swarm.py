@@ -110,8 +110,8 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         self.fun_global_best = np.inf
         # Initialize the velocities to random number in [-1,1]
         self.velocities = np.zeros((n_parts, n_vars))
-        for line in range(len(self.velocities)):  # pylint: disable=consider-using-enumerate
-            for col in range(len(self.velocities[line])):  # pylint: disable=consider-using-enumerate
+        for line, _ in enumerate(self.velocities):
+            for col, _ in enumerate(self.velocities[line]):
                 self.velocities[line][col] = uniform(-1, 1)
         self.rand_state = get_state()
         self._logger.report("Submitting first step.")
@@ -154,7 +154,7 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
             ]
 
         new_parts = deepcopy(self.particles)
-        for fd in range(len(self.particles)):  # pylint: disable=consider-using-enumerate
+        for fd, _ in enumerate(self.particles):
             new_parts[fd] = np.array(new_vel[fd]) + self.particles[fd]
 
         return np.array(new_parts), np.array(new_vel)

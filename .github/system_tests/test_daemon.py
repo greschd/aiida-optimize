@@ -7,7 +7,6 @@ import numpy as np
 
 from aiida import orm
 from aiida.engine.daemon.client import get_daemon_client
-from aiida.orm import load_node
 from aiida.engine import launch
 from aiida.common import exceptions
 
@@ -31,19 +30,6 @@ def print_daemon_log():
         ))
     except subprocess.CalledProcessError as exception:
         print(f'Note: the command failed, message: {exception}')
-
-
-def jobs_have_finished(pks):
-    """Check if jobs with given pks have finished."""
-    finished_list = [load_node(pk).is_terminated for pk in pks]
-    node_list = [load_node(pk) for pk in pks]
-    num_finished = len([_ for _ in finished_list if _])
-
-    for node in node_list:
-        if not node.is_terminated:
-            print(f'not terminated: {node.pk} [{node.process_state}]')
-    print(f'{num_finished}/{len(finished_list)} finished')
-    return False not in finished_list
 
 
 def wait_for(proc, time_elapsed=5):

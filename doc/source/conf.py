@@ -19,11 +19,6 @@ if os.environ.get(
         import sphinx_rtd_theme
         html_theme = 'sphinx_rtd_theme'
         html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-else:
-    # make sure all entry-points are detected, since readthedocs doesn't expose a way to do this
-    # during post-install.
-    import reentry
-    reentry.manager.scan()
 
 import aiida_optimize
 

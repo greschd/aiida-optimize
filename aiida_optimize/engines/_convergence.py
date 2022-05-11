@@ -37,7 +37,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         logger: ty.Optional[ty.Any],
         result_state: ty.Optional[ty.Dict[int, Result]] = None,
     ):
-        super(_ConvergenceImpl, self).__init__(logger=logger, result_state=result_state)
+        super().__init__(logger=logger, result_state=result_state)
         self.input_values = input_values
         self.tol = tol
         self.input_key = input_key

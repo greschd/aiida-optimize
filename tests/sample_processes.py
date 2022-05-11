@@ -11,8 +11,6 @@ import copy
 import numpy as np
 import scipy.linalg as la
 
-import pytest
-
 from aiida import orm
 from aiida.engine import WorkChain, workfunction, calcfunction
 from aiida_tools import check_workchain_step
@@ -44,11 +42,6 @@ def echo_workfunction(x):
 @calcfunction
 def echo_calcfunction(x):
     return {'result': copy.deepcopy(x)}
-
-
-@pytest.fixture(params=[Echo, echo_workfunction, echo_calcfunction])
-def echo_process(request):
-    return request.param
 
 
 class EchoDictValue(WorkChain):
@@ -133,7 +126,7 @@ class Negative(WorkChain):
 
     @check_workchain_step
     def run_negative(self):
-        self.report('Starting negative, input {}'.format(self.inputs.x.value))
+        self.report(f'Starting negative, input {self.inputs.x.value}')
         self.out('result', orm.Float(-self.inputs.x.value).store())
 
 

@@ -34,7 +34,7 @@ class _BisectionImpl(OptimizationEngineImpl):
         result_state: ty.Optional[ty.Dict[int, Result]] = None,
         initialized: bool = False
     ):
-        super(_BisectionImpl, self).__init__(logger=logger, result_state=result_state)
+        super().__init__(logger=logger, result_state=result_state)
         self.lower = lower
         self.upper = upper
         self.initialized = initialized
@@ -77,16 +77,9 @@ class _BisectionImpl(OptimizationEngineImpl):
             lower_val, upper_val = results
             if lower_val > upper_val:
                 self.lower, self.upper = self.upper, self.lower
-            if min(results) > self.target_value:
+            if min(results) > self.target_value or max(results) < self.target_value:
                 # TODO: add exit code
-                raise ValueError(
-                    "Target value '{}' is outside range '{}'".format(self.target_value, results)
-                )
-            if max(results) < self.target_value:
-                # TODO: add exit code
-                raise ValueError(
-                    "Target value '{}' is outside range '{}'".format(self.target_value, results)
-                )
+                raise ValueError(f"Target value '{self.target_value}' is outside range '{results}'")
         else:
             assert num_vals == 1
             res = get_nested_result(next(iter(output_values)), self.result_key)

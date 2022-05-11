@@ -12,10 +12,11 @@ from aiida.engine.launch import run_get_node
 
 from aiida_tools.process_inputs import get_fullname
 
-from sample_processes import echo_process, Echo, EchoDictValue, EchoNestedValues  # pylint: disable=import-error,useless-suppression, unused-import
+from sample_processes import Echo, EchoDictValue, EchoNestedValues  # pylint: disable=import-error,useless-suppression, unused-import
 
 
-def test_concatenate_basic(configure_with_daemon, echo_process):
+@pytest.mark.usefixtures('aiida_profile_clean')
+def test_concatenate_basic(echo_process):
     """
     Test the ConcatenateWorkChain by chaining three basic processes.
     """
@@ -57,7 +58,8 @@ def test_concatenate_basic(configure_with_daemon, echo_process):
     assert res['process_outputs']['three']['result'].value == 1
 
 
-def test_concatenate_wrong_label_order(configure_with_daemon):
+@pytest.mark.usefixtures('aiida_profile_clean')
+def test_concatenate_wrong_label_order(echo_process):
     """
     The 'output_input_mapping' has labels in the wrong order.
     """
@@ -88,7 +90,8 @@ def test_concatenate_wrong_label_order(configure_with_daemon):
     assert 'cannot pass outputs' in str(exc.value).lower()
 
 
-def test_concatenate_duplicate_label(configure_with_daemon):
+@pytest.mark.usefixtures('aiida_profile_clean')
+def test_concatenate_duplicate_label(echo_process):
     """
     The 'process_labels' has a duplicate entry.
     """
@@ -120,7 +123,8 @@ def test_concatenate_duplicate_label(configure_with_daemon):
     assert 'process_labels' in str(exc.value).lower()
 
 
-def test_concatenate_invalid_input_label(configure_with_daemon):
+@pytest.mark.usefixtures('aiida_profile_clean')
+def test_concatenate_invalid_input_label():
     """
     The 'process_inputs' contains an invalid process label.
     """
@@ -156,7 +160,8 @@ def test_concatenate_invalid_input_label(configure_with_daemon):
     assert "does not match any of the 'process_labels'" in str(exc.value)
 
 
-def test_concatenate_invalid_mapping_label(configure_with_daemon):
+@pytest.mark.usefixtures('aiida_profile_clean')
+def test_concatenate_invalid_mapping_label():
     """
     The 'output_input_mapping' contains an invalid process label.
     """
@@ -193,7 +198,8 @@ def test_concatenate_invalid_mapping_label(configure_with_daemon):
     assert "do not exist" in str(exc.value)
 
 
-def test_concatenate_nested_keys(configure_with_daemon):
+@pytest.mark.usefixtures('aiida_profile_clean')
+def test_concatenate_nested_keys():
     """Concatenate processes with nested input and output keys.
     """
     ConcatenateWorkChain = WorkflowFactory('optimize.wrappers.concatenate')  # pylint: disable=invalid-name
@@ -258,7 +264,8 @@ def test_concatenate_nested_keys(configure_with_daemon):
     assert res['process_outputs']['three']['d']['e'].get_dict() == {'f': {'g': 1}}
 
 
-def test_double_passing(configure_with_daemon):
+@pytest.mark.usefixtures('aiida_profile_clean')
+def test_double_passing():
     """Pass inputs from two preceding processes to the last one.
     """
     ConcatenateWorkChain = WorkflowFactory('optimize.wrappers.concatenate')  # pylint: disable=invalid-name

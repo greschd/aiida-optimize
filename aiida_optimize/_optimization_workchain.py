@@ -118,7 +118,7 @@ class OptimizationWorkChain(WorkChain):
             evals = {}
             evaluate_process = load_object(self.inputs.evaluate_process.value)
             for idx, inputs in opt.create_inputs().items():
-                self.report('Launching evaluation {}'.format(idx))
+                self.report(f'Launching evaluation {idx}')
                 inputs_merged = _merge_nested_keys(inputs, self.inputs.get('evaluate', {}))
                 if is_process_function(evaluate_process):
                     _, node = run_get_node(evaluate_process, **inputs_merged)
@@ -138,7 +138,7 @@ class OptimizationWorkChain(WorkChain):
         while self.indices_to_retrieve:
             idx = self.indices_to_retrieve.pop(0)
             key = self.eval_key(idx)
-            self.report('Retrieving output for evaluation {}'.format(idx))
+            self.report(f'Retrieving output for evaluation {idx}')
             eval_proc = self.ctx[key]
             if not eval_proc.is_finished_ok:
                 return self.exit_codes.ERROR_EVALUATE_PROCESS_FAILED

@@ -18,9 +18,7 @@ jobs:
         with:
           python-version: "3.9"
       - name: Install python dependencies
-        env:
-          INSTALL_TYPE: docs
-        run: .ci/install_script.sh
+        run: pip install -e .[docs]
       - name: Build documentation
         env:
           READTHEDOCS: "True"
@@ -47,11 +45,9 @@ jobs:
         with:
           # Using the oldest supported Python version here, to ensure
           # compatible type stubs will be installed.
-          python-version: "3.7"
+          python-version: "3.9"
       - name: Install python dependencies
-        env:
-          INSTALL_TYPE: dev_precommit
-        run: .ci/install_script.sh
+        run: pip install -e .[dev]
       - name: Run pre-commit
         run: pre-commit run --all-files || ( git status --short ; git diff ; exit 1 )
 
@@ -60,14 +56,12 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9"]
-        install-type: [testing]
+        python-version: ["3.8", "3.9", "3.10"]
         include:
           - python-version: "3.9"
-            install-type: testing_sdist
     services:
       postgres:
-        image: postgres:10
+        image: postgres:12
         ports:
           - 5432:5432
       rabbitmq:
@@ -89,11 +83,62 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install python dependencies
-        env:
-          INSTALL_TYPE: ${{ matrix.install-type }}
-        run: .ci/install_script.sh
-      - name: Set up test configuration
-        run: cp .ci/test_config.yml tests/config.yml
+        run: |
+          pip install -e .[tests]
       - name: Run pytest
-        run: pytest --quiet-wipe --print-status
+        run: pytest
         working-directory: tests
+
+  daemon_test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.10']
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: test_aiida
+          POSTGRES_PASSWORD: ''
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      rabbitmq:
+        image: rabbitmq:latest
+        ports:
+          - 5672:5672
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ matrix.python-version }}-tests-${{ hashFiles('**/setup.json') }}
+          restore-keys:
+            pip-${{ matrix.python-version }}-tests
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install system dependencies
+        run: sudo apt update && sudo apt install postgresql
+
+      - name: Install aiida-optimize (aiida-core)
+        run: |
+          pip install -e .
+          pip freeze
+
+      - name: Setup environment
+        run: .github/system_tests/setup.sh
+
+      - name: Run tests
+        run: .github/system_tests/test_daemon.sh

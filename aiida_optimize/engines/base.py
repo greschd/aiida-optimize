@@ -9,7 +9,7 @@ Defines the base classes needed to implement an optimization engine.
 from __future__ import annotations
 
 import typing as ty
-from abc import ABCMeta, abstractmethod, abstractproperty
+from abc import ABCMeta, abstractmethod
 
 import yaml
 
@@ -50,13 +50,15 @@ class OptimizationEngineImpl:
         """
         return dict(result_state=self._result_mapping.state, **self._state)
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def _state(self) -> ty.Dict[str, ty.Any]:
         """
         The serialized state of the instance, without the result mapping. This function needs to be implemented by child classes.
         """
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def is_finished(self) -> bool:
         """
         Returns true if the optimization is finished.

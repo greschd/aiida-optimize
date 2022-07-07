@@ -8,20 +8,22 @@ Defines a basic and generic parameter convergence engine.
 import itertools
 import typing as ty
 
-import numpy as np
 from aiida import orm
 from aiida.orm.nodes.data.base import to_aiida_type
-from .base import (OptimizationEngineImpl, OptimizationEngineWrapper)
-from ._result_mapping import Result
-from ..helpers import get_nested_result
+import numpy as np
 
-__all__ = ['Convergence']
+from ..helpers import get_nested_result
+from ._result_mapping import Result
+from .base import OptimizationEngineImpl, OptimizationEngineWrapper
+
+__all__ = ["Convergence"]
 
 
 class _ConvergenceImpl(OptimizationEngineImpl):
     """
     Implementation class for the convergence engine.
     """
+
     def __init__(
         self,
         *,
@@ -57,7 +59,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         and excluding variables
             logger
         """
-        return {k: v for k, v in self.__dict__.items() if k not in ['_result_mapping', '_logger']}
+        return {k: v for k, v in self.__dict__.items() if k not in ["_result_mapping", "_logger"]}
 
     @property
     def _result_window(self) -> ty.List[ty.Any]:
@@ -65,7 +67,7 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         Create a list of results corresponding to the current convergence window
         and convert those results to python / numpy objects from AiiDA objects
         """
-        result_window = self.result_values[-self.convergence_window:]
+        result_window = self.result_values[-self.convergence_window :]
         for i, result in enumerate(result_window):
             if isinstance(result, orm.ArrayData):
                 result_window[i] = result.get_array(self.array_name)
@@ -81,10 +83,13 @@ class _ConvergenceImpl(OptimizationEngineImpl):
         into a triangle-like jagged list.
         """
         # |x_i - x_j| for i [0, N-1], j (i, N]
-        distance_triangle = [[
-            np.linalg.norm(self._result_window[i] - self._result_window[j])
-            for j in range(i + 1, self.convergence_window)
-        ] for i in range(self.convergence_window - 1)]
+        distance_triangle = [
+            [
+                np.linalg.norm(self._result_window[i] - self._result_window[j])
+                for j in range(i + 1, self.convergence_window)
+            ]
+            for i in range(self.convergence_window - 1)
+        ]
 
         return distance_triangle
 
@@ -168,9 +173,10 @@ class _ConvergenceImpl(OptimizationEngineImpl):
             num_new_iters = self._num_new_iters
 
         self.current_index += num_new_iters
-        inputs = [{
-            self.input_key: to_aiida_type(self.input_values[i])
-        } for i in range(self.current_index - num_new_iters, self.current_index)]
+        inputs = [
+            {self.input_key: to_aiida_type(self.input_values[i])}
+            for i in range(self.current_index - num_new_iters, self.current_index)
+        ]
 
         return inputs
 
@@ -220,7 +226,7 @@ class Convergence(OptimizationEngineWrapper):
 
     _IMPL_CLASS = _ConvergenceImpl
 
-    def __new__(  #type: ignore  # pylint: disable=too-many-arguments,arguments-differ
+    def __new__(  # type: ignore  # pylint: disable=too-many-arguments,arguments-differ
         cls,
         input_values: ty.List[ty.Any],
         tol: float,
@@ -240,5 +246,5 @@ class Convergence(OptimizationEngineWrapper):
             current_index=0,
             result_values=[],
             initialized=False,
-            logger=logger
+            logger=logger,
         )

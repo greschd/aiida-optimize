@@ -7,7 +7,7 @@ import typing as ty
 from aiida import orm
 from aiida.orm.nodes.data.base import to_aiida_type
 
-__all__ = ("get_nested_result", )
+__all__ = ("get_nested_result",)
 
 
 def get_nested_result(output: ty.Dict[str, orm.Node], key: str) -> orm.Node:
@@ -40,25 +40,25 @@ def get_nested_result(output: ty.Dict[str, orm.Node], key: str) -> orm.Node:
     """
     nesting_kind = None
 
-    if ':' in key:
-        node_label, output_label = key.split(':')
-        nesting_kind = 'Dict'
+    if ":" in key:
+        node_label, output_label = key.split(":")
+        nesting_kind = "Dict"
     else:
         node_label = key
 
-    node_label = node_label.replace('.', '__')
+    node_label = node_label.replace(".", "__")
     node = output[node_label]
 
-    if nesting_kind == 'Dict':
+    if nesting_kind == "Dict":
         if not isinstance(node, orm.Dict):
-            raise TypeError(f'{node} was expected to be orm.Dict, is {type(node)}')
-        keys = output_label.split('.')
+            raise TypeError(f"{node} was expected to be orm.Dict, is {type(node)}")
+        keys = output_label.split(".")
         result = node
         for key_part in keys:
             result = result[key_part]
         # TODO: do we need to `.store()` here?
         result = to_aiida_type(result)
     else:
-        result = node
+        result = node  # type: ignore
 
     return result

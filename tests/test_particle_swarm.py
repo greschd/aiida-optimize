@@ -12,8 +12,10 @@ from aiida_optimize.engines import ParticleSwarm
 
 
 @pytest.mark.parametrize(
-    ['func_workchain_name', 'particles', 'x_exact', 'f_exact'],
-    (['X2Y2', [[1.2, 0.9], [1., 2.], [2., 1.], [0.1, 0.1]], [0., 0.], 0.], )  # pylint: disable=too-many-arguments
+    ["func_workchain_name", "particles", "x_exact", "f_exact"],
+    (
+        ["X2Y2", [[1.2, 0.9], [1.0, 2.0], [2.0, 1.0], [0.1, 0.1]], [0.0, 0.0], 0.0],
+    ),  # pylint: disable=too-many-arguments
 )
 def test_particle_swarm(
     check_optimization,
@@ -35,6 +37,6 @@ def test_particle_swarm(
         x_exact=x_exact,
         f_exact=f_exact,
         output_port_names=[
-            'engine_outputs__last_particles',
-        ]
+            "engine_outputs__last_particles",
+        ],
     )

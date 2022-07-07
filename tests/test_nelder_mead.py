@@ -14,18 +14,33 @@ from aiida_optimize.engines import NelderMead
 
 @pytest.mark.parametrize(
     [
-        'func_workchain_name', 'simplex', 'xtol_input', 'ftol_input', 'xtol', 'ftol', 'x_exact',
-        'f_exact'
+        "func_workchain_name",
+        "simplex",
+        "xtol_input",
+        "ftol_input",
+        "xtol",
+        "ftol",
+        "x_exact",
+        "f_exact",
     ],
     (
-        ['Norm', [[0.], [1.]], None, None, np.inf, np.inf, [0.], 0.],
-        ['Norm', [[0.], [1.]], 1e-1, None, 1e-1, np.inf, [0.], 0.],
-        ['Norm', [[0.], [1.]], None, 1e-1, np.inf, 1e-1, [0.], 0.],
-        ['Norm', [[0.], [1.]], 1e-1, 1e-1, 1e-1, 1e-1, [0.], 0.],
-        ['rosenbrock', [[1.2, 0.9], [1., 2.], [2., 1.]], 1e-1, 1e-1, 0.63, 1e-1, [1., 1.], 0.],
-        ['sin_list', [[-np.pi / 2 + 1e-3], [np.pi]], 1e-1, 1e-1, 1e-1, 1e-1, [-np.pi / 2], -1.],
-        ['sin_list', [[-np.pi / 2 - 1e-3], [np.pi]], 1e-1, 1e-1, 1e-1, 1e-1, [-np.pi / 2], -1.],
-    )  # pylint: disable=too-many-arguments
+        ["Norm", [[0.0], [1.0]], None, None, np.inf, np.inf, [0.0], 0.0],
+        ["Norm", [[0.0], [1.0]], 1e-1, None, 1e-1, np.inf, [0.0], 0.0],
+        ["Norm", [[0.0], [1.0]], None, 1e-1, np.inf, 1e-1, [0.0], 0.0],
+        ["Norm", [[0.0], [1.0]], 1e-1, 1e-1, 1e-1, 1e-1, [0.0], 0.0],
+        [
+            "rosenbrock",
+            [[1.2, 0.9], [1.0, 2.0], [2.0, 1.0]],
+            1e-1,
+            1e-1,
+            0.63,
+            1e-1,
+            [1.0, 1.0],
+            0.0,
+        ],
+        ["sin_list", [[-np.pi / 2 + 1e-3], [np.pi]], 1e-1, 1e-1, 1e-1, 1e-1, [-np.pi / 2], -1.0],
+        ["sin_list", [[-np.pi / 2 - 1e-3], [np.pi]], 1e-1, 1e-1, 1e-1, 1e-1, [-np.pi / 2], -1.0],
+    ),  # pylint: disable=too-many-arguments
 )
 def test_nelder_mead(
     check_optimization,
@@ -55,8 +70,8 @@ def test_nelder_mead(
         x_exact=x_exact,
         f_exact=f_exact,
         output_port_names=[
-            'engine_outputs__last_simplex',
-        ]
+            "engine_outputs__last_simplex",
+        ],
     )
 
 
@@ -69,14 +84,14 @@ def test_nelder_mead_max_iter(check_error):
     check_error(
         engine=NelderMead,
         engine_kwargs=dict(
-            simplex=[[1.2, 0.9], [1., 2.], [2., 1.]],
+            simplex=[[1.2, 0.9], [1.0, 2.0], [2.0, 1.0]],
             xtol=1e-1,
             ftol=1e-1,
             max_iter=10,
         ),
-        func_workchain_name='rosenbrock',
+        func_workchain_name="rosenbrock",
         exit_status=202,
         output_port_names=[
-            'engine_outputs__last_simplex',
-        ]
+            "engine_outputs__last_simplex",
+        ],
     )

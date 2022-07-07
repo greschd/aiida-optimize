@@ -8,19 +8,19 @@ Defines the base classes needed to implement an optimization engine.
 
 from __future__ import annotations
 
-import typing as ty
 from abc import ABCMeta, abstractmethod
+import typing as ty
 
 import yaml
 
-from ._result_mapping import ResultMapping, Result
+from ._result_mapping import Result, ResultMapping
 
-yaml.representer.Representer.add_representer(ABCMeta, yaml.representer.Representer.represent_name)
+yaml.representer.Representer.add_representer(ABCMeta, yaml.representer.Representer.represent_name)  # type: ignore
 
 __all__ = (
-    'OptimizationEngineImpl',
-    'OptimizationEngineImplWithOutputs',
-    'OptimizationEngineWrapper',
+    "OptimizationEngineImpl",
+    "OptimizationEngineImplWithOutputs",
+    "OptimizationEngineWrapper",
 )
 
 
@@ -28,6 +28,7 @@ class OptimizationEngineImpl:
     """
     Base class for the stateful optimization engine implementation.
     """
+
     __metaclass__ = ABCMeta
 
     def __init__(
@@ -131,6 +132,7 @@ class OptimizationEngineImplWithOutputs:
     """
     Base class for the optimization engine implementation emitting custom outputs.
     """
+
     @abstractmethod
     def get_engine_outputs(self) -> ty.Dict[str, ty.Any]:
         """
@@ -149,6 +151,7 @@ class OptimizationEngineWrapper:
     """
     Base class for wrappers that supply the public interface for optimization engines.
     """
+
     __metaclass__ = ABCMeta
     _IMPL_CLASS: ty.Type[OptimizationEngineImpl]
 

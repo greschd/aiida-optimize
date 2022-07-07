@@ -6,12 +6,13 @@
 Defines a Particle-Swarm optimization engine.
 """
 
-import typing as ty
-from numpy.random import uniform, get_state, set_state
-import numpy as np
-from decorator import decorator
 from copy import deepcopy
+import typing as ty
+
 from aiida import orm
+from decorator import decorator
+import numpy as np
+from numpy.random import get_state, set_state, uniform
 
 from ..helpers import get_nested_result
 from .base import OptimizationEngineImpl, OptimizationEngineWrapper
@@ -28,6 +29,7 @@ def update_method(next_submit=None):
     """
     Decorator for methods which update the results.
     """
+
     @decorator
     def inner(func, self, outputs):
         self.next_submit = next_submit
@@ -41,6 +43,7 @@ def submit_method(next_update=None):
     """
     Decorator for methods which submit new evaluations.
     """
+
     @decorator
     def inner(func, self):
         self.next_submit = None
@@ -150,7 +153,8 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
                     val[i],
                     self.local_best[idx][i],
                     self.global_best[i],
-                ) for i in range(n_var)
+                )
+                for i in range(n_var)
             ]
 
         new_parts = deepcopy(self.particles)
@@ -234,8 +238,7 @@ class _ParticleSwarmImpl(OptimizationEngineImpl):
         Return the index and optimization value of the best evaluation process.
         """
         cost_values = {
-            k: get_nested_result(v.output, self.result_key)
-            for k, v in self._result_mapping.items()
+            k: get_nested_result(v.output, self.result_key) for k, v in self._result_mapping.items()
         }
         opt_index, opt_output = min(cost_values.items(), key=lambda item: item[1].value)
         opt_input = self._result_mapping[opt_index].input[self.input_key]

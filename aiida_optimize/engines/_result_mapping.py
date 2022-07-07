@@ -10,13 +10,14 @@ from __future__ import annotations
 
 import typing as ty
 
-__all__ = ['Result', 'ResultMapping']
+__all__ = ["Result", "ResultMapping"]
 
 
 class Result:
     """
     Data object for storing the input created by the optimization engine, and the output from the evaluation process corresponding to that input.
     """
+
     def __init__(self, input_: ty.Any, output: ty.Any = None) -> None:
         self.input = input_
         self.output = output
@@ -26,6 +27,7 @@ class ResultMapping:
     """
     Maps the keys used to identify evaluations to their inputs / outputs.
     """
+
     def __init__(self) -> None:
         self._results: ty.Dict[int, Result] = {}
 

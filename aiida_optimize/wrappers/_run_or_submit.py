@@ -15,7 +15,8 @@ class RunOrSubmitWorkChain(WorkChain):
     Adds a 'run_or_submit' method to the WorkChain class, which uses
     'run' for process functions and 'submit' else.
     """
-    def run_or_submit(self, proc: Process, **kwargs: ty.Any) -> orm.ProcessNode:
+
+    def run_or_submit(self, proc: ty.Type[Process], **kwargs: ty.Any) -> orm.ProcessNode:
         if utils.is_process_function(proc):
             _, node = run_get_node(proc, **kwargs)
             return node

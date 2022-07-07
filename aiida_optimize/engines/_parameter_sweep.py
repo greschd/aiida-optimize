@@ -11,13 +11,14 @@ from aiida.orm.nodes.data.base import to_aiida_type
 from ..helpers import get_nested_result
 from .base import OptimizationEngineImpl, OptimizationEngineWrapper
 
-__all__ = ['ParameterSweep']
+__all__ = ["ParameterSweep"]
 
 
 class _ParameterSweepImpl(OptimizationEngineImpl):
     """
     Implementation class for the parameter sweep engine.
     """
+
     def __init__(self, parameters, result_key, logger, result_state=None):
         super().__init__(logger=logger, result_state=result_state)
         self._parameters = parameters
@@ -25,7 +26,7 @@ class _ParameterSweepImpl(OptimizationEngineImpl):
 
     @property
     def _state(self):
-        return {'parameters': self._parameters, 'result_key': self._result_key}
+        return {"parameters": self._parameters, "result_key": self._result_key}
 
     @property
     def is_finished(self):
@@ -34,8 +35,9 @@ class _ParameterSweepImpl(OptimizationEngineImpl):
         return not any(res.output is None for res in self._result_mapping.values())
 
     def _create_inputs(self):
-        return [{k: to_aiida_type(v)
-                 for k, v in param_dict.items()} for param_dict in self._parameters]
+        return [
+            {k: to_aiida_type(v) for k, v in param_dict.items()} for param_dict in self._parameters
+        ]
 
     def _update(self, outputs):
         pass
@@ -64,7 +66,12 @@ class ParameterSweep(OptimizationEngineWrapper):
     :param result_key: Name of the evaluation process output argument.
     :type result_key: str
     """
+
     _IMPL_CLASS = _ParameterSweepImpl
 
-    def __new__(cls, parameters, result_key='result', logger=None):  # pylint: disable=arguments-differ
-        return cls._IMPL_CLASS(parameters=parameters, result_key=result_key, logger=logger)  # pylint: disable=no-member
+    def __new__(
+        cls, parameters, result_key="result", logger=None
+    ):  # pylint: disable=arguments-differ
+        return cls._IMPL_CLASS(
+            parameters=parameters, result_key=result_key, logger=logger
+        )  # pylint: disable=no-member

@@ -6,24 +6,20 @@
 Fixtures for pytest tests of aiida-optimize.
 """
 
-import operator
 from collections import ChainMap
+import operator
 
-import numpy as np
-import pytest
 from aiida import orm
 from aiida.common import exceptions
 from aiida.engine.launch import run_get_node
+import numpy as np
+import pytest
+
 from aiida_optimize import OptimizationWorkChain
-
 import sample_processes
-from sample_processes import (
-    Echo,
-    echo_calcfunction,
-    echo_workfunction,
-)
+from sample_processes import Echo, echo_calcfunction, echo_workfunction
 
-pytest_plugins = ['aiida.manage.tests.pytest_fixtures']
+pytest_plugins = ["aiida.manage.tests.pytest_fixtures"]
 
 
 @pytest.fixture(params=[Echo, echo_workfunction, echo_calcfunction])
@@ -31,13 +27,16 @@ def echo_process(request):
     return request.param
 
 
-@pytest.mark.usefixtures('aiida_profile_clean')
+@pytest.mark.usefixtures("aiida_profile_clean")
 @pytest.fixture
 def run_optimization():  # pylint: disable=unused-argument
     """
     Checks an optimization engine with the given parameters.
     """
-    def inner(engine, func_workchain, engine_kwargs, evaluate=None):  # pylint: disable=missing-docstring,useless-suppression
+
+    def inner(
+        engine, func_workchain, engine_kwargs, evaluate=None
+    ):  # pylint: disable=missing-docstring,useless-suppression
 
         inputs = dict(
             engine=engine,
@@ -70,20 +69,20 @@ def check_optimization(
         x_exact,
         f_exact,
         evaluate=None,
-        input_getter=operator.attrgetter('x'),
-        output_port_names=None
+        input_getter=operator.attrgetter("x"),
+        output_port_names=None,
     ):
 
         func_workchain = getattr(sample_processes, func_workchain_name)
 
         result_node = run_optimization(
             engine=engine,
-            engine_kwargs=ChainMap(engine_kwargs, {'result_key': 'result'}),
+            engine_kwargs=ChainMap(engine_kwargs, {"result_key": "result"}),
             func_workchain=func_workchain,
-            evaluate=evaluate
+            evaluate=evaluate,
         )
 
-        assert 'optimal_process_uuid' in result_node.outputs
+        assert "optimal_process_uuid" in result_node.outputs
         assert np.isclose(result_node.outputs.optimal_process_output.value, f_exact, atol=ftol)
 
         calc = orm.load_node(result_node.outputs.optimal_process_uuid.value)
@@ -131,16 +130,16 @@ def check_error(
         engine_kwargs,
         exit_status,
         evaluate=None,
-        output_port_names=None
+        output_port_names=None,
     ):
 
         func_workchain = getattr(sample_processes, func_workchain_name)
 
         result_node = run_optimization(
             engine=engine,
-            engine_kwargs=ChainMap(engine_kwargs, {'result_key': 'result'}),
+            engine_kwargs=ChainMap(engine_kwargs, {"result_key": "result"}),
             func_workchain=func_workchain,
-            evaluate=evaluate
+            evaluate=evaluate,
         )
 
         assert result_node.exit_status == exit_status

@@ -4,8 +4,8 @@
 # © 2017-2019, ETH Zurich, Institut für Theoretische Physik
 # Author: Dominik Gresch <greschd@gmx.ch>
 
-import sys
 from os.path import abspath, dirname
+import sys
 
 from aiida.engine.launch import run
 from aiida.orm import Dict
@@ -20,16 +20,16 @@ from aiida_optimize.engines import Bisection
 result_wf = run(
     OptimizationWorkChain,
     engine=Bisection,
-    engine_kwargs=Dict(dict=dict(upper=1.3, lower=-1., tol=1e-3, result_key='result')),
-    evaluate_process=sin
+    engine_kwargs=Dict(dict=dict(upper=1.3, lower=-1.0, tol=1e-3, result_key="result")),
+    evaluate_process=sin,
 )
 
 result_wc = run(
     OptimizationWorkChain,
     engine=Bisection,
-    engine_kwargs=Dict(dict=dict(upper=1.3, lower=-1., tol=1e-3, result_key='result')),
-    evaluate_process=Sin
+    engine_kwargs=Dict(dict=dict(upper=1.3, lower=-1.0, tol=1e-3, result_key="result")),
+    evaluate_process=Sin,
 )
 
-print('\nResult with workfunction:', result_wf)
-print('\nResult with workchain:', result_wc)
+print("\nResult with workfunction:", result_wf)
+print("\nResult with workchain:", result_wc)

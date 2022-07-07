@@ -3,13 +3,12 @@
 Defines a workchain for changing the input interface of a process.
 """
 
-from aiida_tools.process_inputs import PROCESS_INPUT_KWARGS, load_object
-
 from aiida import orm
-from aiida.engine import ToContext
 from aiida.common.exceptions import InputValidationError
+from aiida.engine import ToContext
 
 from .._utils import _get_outputs_dict, _merge_nested_keys
+from ..process_inputs import PROCESS_INPUT_KWARGS, load_object
 from ._run_or_submit import RunOrSubmitWorkChain
 
 
@@ -38,36 +37,37 @@ class AddInputsWorkChain(RunOrSubmitWorkChain):
     In cases where only a single input needs to be added, they can be
     specified directly instead of wrapped in a List.
     """
+
     @classmethod
     def define(cls, spec):
         super().define(spec)
 
         spec.input(
-            'added_input_values',
+            "added_input_values",
             valid_type=(orm.List, orm.BaseType),
-            help="Values of the added inputs to be passed into the sub-process."
+            help="Values of the added inputs to be passed into the sub-process.",
         )
         spec.input(
-            'added_input_keys',
+            "added_input_keys",
             valid_type=(orm.List, orm.Str),
-            help="Specifies the location of each added input."
+            help="Specifies the location of each added input.",
         )
         spec.input(
-            'sub_process',
+            "sub_process",
             **PROCESS_INPUT_KWARGS,
-            help="The class of the process that should be wrapped."
+            help="The class of the process that should be wrapped.",
         )
         spec.input_namespace(
-            'inputs',
+            "inputs",
             dynamic=True,
             required=False,
-            help="Inputs to be passed on to the sub-process."
+            help="Inputs to be passed on to the sub-process.",
         )
 
         spec.exit_code(
             201,
-            'ERROR_SUB_PROCESS_FAILED',
-            message='Workchain failed because the sub-process did not finish ok.'
+            "ERROR_SUB_PROCESS_FAILED",
+            message="Workchain failed because the sub-process did not finish ok.",
         )
 
         spec.outputs.dynamic = True
@@ -104,7 +104,7 @@ class AddInputsWorkChain(RunOrSubmitWorkChain):
             )
 
         inputs = _merge_nested_keys(
-            dict(zip(added_input_keys, added_input_values)), getattr(self.inputs, 'inputs', {})
+            dict(zip(added_input_keys, added_input_values)), getattr(self.inputs, "inputs", {})
         )
 
         self.report("Launching the sub-process.")

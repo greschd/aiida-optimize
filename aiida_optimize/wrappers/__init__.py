@@ -4,8 +4,8 @@ Defines helper workchains that can wrap existing processes into
 a format compatible with the optimization procedure.
 """
 
-from ._create_evaluate import CreateEvaluateWorkChain
 from ._add_inputs import AddInputsWorkChain
 from ._concatenate import ConcatenateWorkChain
+from ._create_evaluate import CreateEvaluateWorkChain
 
-__all__ = ['CreateEvaluateWorkChain', 'AddInputsWorkChain', "ConcatenateWorkChain"]
+__all__ = ["CreateEvaluateWorkChain", "AddInputsWorkChain", "ConcatenateWorkChain"]

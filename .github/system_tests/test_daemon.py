@@ -1,17 +1,17 @@
 """Tests to run with a running daemon."""
+import operator
 import subprocess
 import sys
-import operator
 import time
-import numpy as np
 
 from aiida import orm
-from aiida.engine.daemon.client import get_daemon_client
-from aiida.engine import launch
 from aiida.common import exceptions
+from aiida.engine import launch
+from aiida.engine.daemon.client import get_daemon_client
+import numpy as np
 
-from aiida_optimize.engines import Bisection
 from aiida_optimize import OptimizationWorkChain
+from aiida_optimize.engines import Bisection
 import sample_processes
 
 TIMEOUTSECS = 4 * 60  # 4 minutes
@@ -24,12 +24,14 @@ def print_daemon_log():
 
     print(f"Output of 'cat {daemon_log}':")
     try:
-        print(subprocess.check_output(
-            ['cat', f'{daemon_log}'],
-            stderr=subprocess.STDOUT,
-        ))
+        print(
+            subprocess.check_output(
+                ["cat", f"{daemon_log}"],
+                stderr=subprocess.STDOUT,
+            )
+        )
     except subprocess.CalledProcessError as exception:
-        print(f'Note: the command failed, message: {exception}')
+        print(f"Note: the command failed, message: {exception}")
 
 
 def wait_for(proc, time_elapsed=5):
@@ -46,8 +48,8 @@ def check_optimization(
     x_exact,
     f_exact,
     evaluate=None,
-    input_getter=operator.attrgetter('x'),
-    output_port_names=None
+    input_getter=operator.attrgetter("x"),
+    output_port_names=None,
 ):  # pylint: disable=too-many-arguments
     """submit launch and check optimization"""
     func_workchain = getattr(sample_processes, func_workchain_name)
@@ -63,7 +65,7 @@ def check_optimization(
 
     wait_for(result_node)
 
-    assert 'optimal_process_uuid' in result_node.outputs
+    assert "optimal_process_uuid" in result_node.outputs
     assert np.isclose(result_node.outputs.optimal_process_output.value, f_exact, atol=ftol)
 
     calc = orm.load_node(result_node.outputs.optimal_process_uuid.value)
@@ -99,14 +101,14 @@ def launch_all():
         engine=Bisection,
         engine_kwargs=dict(
             lower=-1.1,
-            upper=1.,
+            upper=1.0,
             tol=tol,
         ),
-        func_workchain_name='Echo',
+        func_workchain_name="Echo",
         xtol=tol,
         ftol=tol,
-        x_exact=0.,
-        f_exact=0.,
+        x_exact=0.0,
+        f_exact=0.0,
     )
 
 
@@ -119,5 +121,5 @@ def main():
     sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

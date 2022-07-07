@@ -2,14 +2,13 @@
 """
 Defines common helper functions.
 """
-import typing as ty
 from collections import defaultdict
-
-from plumpy.utils import AttributesFrozendict
+import typing as ty
 
 from aiida import orm
-from aiida.orm.nodes.data.base import to_aiida_type
 from aiida.common.links import LinkType
+from aiida.orm.nodes.data.base import to_aiida_type
+from plumpy.utils import AttributesFrozendict
 
 
 def _get_outputs_dict(process: orm.ProcessNode, wrap_nested=False) -> ty.Dict[str, orm.Node]:
@@ -26,16 +25,15 @@ def _get_outputs_dict(process: orm.ProcessNode, wrap_nested=False) -> ty.Dict[st
 
 
 def _wrap_nested_links(output_dict):
-    """Wrap links containing `__` into nested dicts.
-    """
+    """Wrap links containing `__` into nested dicts."""
     if not isinstance(output_dict, dict):
         return output_dict
     res = {}
-    direct_links = set(link for link in output_dict if '__' not in link)
-    nested_links = set(link for link in output_dict if '__' in link)
+    direct_links = set(link for link in output_dict if "__" not in link)
+    nested_links = set(link for link in output_dict if "__" in link)
     nested_links_by_head = defaultdict(list)
     for link in nested_links:
-        head, tail = link.split('__', 1)
+        head, tail = link.split("__", 1)
         nested_links_by_head[head].append((tail, link))
 
     invalid_links = direct_links.intersection(nested_links_by_head.keys())
@@ -58,6 +56,7 @@ def _merge_nested_keys(nested_key_inputs, target_inputs):
         x.y:a.b -> x.y['a']['b']
     Note: keys will be python str; values will be AiiDA data types
     """
+
     def _get_nested_dict(in_dict, split_path):
         res_dict = in_dict
         for path_part in split_path:
@@ -67,8 +66,8 @@ def _merge_nested_keys(nested_key_inputs, target_inputs):
     destination = _copy_nested_dict(target_inputs)
 
     for key, value in nested_key_inputs.items():
-        full_port_path, *full_attr_path = key.split(':')
-        *port_path, port_name = full_port_path.split('.')
+        full_port_path, *full_attr_path = key.split(":")
+        *port_path, port_name = full_port_path.split(".")
         namespace = _get_nested_dict(in_dict=destination, split_path=port_path)
 
         if not full_attr_path:
@@ -85,7 +84,7 @@ def _merge_nested_keys(nested_key_inputs, target_inputs):
             except KeyError:
                 res_dict = {}
 
-            *sub_dict_path, attr_name = full_attr_path[0].split('.')
+            *sub_dict_path, attr_name = full_attr_path[0].split(".")
             sub_dict = _get_nested_dict(in_dict=res_dict, split_path=sub_dict_path)
             sub_dict[attr_name] = _from_aiida_type(value)
             res_value = orm.Dict(dict=res_dict).store()
@@ -118,4 +117,4 @@ def _from_aiida_type(value):
         return value.get_dict()
     if isinstance(value, orm.List):
         return value.get_list()
-    raise TypeError(f'value of type {type(value)} is not supported')
+    raise TypeError(f"value of type {type(value)} is not supported")

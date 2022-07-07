@@ -40,9 +40,9 @@ from aiida_optimize.engines import NelderMead
         ],
         ["sin_list", [[-np.pi / 2 + 1e-3], [np.pi]], 1e-1, 1e-1, 1e-1, 1e-1, [-np.pi / 2], -1.0],
         ["sin_list", [[-np.pi / 2 - 1e-3], [np.pi]], 1e-1, 1e-1, 1e-1, 1e-1, [-np.pi / 2], -1.0],
-    ),  # pylint: disable=too-many-arguments
+    ),
 )
-def test_nelder_mead(
+def test_nelder_mead(  # pylint: disable=too-many-arguments
     check_optimization,
     func_workchain_name,
     simplex,

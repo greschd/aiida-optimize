@@ -53,5 +53,5 @@ def load_object(cls_name):
         return ObjectLoader().load_object(cls_name_str)
     except ValueError as err:
         if cls_name_str.startswith(_YAML_IDENTIFIER):
-            return yaml.load(cls_name_str[len(_YAML_IDENTIFIER) :])
+            return yaml.load(cls_name_str[len(_YAML_IDENTIFIER) :], Loader=yaml.UnsafeLoader)
         raise ValueError(f"Could not load class name '{cls_name_str}'.") from err

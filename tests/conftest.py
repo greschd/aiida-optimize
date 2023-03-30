@@ -37,7 +37,6 @@ def run_optimization():  # pylint: disable=unused-argument
     def inner(
         engine, func_workchain, engine_kwargs, evaluate=None
     ):  # pylint: disable=missing-docstring,useless-suppression
-
         inputs = dict(
             engine=engine,
             engine_kwargs=orm.Dict(dict=dict(engine_kwargs)),
@@ -72,7 +71,6 @@ def check_optimization(
         input_getter=operator.attrgetter("x"),
         output_port_names=None,
     ):
-
         func_workchain = getattr(sample_processes, func_workchain_name)
 
         result_node = run_optimization(
@@ -132,7 +130,6 @@ def check_error(
         evaluate=None,
         output_port_names=None,
     ):
-
         func_workchain = getattr(sample_processes, func_workchain_name)
 
         result_node = run_optimization(

@@ -25,7 +25,7 @@
   ],
   "include_package_data": true,
   "install_requires": [
-    "aiida-core>=2.0.0<3.0.0",
+    "aiida-core>=2.0.0,<3.0.0",
     "numpy",
     "scipy",
     "decorator",
@@ -46,7 +46,7 @@
     "dev": [
       "yapf==0.32.0",
       "pre-commit==2.19",
-      "pylint==2.14.4",
+      "pylint==2.17.1",
       "mypy==0.961",
       "types-PyYAML==6.0.9",
       "types-decorator==5.1.7"

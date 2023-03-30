@@ -128,7 +128,7 @@ class OptimizationWorkChain(WorkChain):
                 self.indices_to_retrieve.append(idx)
         return self.to_context(**evals)
 
-    def get_results(self):
+    def get_results(self):  # pylint: disable=inconsistent-return-statements
         """
         Retrieve results of the current iteration step's evaluations.
         """

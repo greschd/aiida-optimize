@@ -25,7 +25,7 @@
   ],
   "include_package_data": true,
   "install_requires": [
-    "aiida-core>=2.0.0<3.0.0",
+    "aiida-core>=2.0.0,<3.0.0",
     "numpy",
     "scipy",
     "decorator",
